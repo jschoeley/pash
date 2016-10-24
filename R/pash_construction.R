@@ -5,7 +5,7 @@
 #' your data.
 #'
 #' First: Ceate a pace-shape object from either a life-table column or a
-#' population matrix using one of the input function: \code{Inputlx}.
+#' population matrix using one of the input function: \code{\link{Inputlx}}.
 #'
 #' Second: Calculate pace measures with \code{\link{GetPace}}, calculate shape
 #' measures with \code{\link{GetShape}}, standardize a life table by pace and
@@ -93,7 +93,7 @@ naxMidpoint <- function (nx) {
 
 # X To Pash ---------------------------------------------------------------
 
-#' Convert A Life Table Survivorship Function To A Pace-Shape Object
+#' Convert a Life Table Survivorship Function to a Pace-Shape Object
 #'
 #' Given an age vector and corresponding survival probabilities a complete
 #' lifetable is calculated and a pace-shape object constructed.

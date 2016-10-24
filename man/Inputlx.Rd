@@ -2,7 +2,7 @@
 % Please edit documentation in R/pash_construction.R
 \name{Inputlx}
 \alias{Inputlx}
-\title{Convert A Life Table Survivorship Function To A Pace-Shape Object}
+\title{Convert a Life Table Survivorship Function to a Pace-Shape Object}
 \usage{
 Inputlx(x, lx, nax = "midpoint", nx = "auto", last_open = FALSE,
   time_unit = "years")
