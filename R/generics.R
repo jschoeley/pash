@@ -1,5 +1,14 @@
 #' Print Pace-Shape Object
-print.pash <- function (x, radix = 10000, big.mark = ",") {
+#'
+#' Printing method for a pace-shape object
+#'
+#' @param x Pace-shape object.
+#' @param radix Initial life table population.
+#' @param big.mark See \code{\link{formatC}}.
+#' @param ... Additional arguments passed on to \code{\link{print.data.frame}}.
+#'
+#' @export
+print.pash <- function (x, radix = 10000, big.mark = ",", ...) {
   lt = x[["lt"]]
   df = data.frame(
     x   = paste0("[", lt$x, ",", lt$x+lt$nx, ")"),
@@ -14,34 +23,63 @@ print.pash <- function (x, radix = 10000, big.mark = ",") {
     ex  = formatC(lt$ex,        format   = "f", digits = 2)
   )
   cat("A life table with", length(lt$x), "age groups.\n")
-  print.data.frame(df, row.names = FALSE, quote = FALSE)
+  print.data.frame(df, row.names = FALSE, quote = FALSE, ...)
   invisible(x)
 }
 
-#' Summarise Pace-Shape Object
-summary.pash <- function (x) {
-  lt = x[["lt"]]
+#' Summarize Pace-Shape Object
+#'
+#' Summary method for the pace-shape object.
+#'
+#' @param object A pace-shape object.
+#' @param ... Additional arguments.
+#'
+#' @export
+summary.pash <- function (object, ...) {
+  lt = object[["lt"]]
   cat("A life table with", length(lt$x), "age groups.\nSource:",
-      attr(x, "source")$type, "\n\n")
+      attr(object, "source")$type, "\n\n")
   cat("Average life expectancy :",
-      formatC(lt$ex[1], format = "f", digits = 2), attr(x, "time_unit"), "\n")
+      formatC(lt$ex[1], format = "f", digits = 2), attr(object, "time_unit"), "\n")
   cat("Avg. e0 lost upon death :",
-      formatC(EDagger(lt), format = "f", digits = 2), attr(x, "time_unit"), "\n")
+      formatC(EDagger(lt$nax, lt$nx, lt$ndx, lt$ex), format = "f", digits = 2), attr(object, "time_unit"), "\n")
   cat("Life table entropy      :",
-      formatC(GetShape(x, type = "LTentr"), format = "f", digits = 3))
+      formatC(GetShape(object, type = "LTentr"), format = "f", digits = 3))
 }
 
-#' Convert Pace-Shape Object To Data Frame
-as.data.frame.pash <- function (x) {
-  x[["lt"]]
+#' Convert Pace-Shape Object to Data Frame
+#'
+#' Method to convert a pace-shape object to a data frame.
+#'
+#' @param x A pace-shape object.
+#' @param row.names See \code{\link{as.data.frame}}.
+#' @param optional See \code{\link{as.data.frame}}.
+#' @param ... Additional arguments passed on to \code{\link{as.data.frame}}.
+#'
+#' @export
+as.data.frame.pash <- function (x, row.names = NULL, optional = FALSE, ...) {
+  as.data.frame(x[["lt"]], row.names, optional, ...)
 }
 
-#' Convert Pace-Shape Object To Matrix
-as.matrix.pash <- function (x) {
-  matrix(unlist(x[["lt"]]), ncol = 11, dimnames = list(NULL, names(x[["lt"]])))
+#' Convert Pace-Shape Object to Matrix
+#'
+#' Method to convert a pace-shape object to a data frame.
+#'
+#' @param x A pace-shape object.
+#' @param ... Additional arguments passed on to \code{\link{as.matrix}}.
+#'
+#' @export
+as.matrix.pash <- function (x, ...) {
+  as.matrix(x[["lt"]], ...)
 }
 
-#' Test if Object is Pace-Shaoe
+#' Test if Object is Pace-Shape
+#'
+#' Method to test if an object is of class \code{pash}.
+#'
+#' @param x A pace-shape object.
+#'
+#' @export
 is.pash <- function (x) {
   inherits(x, "pash")
 }

@@ -2,11 +2,16 @@
 % Please edit documentation in R/generics.R
 \name{as.matrix.pash}
 \alias{as.matrix.pash}
-\title{Convert Pace-Shape Object To Matrix}
+\title{Convert Pace-Shape Object to Matrix}
 \usage{
-\method{as.matrix}{pash}(x)
+\method{as.matrix}{pash}(x, ...)
+}
+\arguments{
+\item{x}{A pace-shape object.}
+
+\item{...}{Additional arguments passed on to \code{\link{as.matrix}}.}
 }
 \description{
-Convert Pace-Shape Object To Matrix
+Method to convert a pace-shape object to a data frame.
 }
 

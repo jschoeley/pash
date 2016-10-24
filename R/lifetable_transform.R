@@ -1,8 +1,25 @@
 #' Rebase Life Table to Different Age
 #'
+#' Start the life table at a later age.
+#'
+#' The life table is truncated to the new origin age and the lx at origin set to
+#' 1. ndx, nLx, Tx and ex columns are re-calculated.
+#'
+#' @param pash A pace-shape object.
+#' @param origin The age the life table should be rebased to.
+#'
+#' @return A rebased pace-shape object.
+#'
 #' @examples
-#' pash = lxToPash(x = prestons_lx$x, lx = prestons_lx$lx)
-#' RebaseLT(pash, 50)
+#' # generate pace-shape object
+#' pash <- Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
+#' # rebase life table to age 50
+#' lt50 <- RebaseLT(pash, 50)
+#' lt50
+#'
+#' # the rebase operation is reversible
+#' lt0 = RebaseLT(lt50, 0)
+#' lt0
 #'
 #' @export
 RebaseLT <- function (pash, origin = 0) {
@@ -19,7 +36,8 @@ RebaseLT <- function (pash, origin = 0) {
   # rebase ndx
   pash[["lt"]]$ndx = pash[["lt"]]$ndx / sum(pash[["lt"]]$ndx)
   # rebase nLx
-  pash[["lt"]]$nLx = pash[["lt"]]$nx*(pash[["lt"]]$lx-pash[["lt"]]$ndx) + pash[["lt"]]$nax*pash[["lt"]]$ndx
+  pash[["lt"]]$nLx = pash[["lt"]]$nx*(pash[["lt"]]$lx-pash[["lt"]]$ndx) +
+                     pash[["lt"]]$nax*pash[["lt"]]$ndx
   # rebase Tx
   pash[["lt"]]$Tx = rev(cumsum(rev(pash[["lt"]]$nLx)))
   # rebase ex
@@ -30,22 +48,36 @@ RebaseLT <- function (pash, origin = 0) {
 
 #' Standardize Life Table By Pace and Shape
 #'
+#' @param pash A pace-shape object.
+#' @param pace Measure of pace used for standardization (default e0, see details).
+#' @param q (optional) Quantile specification for age where q percent of the
+#'   life table population is still alive (default 0.5).
+#'
+#' @return A pace-shape standardized life table in form of a data frame. Note
+#' that this is not a pace-shape object anymore.
+#'
 #' @examples
-#' pash = lxToPash(x = prestons_lx$x, lx = prestons_lx$lx)
+#' # generate a pace-shape object
+#' pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
+#' # standardize the life table by pace and shape
 #' StandardizeLT(pash)
+#' StandardizeLT(pash, pace = "qlx", q = 0.1)
 #'
 #' @export
-StandardizeLT <- function(pash) {
+StandardizeLT <- function(pash, pace = "e0", q = 0.5) {
 
   lt = pash[["lt"]]
+  if (identical(pace, "e0")) pace = TotalLifeExpectancy(lt$ex)
+  if (identical(pace, "qlx")) pace = SurvivalQuantile(lt$x, lt$lx, q)
+  if (identical(pace, "maxx")) pace = MaximumLifespan(lt$x, attr(pash, "last_open"))
 
   # standardize age
-  x_s =  lt$x  / lt$ex[1]
-  nx_s = lt$nx  / lt$ex[1]
+  x_s =  lt$x  / pace
+  nx_s = lt$nx  / pace
   # standardize nmx
-  nmx_s = lt$nmx*lt$ex[1]
+  nmx_s = lt$nmx*pace
   # standardize ex
-  ex_s = lt$ex / lt$ex[1]
+  ex_s = lt$ex / pace
 
   # return standardized LT
   return(

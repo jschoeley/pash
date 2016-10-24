@@ -4,9 +4,18 @@
 \alias{print.pash}
 \title{Print Pace-Shape Object}
 \usage{
-\method{print}{pash}(x, radix = 10000, big.mark = ",")
+\method{print}{pash}(x, radix = 10000, big.mark = ",", ...)
+}
+\arguments{
+\item{x}{Pace-shape object.}
+
+\item{radix}{Initial life table population.}
+
+\item{big.mark}{See \code{\link{formatC}}.}
+
+\item{...}{Additional arguments passed on to \code{\link{print.data.frame}}.}
 }
 \description{
-Print Pace-Shape Object
+Printing method for a pace-shape object
 }
 

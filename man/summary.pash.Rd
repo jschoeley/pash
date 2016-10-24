@@ -2,11 +2,16 @@
 % Please edit documentation in R/generics.R
 \name{summary.pash}
 \alias{summary.pash}
-\title{Summarise Pace-Shape Object}
+\title{Summarize Pace-Shape Object}
 \usage{
-\method{summary}{pash}(x)
+\method{summary}{pash}(object, ...)
+}
+\arguments{
+\item{object}{A pace-shape object.}
+
+\item{...}{Additional arguments.}
 }
 \description{
-Summarise Pace-Shape Object
+Summary method for the pace-shape object.
 }
 

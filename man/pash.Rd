@@ -6,17 +6,17 @@
 \alias{pash-package}
 \title{pash: Pace-Shape Analysis for Life Tables}
 \description{
-\code{pash} lets you perform pace-shape analysis on life tables.Calculate a
+\code{pash} lets you perform pace-shape analysis on life tables. Calculate a
 wide array of pace and shape metrics and use them to standardize and compare
 your data.
 }
 \details{
 First: Ceate a pace-shape object from either a life-table column or a
-population matrix using one of the input function: \code{lxToPash}.
+population matrix using one of the input function: \code{Inputlx}.
 
-Second: Calculate pace measures with \code{GetPace}, calculate shape
-measures with \code{GetShape}, standardize a life table by pace and
-shape \code{StandardizeLT}, rebase your life table to a different age
-\code{RebaseLT}.
+Second: Calculate pace measures with \code{\link{GetPace}}, calculate shape
+measures with \code{\link{GetShape}}, standardize a life table by pace and
+shape \code{\link{StandardizeLT}}, rebase your life table to a different age
+\code{\link{RebaseLT}}.
 }
 

@@ -4,14 +4,29 @@
 \alias{StandardizeLT}
 \title{Standardize Life Table By Pace and Shape}
 \usage{
-StandardizeLT(pash)
+StandardizeLT(pash, pace = "e0", q = 0.5)
+}
+\arguments{
+\item{pash}{A pace-shape object.}
+
+\item{pace}{Measure of pace used for standardization (default e0, see details).}
+
+\item{q}{(optional) Quantile specification for age where q percent of the
+life table population is still alive (default 0.5).}
+}
+\value{
+A pace-shape standardized life table in form of a data frame. Note
+that this is not a pace-shape object anymore.
 }
 \description{
 Standardize Life Table By Pace and Shape
 }
 \examples{
-pash = lxToPash(x = prestons_lx$x, lx = prestons_lx$lx)
+# generate a pace-shape object
+pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
+# standardize the life table by pace and shape
 StandardizeLT(pash)
+StandardizeLT(pash, pace = "qlx", q = 0.1)
 
 }
 

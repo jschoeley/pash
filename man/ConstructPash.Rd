@@ -7,7 +7,57 @@
 ConstructPash(x, nx, nmx, nax, nqx, npx, lx, ndx, nLx, Tx, ex, last_open,
   time_unit, type, input)
 }
+\arguments{
+\item{x}{Start of age interval.}
+
+\item{nx}{Width of age interval [x, x+nx). No zero width allowed.}
+
+\item{nmx}{Mortality rate in age interval [x, x+nx) measured in deaths per
+unit of subject-time.}
+
+\item{nax}{Subject-time spent in age interval [x, x+nx) when dying in that
+interval.}
+
+\item{nqx}{Probability to die within age interval [x, x+nx) given survival to
+x. Must be in range [0, 1].}
+
+\item{npx}{Probability to survive age interval [x, x+nx) given survival to x.
+A numeric vector. Must be in range [0, 1].}
+
+\item{lx}{Life table survivors at age x. Radix must be 1. Must be in range [0, 1].}
+
+\item{ndx}{Deaths by life table population in age interval [x, x+nx).}
+
+\item{nLx}{Total subject-time lived in age interval [x, x+nx).}
+
+\item{Tx}{Total subject-time yet to live past age x by life table population.
+A numeric vector.}
+
+\item{ex}{Life expectancy at age x. A numeric vector.}
+
+\item{last_open}{Is the last age group open? Boolean scalar.}
+
+\item{time_unit}{The unit of the ages. A scalar string.}
+
+\item{type}{The type of input used to create the pace-shape object (e.g.
+"lx). A scalar string.}
+
+\item{input}{The raw input of the Input[*] function. Free format.}
+}
+\value{
+An S3 object of class \code{pash}.
+}
 \description{
-Pace-Shape Object Constructor
+Construct a pace-shape object.
+}
+\details{
+Unless otherwise noted in the argument description the input
+arguments must be non-negative numeric vectors of length > 1 and length ==
+length(x). NA, NaN, Inf, -Inf are not allowed.
+}
+\section{Warning}{
+
+Only use when writing new Input functions. For pace-shape object construction
+use the existing Input functions provided by \code{pash}.
 }
 

@@ -2,11 +2,20 @@
 % Please edit documentation in R/generics.R
 \name{as.data.frame.pash}
 \alias{as.data.frame.pash}
-\title{Convert Pace-Shape Object To Data Frame}
+\title{Convert Pace-Shape Object to Data Frame}
 \usage{
-\method{as.data.frame}{pash}(x)
+\method{as.data.frame}{pash}(x, row.names = NULL, optional = FALSE, ...)
+}
+\arguments{
+\item{x}{A pace-shape object.}
+
+\item{row.names}{See \code{\link{as.data.frame}}.}
+
+\item{optional}{See \code{\link{as.data.frame}}.}
+
+\item{...}{Additional arguments passed on to \code{\link{as.data.frame}}.}
 }
 \description{
-Convert Pace-Shape Object To Data Frame
+Method to convert a pace-shape object to a data frame.
 }
 

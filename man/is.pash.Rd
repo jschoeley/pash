@@ -2,11 +2,14 @@
 % Please edit documentation in R/generics.R
 \name{is.pash}
 \alias{is.pash}
-\title{Test if Object is Pace-Shaoe}
+\title{Test if Object is Pace-Shape}
 \usage{
 is.pash(x)
 }
+\arguments{
+\item{x}{A pace-shape object.}
+}
 \description{
-Test if Object is Pace-Shaoe
+Method to test if an object is of class \code{pash}.
 }
 

@@ -1,35 +1,36 @@
+# Test if Object is Pace-Shape
 TestClass <- function (x) {
   if (!is.pash(x)) stop("x is not a pace-shape object.")
 }
 
-#' Test for NAs in Function Parameters
+# Test for NAs in Function Parameters
 TestNA <- function (x, name) {
   if (any(is.na(x))) stop(paste("NA found in", name, "input."))
 }
 
-#' Test if Last Value in nx is NA
+# Test if Last Value in nx is NA
 TestLastnxNA <- function (x) {
   if (!is.na(rev(x)[1L])) warning("Last value in nx vector must be NA if the last age group is open. Last value is set to NA.")
 }
 
-#' Set Last Value in Vector to NA
+# Set Last Value in Vector to NA
 SetLastToNA <- function (x) {
   x[length(x)] = NA
   return(x)
 }
 
-#' Test if Vector is Same Length as Age Vector
+# Test if Vector is Same Length as Age Vector
 TestLength <- function (a, x, name_a) {
   if (!identical(length(a), length(x))) stop(paste("Input", name_a, "is not of same length as age vector."))
 }
 
-#' Test if Age Vector Matches nx Vector
+# Test if Age Vector Matches nx Vector
 TestnxMatchx <- function(x, nx) {
   if(any(diff(x) != nx[-length(nx)])) stop("Provided Age and nx vectors don't match.")
 }
 
-#' Validate Input of lxToPash Function
-lxToPashInputValidation <- function(x, lx, nax, nx, k, last_open) {
+# Validate Inputlx Arguments
+InputlxValidation <- function(x, lx, nax, nx, k, last_open) {
 
   # check basic input sanity
   TestNA(x, "x")
