@@ -1,4 +1,4 @@
-#' Lifetable Shape Measures
+#' Life Table Pace Measures
 #'
 #' Get life table shape measures from pace-shape object.
 #'
