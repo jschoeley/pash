@@ -16,7 +16,7 @@ population matrix using one of the input function: \code{\link{Inputlx}}.
 
 Second: Calculate pace measures with \code{\link{GetPace}}, calculate shape
 measures with \code{\link{GetShape}}, standardize a life table by pace and
-shape \code{\link{StandardizeLT}}, rebase your life table to a different age
-\code{\link{RebaseLT}}.
+shape with \code{\link{StandardizeLT}}, rebase your life table to a different
+age with \code{\link{RebaseLT}}.
 }
 
