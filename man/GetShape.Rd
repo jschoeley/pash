@@ -2,7 +2,7 @@
 % Please edit documentation in R/shape_measures.R
 \name{GetShape}
 \alias{GetShape}
-\title{Lifetable Shape Measures}
+\title{Life Table Shape Measures}
 \source{
 Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015.
 "Quantifying the Shape of Aging." PLOS ONE 10 (3): 1-18. doi:10.1371/journal.pone.0119163.

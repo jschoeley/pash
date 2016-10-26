@@ -19,3 +19,25 @@ prestons_lx <-
                     98334, 97704, 97151, 96492, 95588,
                     94195, 91937, 88711, 83845, 76377,
                     66225, 53803, 37441, 21134))
+
+#' Complete life table for Swedish Females 2014
+#'
+#' @usage data(HMD_SWE_2014)
+#' @format
+#'   A data frame with 111 rows and 11 variables:
+#'   \describe{
+#'     \item{country}{Country code: SWE}
+#'     \item{Year}{Year}
+#'     \item{Age}{Age}
+#'     \item{mx}{Age specific death-rates}
+#'     \item{qx}{Age specific 1-year death probability}
+#'     \item{ax}{ax}
+#'     \item{lx}{Survivors at age x}
+#'     \item{dx}{Deaths in the age interval}
+#'     \item{Lx}{Lx}
+#'     \item{Tx}{Tx}
+#'     \item{ex}{Life expectancy at age x}
+#'   }
+#'
+#' @source Human Mortality Database, \url{http://www.mortality.org}
+'HMD_SWE_2014'
