@@ -18,4 +18,5 @@
 \description{
 Method to convert a pace-shape object to a data frame.
 }
+\keyword{internal}
 

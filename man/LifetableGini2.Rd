@@ -3,10 +3,6 @@
 \name{LifetableGini2}
 \alias{LifetableGini2}
 \title{Life Table Gini-Coefficient}
-\source{
-Shkolnikov and Andreev (2010)
-\url{http://www.demogr.mpg.de/papers/technicalreports/tr-2010-001.pdf}
-}
 \usage{
 LifetableGini2(nax, nx, lx, ex)
 }
