@@ -12,4 +12,5 @@ is.pash(x)
 \description{
 Method to test if an object is of class \code{pash}.
 }
+\keyword{internal}
 

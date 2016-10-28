@@ -1,10 +1,11 @@
 Package: pash
 Type: Package
 Title: Pace-Shape Analysis of Life Tables
-Version: 0.0.1.9001
-Author: Jonas Schoeley
+Version: 0.0.1.9002
+Author: Jonas Schoeley and Marius Pascariu
 Maintainer: Jonas Schoeley <jschoeley@gmail.com>
 Description: Perform pace-shape analysis on data in various formats.
 License: GPL-2
 LazyData: TRUE
+Depends: R (>= 2.10)
 RoxygenNote: 5.0.1

@@ -2,7 +2,7 @@
 % Please edit documentation in R/pace_measures.R
 \name{GetPace}
 \alias{GetPace}
-\title{Lifetable Shape Measures}
+\title{Life Table Pace Measures}
 \source{
 Wrycza, Tomasz, and Annette Baudisch. 2014.
 "The Pace of Aging: Intrinsic Time Scales in Demography."
