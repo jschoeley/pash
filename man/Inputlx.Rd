@@ -69,5 +69,7 @@ For nx you may provide a scalar, a vector numeric, or let the
 \examples{
 Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
 
+# different nax assumptions
+Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, nax = "constant_nmx")
 }
 

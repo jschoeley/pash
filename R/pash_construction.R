@@ -185,7 +185,16 @@ Inputlx <- function (x, lx,
   # k: number of age-groups
   k = length(x)
 
-  valid_input = InputlxValidation(x, lx, nax, nx, k, last_open)
+  # keep the argument values
+  nax_arg = nax
+  nx_arg = nx
+
+  # validate data
+  ValidateAge(x)
+  Validatelx(lx)
+
+  # validate options
+  valid_input = ValidateOptions(x, nax_arg, nx_arg, k, last_open)
   nax = valid_input[["nax"]]
   nx = valid_input[["nx"]]
 
@@ -204,7 +213,7 @@ Inputlx <- function (x, lx,
   npx = 1-nqx
 
   # nx: width of age groups [x, x+n)
-  if (identical(nx, "auto")) {
+  if (identical(nx_arg, "auto")) {
     nx = DiffAge(x, last_open)
   }
 
@@ -212,13 +221,13 @@ Inputlx <- function (x, lx,
   # contributed by those who die in that age group
   # in case of an open last age group and "midpoint" or "constant_mx" method
   # set the last nax value to the value of the preceeding age group
-  if (identical(nax, "midpoint")) {
+  if (identical(nax_arg, "midpoint")) {
     nax = naxMidpoint(nx)
   }
-  if (identical(nax, "constant_nmx")) {
+  if (identical(nax_arg, "constant_nmx")) {
     nax = naxConstantnmx1(x, nx, nqx, npx, k)
   }
-  if (identical(last_open, TRUE) && identical(nax, "midpoint") || identical(nax, "constant_nmx")) {
+  if (identical(last_open, TRUE) && (identical(nax_arg, "midpoint") || identical(nax_arg, "constant_nmx"))) {
     nax[k] = nax[k-1L]
   }
 
