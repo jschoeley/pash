@@ -91,6 +91,30 @@ naxMidpoint <- function (nx) {
   return(nax)
 }
 
+# Life Table ax Values Using Assumption of Constant nmx
+# starting with probabilities
+naxConstantnmx1 <- function (x, nx, nqx, npx, k) {
+  # analytical style
+  nax = -nx/nqx - nx/log(npx) + nx
+  nAx = nax/nx
+  regress_nAx = log(nAx / (1-nAx))[-k]; regress_x = x[-k]
+  # the analytic expression above can't return a nax value for the
+  # last age group (when survivorship hits 0). Therefore we extrapolate
+  # the last nax value based on loess regression of the nax values
+  pred = stats::predict(stats::loess(regress_nAx~regress_x,
+                                     control = stats::loess.control(surface = "direct")),
+                        data.frame(regress_x = x[k]))
+  nax[k] = exp(pred)/(1+exp(pred))*nx[k]
+  return(nax)
+}
+
+# Life Table ax Values Using Assumption of Constant nmx
+# starting with rates
+naxConstantnmx2 <- function (nx, nmx) {
+  nax = nx + 1/nmx - nx/(1 - exp(-nx*nmx))
+  return(nax)
+}
+
 # X To Pash ---------------------------------------------------------------
 
 #' Convert a Life Table Survivorship Function to a Pace-Shape Object
@@ -100,35 +124,55 @@ naxMidpoint <- function (nx) {
 #'
 #' @param x Start of the age interval.
 #' @param lx Probability to survive up until age x.
-#' @param nax Subject-time alive in [x, x+n) for those who die in same interval (see details for options).
+#' @param nax Subject-time alive in [x, x+n) for those who die in same interval
+#'   (see details for options).
 #' @param nx Width of age interval [x, x+n) (see details for options).
-#' @param last_open Is the last age group open (TRUE) or closed (FALSE, default).
+#' @param last_open Is the last age group open (TRUE) or closed (FALSE,
+#'   default).
 #' @param time_unit The unit of the ages (by default "years").
 #'
-#' @details
-#' For nx you may provide a scalar, a vector numeric, or let the function
-#' determine the width for you (default).
-#' A scalar will be recycled for each age group. A vector must be as long as the
-#' age vector and allows you to specify the width of each age group seperately.
-#' If the last age group is supposed to be open make sure that the last value
-#' of your nx vector is NA. By default the width of the age groups is guessed
-#' from the age vector. The width of the last age group is assumed to be equal
-#' to the width of the preceeding age group.
+#' @details For nx you may provide a scalar, a vector numeric, or let the
+#'   function determine the width for you (default). A scalar will be recycled
+#'   for each age group. A vector must be as long as the age vector and allows
+#'   you to specify the width of each age group seperately. If the last age
+#'   group is supposed to be open make sure that the last value of your nx
+#'   vector is NA. By default the width of the age groups is guessed from the
+#'   age vector. The width of the last age group is assumed to be equal to the
+#'   width of the preceeding age group.
 #'
-#' Likewise to nx, nax may be provided as a scalar, a vector, or automatically
-#' derived from the width of the age groups via the midpoint method (default).
-#' The midpoint method assumes a linear decline of the lx function over the width
-#' of an age group, implying that those who die in that age group die on average
-#' halfway into it. This is a common assumption in life table creation. Should
-#' you specify an open last age group and nax estimation via the midpoint method
-#' (not recomended) the nax of the last open age group will be set to the nax of
-#' the preceeding age group.
+#'   Likewise to nx, nax may be provided as a scalar, a vector, or automatically
+#'   calculated via the midpoint method (default) or the constant nmx assumption
+#'   (option "\code{constant_nmx}").
+#'
+#'   The midpoint method assumes a linear decline of the lx function over the
+#'   width of an age group, implying that those who die in that age group die on
+#'   average halfway into it:
+#'
+#'   nax = n/2 (see Preston, 2001, p. 46)
+#'
+#'   Assuming the mortality rate during age interval [x, x+n] to be constant
+#'   implies an exponentially declining lx function within [x, x+n] and will
+#'   produce ax values smaller than those calculated via the midpoint method.
+#'   Preston (2001), p. 46 provides an expression for nax given the assumption
+#'   of constant mortality. Restating this expression in terms of nqx and npx
+#'   leads to:
+#'
+#'   nax = -n/nqx - n/ln(npx) + n
+#'
+#'   Should you specify an open last age group and nax estimation via the
+#'   midpoint or constant nmx method (not recomended) the nax of the last open
+#'   age group will be set to the nax of the preceeding age group.
+#'
+#' @source Preston, Samuel H., Patric Heuveline, and Michel Guillot. 2001.
+#'   Demography. Oxford, UK: Blackwell.
 #'
 #' @return A pace-shape object.
 #'
 #' @examples
 #' Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
 #'
+#' # different nax assumptions
+#' Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, nax = "constant_nmx")
 #' @export
 Inputlx <- function (x, lx,
                      nax = "midpoint",
@@ -150,23 +194,6 @@ Inputlx <- function (x, lx,
   # set radix to 1
   lx_ = lx / lx[1L]
 
-  # nx: width of age groups [x, x+n)
-  if (identical(nx, "auto")) {
-    nx = DiffAge(x, last_open)
-  }
-
-  # nax: amount of subject-time at risk in age group [x, x+n)
-  # contributed by those who die in that age group
-  # if no nax value(s) is/are provided assume that death
-  # ocours on average mid-interval, i.e. linear surviorship
-  # in case of an open last age group and "midpoint" method
-  # set the last nax value to the value of the preceeding age group
-  if (identical(nax, "midpoint")) {
-    nax = naxMidpoint(nx)
-    if (identical(last_open, TRUE)) {
-      nax[k] = nax[k-1L]
-    }
-  }
   # ndx: lifetable deaths in age group [x, x+n)
   ndx = c(lx_[-k] - lx_[-1L], lx_[k])
   # nqx: lifetable probability of death in age group [x, x+n)
@@ -175,6 +202,26 @@ Inputlx <- function (x, lx,
   # npx: lifetable probability of surviving age group [x, x+n)
   # given survival to age x
   npx = 1-nqx
+
+  # nx: width of age groups [x, x+n)
+  if (identical(nx, "auto")) {
+    nx = DiffAge(x, last_open)
+  }
+
+  # nax: amount of subject-time at risk in age group [x, x+n)
+  # contributed by those who die in that age group
+  # in case of an open last age group and "midpoint" or "constant_mx" method
+  # set the last nax value to the value of the preceeding age group
+  if (identical(nax, "midpoint")) {
+    nax = naxMidpoint(nx)
+  }
+  if (identical(nax, "constant_nmx")) {
+    nax = naxConstantnmx1(x, nx, nqx, npx, k)
+  }
+  if (identical(last_open, TRUE) && identical(nax, "midpoint") || identical(nax, "constant_nmx")) {
+    nax[k] = nax[k-1L]
+  }
+
   # nLx: amount of subject-time at risk in age group [x, x+n)
   # The nx handling needs to be improved in case of open age groups
   nx_ = if (identical(last_open, TRUE)) c(nx[-k], nx[k-1]) else nx

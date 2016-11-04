@@ -44,8 +44,8 @@ InputlxValidation <- function(x, lx, nax, nx, k, last_open) {
   # do the appropriate checks and operations
 
   if (identical(last_open, TRUE)) {
-    if (identical(nax, "midpoint")) {
-      warning("Midpoint method used in conjuction with open last age group. nax from preceeding age group will stand in for nax in open last age group.")
+    if (identical(nax, "midpoint") || identical(nax, "constant_nmx")) {
+      warning("Midpoint or constant nmx method used in conjuction with open last age group. nax from preceeding age group will stand in for nax in open last age group.")
 
       if (!identical(nx, "auto") && identical(length(nx), 1L)) {
         TestNA(nx, "nx")
@@ -60,8 +60,8 @@ InputlxValidation <- function(x, lx, nax, nx, k, last_open) {
       }
     }
 
-    if (!identical(nax, "midpoint") && identical(length(nax), 1L)) {
-      warning("nax scalar value will be used for open last age group.")
+    if (!identical(nax, "midpoint") && !identical(nax, "constant_nmx") && identical(length(nax), 1L)) {
+      warning("Provided nax scalar value will be used for open last age group.")
       TestNA(nax, "nax"); nax = rep(nax, k)
 
       if (!identical(nx, "auto") && identical(length(nx), 1L)) {
@@ -95,7 +95,7 @@ InputlxValidation <- function(x, lx, nax, nx, k, last_open) {
   }
 
   if (identical(last_open, FALSE)) {
-    if (identical(nax, "midpoint")) {
+    if (identical(nax, "midpoint") || identical(nax, "constant_nmx")) {
 
       if (!identical(nx, "auto") && identical(length(nx), 1L)) {
         TestNA(nx, "nx")
@@ -109,7 +109,7 @@ InputlxValidation <- function(x, lx, nax, nx, k, last_open) {
       }
     }
 
-    if (!identical(nax, "midpoint") && identical(length(nax), 1L)) {
+    if (!identical(nax, "midpoint") && !identical(nax, "constant_nmx") && identical(length(nax), 1L)) {
       TestNA(nax, "nax"); nax = rep(nax, k)
 
       if (!identical(nx, "auto") && identical(length(nx), 1L)) {

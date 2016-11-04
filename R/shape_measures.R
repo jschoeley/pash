@@ -119,5 +119,3 @@ LifetableCV <- function (nax, nx, ndx, lx, ex) {
   CV  = sqrt(Var)/ex[1]
   return(CV)
 }
-
-

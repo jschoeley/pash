@@ -3,6 +3,10 @@
 \name{Inputlx}
 \alias{Inputlx}
 \title{Convert a Life Table Survivorship Function to a Pace-Shape Object}
+\source{
+Preston, Samuel H., Patric Heuveline, and Michel Guillot. 2001.
+  Demography. Oxford, UK: Blackwell.
+}
 \usage{
 Inputlx(x, lx, nax = "midpoint", nx = "auto", last_open = FALSE,
   time_unit = "years")
@@ -12,11 +16,13 @@ Inputlx(x, lx, nax = "midpoint", nx = "auto", last_open = FALSE,
 
 \item{lx}{Probability to survive up until age x.}
 
-\item{nax}{Subject-time alive in [x, x+n) for those who die in same interval (see details for options).}
+\item{nax}{Subject-time alive in [x, x+n) for those who die in same interval
+(see details for options).}
 
 \item{nx}{Width of age interval [x, x+n) (see details for options).}
 
-\item{last_open}{Is the last age group open (TRUE) or closed (FALSE, default).}
+\item{last_open}{Is the last age group open (TRUE) or closed (FALSE,
+default).}
 
 \item{time_unit}{The unit of the ages (by default "years").}
 }
@@ -28,23 +34,37 @@ Given an age vector and corresponding survival probabilities a complete
 lifetable is calculated and a pace-shape object constructed.
 }
 \details{
-For nx you may provide a scalar, a vector numeric, or let the function
-determine the width for you (default).
-A scalar will be recycled for each age group. A vector must be as long as the
-age vector and allows you to specify the width of each age group seperately.
-If the last age group is supposed to be open make sure that the last value
-of your nx vector is NA. By default the width of the age groups is guessed
-from the age vector. The width of the last age group is assumed to be equal
-to the width of the preceeding age group.
+For nx you may provide a scalar, a vector numeric, or let the
+  function determine the width for you (default). A scalar will be recycled
+  for each age group. A vector must be as long as the age vector and allows
+  you to specify the width of each age group seperately. If the last age
+  group is supposed to be open make sure that the last value of your nx
+  vector is NA. By default the width of the age groups is guessed from the
+  age vector. The width of the last age group is assumed to be equal to the
+  width of the preceeding age group.
 
-Likewise to nx, nax may be provided as a scalar, a vector, or automatically
-derived from the width of the age groups via the midpoint method (default).
-The midpoint method assumes a linear decline of the lx function over the width
-of an age group, implying that those who die in that age group die on average
-halfway into it. This is a common assumption in life table creation. Should
-you specify an open last age group and nax estimation via the midpoint method
-(not recomended) the nax of the last open age group will be set to the nax of
-the preceeding age group.
+  Likewise to nx, nax may be provided as a scalar, a vector, or automatically
+  calculated via the midpoint method (default) or the constant nmx assumption
+  (option "\code{constant_nmx}").
+
+  The midpoint method assumes a linear decline of the lx function over the
+  width of an age group, implying that those who die in that age group die on
+  average halfway into it:
+
+  nax = n/2 (see Preston, 2001, p. 46)
+
+  Assuming the mortality rate during age interval [x, x+n] to be constant
+  implies an exponentially declining lx function within [x, x+n] and will
+  produce ax values smaller than those calculated via the midpoint method.
+  Preston (2001), p. 46 provides an expression for nax given the assumption
+  of constant mortality. Restating this expression in terms of nqx and npx
+  leads to:
+
+  nax = -n/nqx - n/ln(npx) + n
+
+  Should you specify an open last age group and nax estimation via the
+  midpoint or constant nmx method (not recomended) the nax of the last open
+  age group will be set to the nax of the preceeding age group.
 }
 \examples{
 Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
