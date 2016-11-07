@@ -27,13 +27,17 @@ The type argument accepts the following strings:
 \describe{
   \item{\code{"e0"}}{Total life expectancy.}
   \item{\code{"qlx"}}{Age where q percent of the life table population is still alive.}
-  \item{\code{"maxx"}}{Maximum lifespan.}
   \item{\code{"all"}}{All of the above measures}
 }
+
+Exact values for the quantiles are determined by linear interpolation of the
+lx function: qlx = (-x1*q+x0*q-x0*y1+x1*y0)/(y0-y1)
 }
 \examples{
-pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
+pash <- Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
 GetPace(pash)
+# the age only 10\% of the life-table population reaches
+GetPace(pash, q = 0.1)
 
 }
 

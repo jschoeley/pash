@@ -60,7 +60,7 @@ GetShape <- function (pash, type = "all") {
 #' @keywords internal
 eDaggerx <- function (nax, nx, ex) {
   nAx = nax/nx
-  edx = (nAx * c(ex[-1], 0) + (1 - nAx) * ex)
+  edx = (nAx * c(ex[-1L], 0) + (1 - nAx) * ex)
   return(edx)
 }
 
@@ -78,7 +78,7 @@ EDagger <- function (nax, nx, ndx, ex) {
 #' @keywords internal
 LifetableEntropy <- function (nax, nx, ndx, ex) {
   ed = EDagger(nax, nx, ndx, ex)
-  H = 1 - ed / ex[1]
+  H = 1 - ed / ex[1L]
   return(H)
 }
 
@@ -88,9 +88,9 @@ LifetableEntropy <- function (nax, nx, ndx, ex) {
 #' @keywords internal
 LifetableGini <- function (nax, nx, lx, ex) {
   nAx <- nax/nx
-  Gx = nAx * c(lx[-1], 0) + (1 - nAx) * lx
+  Gx = nAx * c(lx[-1L], 0) + (1 - nAx) * lx
   Gx = Gx^2 * nx
-  G = 2/ex[1]*sum(Gx) - 1
+  G = 2/ex[1L]*sum(Gx) - 1
   return(G)
 }
 
@@ -101,10 +101,10 @@ LifetableGini <- function (nax, nx, lx, ex) {
 #' @keywords internal
 LifetableGini2 <- function (nax, nx, lx, ex) {
   nAx  = nax/nx
-  lx_1 = c(lx[-1], 0)
+  lx_1 = c(lx[-1L], 0)
   Gx   = lx_1^2 + nAx*(lx^2 - lx_1^2)
   Gx   = Gx * nx
-  G    = 1 - 1/ex[1] * sum(Gx)
+  G    = 1 - 1/ex[1L] * sum(Gx)
   return(1-G)
 }
 
@@ -113,9 +113,9 @@ LifetableGini2 <- function (nax, nx, lx, ex) {
 #' @keywords internal
 LifetableCV <- function (nax, nx, ndx, lx, ex) {
   nAx = nax/nx
-  var = nAx * c(ex[-1], 0) + (1 - nAx) * ex
+  var = nAx * c(ex[-1L], 0) + (1 - nAx) * ex
   var = nx * var^2
   Var = sum(var * ndx)
-  CV  = sqrt(Var)/ex[1]
+  CV  = sqrt(Var)/ex[1L]
   return(CV)
 }

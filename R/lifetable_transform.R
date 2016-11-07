@@ -37,7 +37,7 @@ RebaseLT <- function (pash, origin = 0) {
   pash[["lt"]]$ndx = pash[["lt"]]$ndx / sum(pash[["lt"]]$ndx)
   # rebase nLx
   pash[["lt"]]$nLx = pash[["lt"]]$nx*(pash[["lt"]]$lx-pash[["lt"]]$ndx) +
-                     pash[["lt"]]$nax*pash[["lt"]]$ndx
+    pash[["lt"]]$nax*pash[["lt"]]$ndx
   # rebase Tx
   pash[["lt"]]$Tx = rev(cumsum(rev(pash[["lt"]]$nLx)))
   # rebase ex
@@ -61,7 +61,7 @@ RebaseLT <- function (pash, origin = 0) {
 #' pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
 #' # standardize the life table by pace and shape
 #' StandardizeLT(pash)
-#' StandardizeLT(pash, pace = "qlx", q = 0.1)
+#' StandardizeLT(pash, pace = "qlx", q = 0.9)
 #'
 #' @export
 StandardizeLT <- function(pash, pace = "e0", q = 0.5) {
@@ -69,7 +69,6 @@ StandardizeLT <- function(pash, pace = "e0", q = 0.5) {
   lt = pash[["lt"]]
   if (identical(pace, "e0")) pace = TotalLifeExpectancy(lt$ex)
   if (identical(pace, "qlx")) pace = SurvivalQuantile(lt$x, lt$lx, q)
-  if (identical(pace, "maxx")) pace = MaximumLifespan(lt$x, attr(pash, "last_open"))
 
   # standardize age
   x_s =  lt$x  / pace

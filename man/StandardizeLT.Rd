@@ -26,7 +26,7 @@ Standardize Life Table By Pace and Shape
 pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
 # standardize the life table by pace and shape
 StandardizeLT(pash)
-StandardizeLT(pash, pace = "qlx", q = 0.1)
+StandardizeLT(pash, pace = "qlx", q = 0.9)
 
 }
 

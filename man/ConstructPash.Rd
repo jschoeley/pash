@@ -28,7 +28,7 @@ A numeric vector. Must be in range [0, 1].}
 
 \item{ndx}{Deaths by life table population in age interval [x, x+nx).}
 
-\item{nLx}{Total subject-time lived in age interval [x, x+nx).}
+\item{nLx}{Total subject-time lived by life table population in age interval [x, x+nx).}
 
 \item{Tx}{Total subject-time yet to live past age x by life table population.
 A numeric vector.}
@@ -60,4 +60,5 @@ length(x). NA, NaN, Inf, -Inf are not allowed.
 Only use when writing new Input functions. For pace-shape object construction
 use the existing Input functions provided by \code{pash}.
 }
+\keyword{internal}
 

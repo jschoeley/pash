@@ -1,0 +1,43 @@
+---
+title: "pash: Pace-Shape Analysis for Life Tables"
+author: "Jonas Schoeley, Marius Pascariu, Francisco Villavicencio"
+date: "`r Sys.Date()`"
+output: rmarkdown::pdf_document
+vignette: >
+  %\VignetteIndexEntry{pash: Pace-Shape Analysis for Life Tables}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+How to install?
+---------------
+
+You can install `pash` by running:
+
+```{r eval=FALSE}
+install.packages("devtools")
+devtools::install_github("jschoeley/pash")
+```
+
+Examples
+--------
+
+```{r}
+prestons_lx
+
+Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
+# different nax assumptions
+Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, nax = "constant_nmx")
+
+
+swe <- subset(sweden5x5, sex == "female" & period == "1940-1944")[c("x", "nmx")]
+swe
+Inputmx(x = swe$x, nmx = swe$nmx, last_open = TRUE, nax = "constant_nmx")
+
+# generate a pace-shape object
+pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
+# standardize the life table by pace and shape
+StandardizeLT(pash)
+StandardizeLT(pash, pace = "qlx")
+RebaseLT(pash, 25)
+```

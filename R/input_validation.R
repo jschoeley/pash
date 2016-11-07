@@ -44,6 +44,13 @@ Validatelx <- function (lx) {
   if (is.unsorted(rev(lx))) stop("lx must be monotonically decreasing.", call. = FALSE)
 }
 
+# Validate mx
+Validatemx <- function (mx) {
+  if (!is.numeric(mx)) stop("mx must be numeric.", call. = FALSE)
+  if (any(mx < 0L)) stop("mx can't be negative.", call. = FALSE)
+}
+
+
 # Validate nax, nx, last open specifications
 ValidateOptions <- function (x, nax, nx, k, last_open) {
 
@@ -56,7 +63,7 @@ ValidateOptions <- function (x, nax, nx, k, last_open) {
 
   if (identical(last_open, TRUE)) {
     if (identical(nax, "midpoint") || identical(nax, "constant_nmx")) {
-      warning("Midpoint or constant nmx method used in conjuction with open last age group. nax from preceeding age group will stand in for nax in open last age group.", call. = FALSE)
+      #warning("Midpoint or constant nmx method used in conjuction with open last age group. nax from preceeding age group will stand in for nax in open last age group.", call. = FALSE)
 
       if (!identical(nx, "auto") && identical(length(nx), 1L)) {
         TestNA(nx, "nx")

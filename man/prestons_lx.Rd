@@ -3,7 +3,7 @@
 \docType{data}
 \name{prestons_lx}
 \alias{prestons_lx}
-\title{Period Lifetable Survival Function for Austrian Males 1992}
+\title{Period Life-table Survival Function for Austrian Males 1992}
 \format{A data frame with 19 rows and 2 variables:
   \describe{
     \item{x}{Start of age interval in years.}
