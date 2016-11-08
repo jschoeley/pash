@@ -2,7 +2,7 @@
 % Please edit documentation in R/pace_measures.R
 \name{GetPace}
 \alias{GetPace}
-\title{Life Table Pace Measures}
+\title{Life-table Pace Measures}
 \source{
 Wrycza, Tomasz, and Annette Baudisch. 2014.
 "The Pace of Aging: Intrinsic Time Scales in Demography."
@@ -16,11 +16,11 @@ GetPace(pash, type = "all", q = 0.5)
 
 \item{type}{Which pace measure should be returned (see details for choices)?}
 
-\item{q}{(optional) Quantile specification for age where q percent of the
-life table population is still alive (default 0.5).}
+\item{q}{Quantile specification for age where q percent of the
+life table population is still alive (defaults to median).}
 }
 \description{
-Get life table shape measures from pace-shape object.
+Get life-table shape measures from pace-shape object.
 }
 \details{
 The type argument accepts the following strings:
@@ -30,14 +30,25 @@ The type argument accepts the following strings:
   \item{\code{"all"}}{All of the above measures}
 }
 
-Exact values for the quantiles are determined by linear interpolation of the
-lx function: qlx = (-x1*q+x0*q-x0*y1+x1*y0)/(y0-y1)
+Exact values for the quantiles are determined by either linear- or
+exponential interpolation of the l(x) function. Given a value q we find the
+x and l(x) at the boundaries of the interval containing l(x) = q. The we
+return the x where l(x) = q by either:
+\describe{
+  \item{linear interpolation}{In case of nax = "scalar" | "vector" |
+  "midpoint" then x = (-x1*q+x0*q-x0*y1+x1*y0)/(y0-y1).}
+  \item{exponential interpolation}{In case of nax = "constant_nmx" then
+  x = ((x0-x1)*log(y)-x0*log(y1)+x1*log(y0))/(log(y0)-log(y1))}
+}
 }
 \examples{
 pash <- Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
 GetPace(pash)
-# the age only 10\% of the life-table population reaches
-GetPace(pash, q = 0.1)
 
+# the age only 30\% of the life-table population reaches
+GetPace(pash, q = 0.3)
+# the estimate changes with changing nax assumptions
+pash <- Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, nax = "constant_nmx")
+GetPace(pash, q = 0.3)
 }
 

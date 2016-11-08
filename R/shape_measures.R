@@ -26,7 +26,6 @@
 #' GetShape(pash)
 #'
 #' @export
-#'
 GetShape <- function (pash, type = "all") {
   TestClass(pash)
   with(pash[["lt"]],

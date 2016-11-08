@@ -5,7 +5,7 @@
 \title{Pace-Shape Object Constructor}
 \usage{
 ConstructPash(x, nx, nmx, nax, nqx, npx, lx, ndx, nLx, Tx, ex, last_open,
-  time_unit, type, input)
+  nax_mode, time_unit, type, input)
 }
 \arguments{
 \item{x}{Start of age interval.}

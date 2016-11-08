@@ -1,7 +1,7 @@
 Package: pash
 Type: Package
-Title: Pace-Shape Analysis of Life Tables
-Version: 0.0.1.9004
+Title: Pace-Shape Analysis of Life-tables
+Version: 0.0.2
 Author: Jonas Schoeley, Marius Pascariu, Francisco Villavicencio
 Maintainer: Jonas Schoeley <jschoeley@gmail.com>
 Description: Perform pace-shape analysis on data in various formats.

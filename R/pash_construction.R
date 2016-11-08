@@ -1,11 +1,12 @@
-#' pash: Pace-Shape Analysis for Life Tables
+#' pash: Pace-Shape Analysis for Life-tables
 #'
-#' \code{pash} lets you perform pace-shape analysis on life tables. Calculate a
+#' \code{pash} lets you perform pace-shape analysis on life-tables. Calculate a
 #' wide array of pace and shape metrics and use them to standardize and compare
 #' your data.
 #'
 #' First: Ceate a pace-shape object from either a life-table column or a
-#' population matrix using one of the input function: \code{\link{Inputlx}}.
+#' population matrix using one of the input function: \code{\link{Inputlx}},
+#' \code{\link{Inputmx}}.
 #'
 #' Second: Calculate pace measures with \code{\link{GetPace}}, calculate shape
 #' measures with \code{\link{GetShape}}, standardize a life table by pace and
@@ -56,7 +57,7 @@ NULL
 #'
 #' @keywords internal
 ConstructPash <- function (x, nx, nmx, nax, nqx, npx, lx, ndx, nLx, Tx, ex,
-                           last_open, time_unit, type, input) {
+                           last_open, nax_mode, time_unit, type, input) {
 
   lt = data.frame(x = x, nx = nx, nmx = nmx, nax = nax,
                   nqx = nqx, npx = npx, lx = lx, ndx = ndx,
@@ -68,6 +69,7 @@ ConstructPash <- function (x, nx, nmx, nax, nqx, npx, lx, ndx, nLx, Tx, ex,
       class = "pash",
       non_destructive_copy = lt,
       last_open = last_open,
+      nax_mode = nax_mode,
       time_unit = time_unit,
       source = list(type = type, input = input)
     )
@@ -252,12 +254,18 @@ Inputlx <- function (x, lx,
 
   # Construct pash object ---------------------------------------------------
 
+  # what kind of nax where provided?
+  if (all(is.numeric(nax_arg)) && length(nax_arg) > 1L) {nax_mode = "vector"}
+  if (all(is.numeric(nax_arg)) && length(nax_arg) == 1L) {nax_mode = "scalar"}
+  if (identical(nax_arg, "midpoint")) {nax_mode = "midpoint"}
+  if (identical(nax_arg, "constant_nmx")) {nax_mode = "constant_nmx"}
+
   # construct the pace-shape object, a validated life table
   pash =  ConstructPash(
     x = x, nx = nx, nmx = nmx, nax = nax,
     nqx = nqx, npx = npx, lx = lx_, ndx = ndx,
     nLx = nLx, Tx = Tx, ex = ex,
-    time_unit = time_unit, last_open = last_open,
+    time_unit = time_unit, nax_mode = nax_mode, last_open = last_open,
     type = "lx", input = data.frame(x = x, lx = lx)
   )
 
@@ -371,7 +379,6 @@ Inputmx <- function (x, nmx,
   # ndx: lifetable deaths in age group [x, x+n)
   ndx = c(lx[-k] - lx[-1L], lx[k])
   # nLx: amount of subject-time at risk in age group [x, x+n)
-  # The nx handling needs to be improved in case of open age groups
   nLx = nx*(lx-ndx) + nax*ndx
   nLx[k] = lx[k]/nmx[k]
   # Tx: amount of subject-time at risk above age group [x, x+n)
@@ -381,12 +388,18 @@ Inputmx <- function (x, nmx,
 
   # Construct pash object ---------------------------------------------------
 
+  # what kind of nax where provided?
+  if (all(is.numeric(nax_arg)) && length(nax_arg) > 1L) {nax_mode = "vector"}
+  if (all(is.numeric(nax_arg)) && length(nax_arg) == 1L) {nax_mode = "scalar"}
+  if (identical(nax_arg, "midpoint")) {nax_mode = "midpoint"}
+  if (identical(nax_arg, "constant_nmx")) {nax_mode = "constant_nmx"}
+
   # construct the pace-shape object, a validated life table
   pash =  ConstructPash(
     x = x, nx = nx, nmx = nmx, nax = nax,
     nqx = nqx, npx = npx, lx = lx, ndx = ndx,
     nLx = nLx, Tx = Tx, ex = ex,
-    time_unit = time_unit, last_open = last_open,
+    time_unit = time_unit, nax_mode = nax_mode, last_open = last_open,
     type = "mx", input = data.frame(x = x, nmx = nmx)
   )
 

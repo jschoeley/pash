@@ -39,7 +39,7 @@
 #'   A data frame with 19 rows and 2 variables:
 #'   \describe{
 #'     \item{x}{Start of age interval in years.}
-#'     \item{lx}{Survivors at age x.}
+#'     \item{lx}{Life table survivors at age x.}
 #'   }
 #'
 #' @source Preston, Samuel H., Patric Heuveline, and Michel Guillot. 2001.

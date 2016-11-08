@@ -4,9 +4,9 @@
 \name{pash}
 \alias{pash}
 \alias{pash-package}
-\title{pash: Pace-Shape Analysis for Life Tables}
+\title{pash: Pace-Shape Analysis for Life-tables}
 \description{
-\code{pash} lets you perform pace-shape analysis on life tables. Calculate a
+\code{pash} lets you perform pace-shape analysis on life-tables. Calculate a
 wide array of pace and shape metrics and use them to standardize and compare
 your data.
 }

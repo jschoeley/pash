@@ -67,8 +67,11 @@ RebaseLT <- function (pash, origin = 0) {
 StandardizeLT <- function(pash, pace = "e0", q = 0.5) {
 
   lt = pash[["lt"]]
-  if (identical(pace, "e0")) pace = TotalLifeExpectancy(lt$ex)
-  if (identical(pace, "qlx")) pace = SurvivalQuantile(lt$x, lt$lx, q)
+  if (identical(pace, "e0")) {pace = TotalLifeExpectancy(lt$ex)}
+  if (identical(pace, "qlx")) {
+    pace = SurvivalQuantile(lt$x, lt$nx, lt$lx, q,
+                            nax_mode = attr(pash, "nax_mode"))
+  }
 
   # standardize age
   x_s =  lt$x  / pace
