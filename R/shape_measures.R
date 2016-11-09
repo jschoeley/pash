@@ -1,9 +1,9 @@
-#' Life Table Shape Measures
+#' Life-table Shape Measures
 #'
-#' Get life table shape measures from pace-shape object.
+#' Get life-table shape measures from pace-shape object.
 #'
 #' @param pash A pace-shape object.
-#' @param type Which shape measure should be returned (see details for choices)?
+#' @param type Which shape measure should be returned (default \code{"all"})?
 #'
 #' @details
 #' The type argument accepts the following strings:
@@ -54,7 +54,7 @@ GetShape <- function (pash, type = "all") {
 
 # Lifetable Entropy -------------------------------------------------------
 
-#' Average Years of Life Lost due to Death in Age x
+#' Average Years of Life Lost Due to Death in Age x
 #'
 #' @keywords internal
 eDaggerx <- function (nax, nx, ex) {
@@ -63,7 +63,7 @@ eDaggerx <- function (nax, nx, ex) {
   return(edx)
 }
 
-#' Total Life Years Lost due to Death
+#' Total Life Years Lost Due to Death
 #'
 #' @keywords internal
 EDagger <- function (nax, nx, ndx, ex) {
@@ -81,7 +81,7 @@ LifetableEntropy <- function (nax, nx, ndx, ex) {
   return(H)
 }
 
-#' Life Table Gini-Coefficient
+#' Life Table Gini-Coefficient (Pascariu)
 #'
 #' @seealso LifetableGini2
 #' @keywords internal
@@ -93,9 +93,8 @@ LifetableGini <- function (nax, nx, lx, ex) {
   return(G)
 }
 
-#' Life Table Gini-Coefficient
+#' Life Table Gini-Coefficient (Shkolnikov)
 #'
-#' Another discrete formulation of the Gini-Coeffcient
 #' @seealso LifetableGini
 #' @keywords internal
 LifetableGini2 <- function (nax, nx, lx, ex) {

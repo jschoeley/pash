@@ -3,7 +3,7 @@
 #' Printing method for a pace-shape object
 #'
 #' @param x Pace-shape object.
-#' @param radix Initial life table population.
+#' @param radix Initial life-table population.
 #' @param big.mark See \code{\link{formatC}}.
 #' @param ... Additional arguments passed on to \code{\link{print.data.frame}}.
 #'
@@ -66,7 +66,7 @@ as.data.frame.pash <- function (x, row.names = NULL, optional = FALSE, ...) {
 
 #' Convert Pace-Shape Object to Matrix
 #'
-#' Method to convert a pace-shape object to a data frame.
+#' Method to convert a pace-shape object to a matrix.
 #'
 #' @param x A pace-shape object.
 #' @param ... Additional arguments passed on to \code{\link{as.matrix}}.

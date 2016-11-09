@@ -2,7 +2,7 @@
 % Please edit documentation in R/shape_measures.R
 \name{GetShape}
 \alias{GetShape}
-\title{Life Table Shape Measures}
+\title{Life-table Shape Measures}
 \source{
 Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015.
 "Quantifying the Shape of Aging." PLOS ONE 10 (3): 1-18. doi:10.1371/journal.pone.0119163.
@@ -17,10 +17,10 @@ GetShape(pash, type = "all")
 \arguments{
 \item{pash}{A pace-shape object.}
 
-\item{type}{Which shape measure should be returned (see details for choices)?}
+\item{type}{Which shape measure should be returned (default \code{"all"})?}
 }
 \description{
-Get life table shape measures from pace-shape object.
+Get life-table shape measures from pace-shape object.
 }
 \details{
 The type argument accepts the following strings:

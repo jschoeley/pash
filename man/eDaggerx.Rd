@@ -2,12 +2,12 @@
 % Please edit documentation in R/shape_measures.R
 \name{eDaggerx}
 \alias{eDaggerx}
-\title{Average Years of Life Lost due to Death in Age x}
+\title{Average Years of Life Lost Due to Death in Age x}
 \usage{
 eDaggerx(nax, nx, ex)
 }
 \description{
-Average Years of Life Lost due to Death in Age x
+Average Years of Life Lost Due to Death in Age x
 }
 \keyword{internal}
 

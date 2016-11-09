@@ -14,10 +14,10 @@ GetPace(pash, type = "all", q = 0.5)
 \arguments{
 \item{pash}{A pace-shape object.}
 
-\item{type}{Which pace measure should be returned (see details for choices)?}
+\item{type}{Which pace measure should be returned (default \code{"all"})?}
 
-\item{q}{Quantile specification for age where q percent of the
-life table population is still alive (defaults to median).}
+\item{q}{Quantile specification for age where q percent of the life-table
+population is still alive (defaults to median).}
 }
 \description{
 Get life-table shape measures from pace-shape object.
@@ -29,16 +29,18 @@ The type argument accepts the following strings:
   \item{\code{"qlx"}}{Age where q percent of the life table population is still alive.}
   \item{\code{"all"}}{All of the above measures}
 }
+}
+\section{l(x) quantile interpolation}{
 
 Exact values for the quantiles are determined by either linear- or
-exponential interpolation of the l(x) function. Given a value q we find the
-x and l(x) at the boundaries of the interval containing l(x) = q. The we
+exponential interpolation of the l(x) function. Given a value q we first find
+the x and l(x) at the boundaries of the interval containing l(x) = q. Then we
 return the x where l(x) = q by either:
 \describe{
-  \item{linear interpolation}{In case of nax = "scalar" | "vector" |
-  "midpoint" then x = (-x1*q+x0*q-x0*y1+x1*y0)/(y0-y1).}
-  \item{exponential interpolation}{In case of nax = "constant_nmx" then
-  x = ((x0-x1)*log(y)-x0*log(y1)+x1*log(y0))/(log(y0)-log(y1))}
+  \item{linear interpolation}{In case of nax = \code{"scalar" | "vector" |
+  "midpoint"} then x = (-x1*q+x0*q-x0*y1+x1*y0)/(y0-y1).}
+  \item{exponential interpolation}{In case of nax = \code{"constant_nmx"}
+  then x = ((x0-x1)*log(y)-x0*log(y1)+x1*log(y0))/(log(y0)-log(y1))}
 }
 }
 \examples{

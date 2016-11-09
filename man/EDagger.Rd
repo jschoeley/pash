@@ -2,12 +2,12 @@
 % Please edit documentation in R/shape_measures.R
 \name{EDagger}
 \alias{EDagger}
-\title{Total Life Years Lost due to Death}
+\title{Total Life Years Lost Due to Death}
 \usage{
 EDagger(nax, nx, ndx, ex)
 }
 \description{
-Total Life Years Lost due to Death
+Total Life Years Lost Due to Death
 }
 \keyword{internal}
 

@@ -1,5 +1,5 @@
 ---
-title: "pash: Pace-Shape Analysis for Life Tables"
+title: "pash: Pace-Shape Analysis for Life-tables"
 author: "Jonas Schoeley, Marius Pascariu, Francisco Villavicencio"
 date: "`r Sys.Date()`"
 output: rmarkdown::pdf_document
@@ -32,7 +32,7 @@ Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, nax = "constant_nmx")
 
 swe <- subset(sweden5x5, sex == "female" & period == "1940-1944")[c("x", "nmx")]
 swe
-Inputmx(x = swe$x, nmx = swe$nmx, last_open = TRUE, nax = "constant_nmx")
+Inputnmx(x = swe$x, nmx = swe$nmx, last_open = TRUE, nax = "constant_nmx")
 
 # generate a pace-shape object
 pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)

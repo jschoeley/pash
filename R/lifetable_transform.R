@@ -1,14 +1,15 @@
-#' Rebase Life Table to Different Age
+#' Rebase Life-table to Different Age
 #'
-#' Start the life table at a later age.
+#' Start the life-table at a later age.
 #'
+#' @details
 #' The life table is truncated to the new origin age and the lx at origin set to
 #' 1. ndx, nLx, Tx and ex columns are re-calculated.
 #'
 #' @param pash A pace-shape object.
 #' @param origin The age the life table should be rebased to.
 #'
-#' @return A rebased pace-shape object.
+#' @return A pace-shape object.
 #'
 #' @examples
 #' # generate pace-shape object
@@ -46,12 +47,12 @@ RebaseLT <- function (pash, origin = 0) {
   return(pash)
 }
 
-#' Standardize Life Table By Pace and Shape
+#' Standardize Life-table By Pace and Shape
 #'
 #' @param pash A pace-shape object.
-#' @param pace Measure of pace used for standardization (default e0, see details).
-#' @param q (optional) Quantile specification for age where q percent of the
-#'   life table population is still alive (default 0.5).
+#' @param pace Measure of pace used for standardization (default e0).
+#' @param q Quantile specification for age where q percent of the life-table
+#'   population is still alive (defaults to median).
 #'
 #' @return A pace-shape standardized life table in form of a data frame. Note
 #' that this is not a pace-shape object anymore.

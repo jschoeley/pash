@@ -12,7 +12,7 @@
 \item{...}{Additional arguments passed on to \code{\link{as.matrix}}.}
 }
 \description{
-Method to convert a pace-shape object to a data frame.
+Method to convert a pace-shape object to a matrix.
 }
 \keyword{internal}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/lifetable_transform.R
 \name{RebaseLT}
 \alias{RebaseLT}
-\title{Rebase Life Table to Different Age}
+\title{Rebase Life-table to Different Age}
 \usage{
 RebaseLT(pash, origin = 0)
 }
@@ -12,10 +12,10 @@ RebaseLT(pash, origin = 0)
 \item{origin}{The age the life table should be rebased to.}
 }
 \value{
-A rebased pace-shape object.
+A pace-shape object.
 }
 \description{
-Start the life table at a later age.
+Start the life-table at a later age.
 }
 \details{
 The life table is truncated to the new origin age and the lx at origin set to

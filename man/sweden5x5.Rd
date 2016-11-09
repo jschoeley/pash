@@ -12,10 +12,10 @@
     \item{nmx}{Mortality rate in age interval [x, x+nx).}
     \item{nqx}{Probability to die within age interval [x, x+nx) given survival to x.}
     \item{nax}{Subject-time spent in age interval [x, x+nx) when dying in that interval.}
-    \item{lx}{Life table survivors at age x.}
-    \item{ndx}{Deaths by life table population in age interval [x, x+nx).}
-    \item{nLx}{Total person-years lived by life table population in age interval [x, x+nx).}
-    \item{Tx}{Total person-years yet to live past age x by life table population.}
+    \item{lx}{Life-table survivors at age x.}
+    \item{ndx}{Deaths by life-table population in age interval [x, x+nx).}
+    \item{nLx}{Total person-years lived by life-table population in age interval [x, x+nx).}
+    \item{Tx}{Total person-years yet to live past age x by life-table population.}
     \item{ex}{Life expectancy at age x.}
   }}
 \source{
