@@ -12,25 +12,33 @@ Vladimir, Shkolnikov M. and Evgheny, Andreev M. 2010.
 \url{http://www.demogr.mpg.de/papers/technicalreports/tr-2010-001.pdf}
 }
 \usage{
-GetShape(pash, type = "all")
+GetShape(pash)
 }
 \arguments{
 \item{pash}{A pace-shape object.}
-
-\item{type}{Which shape measure should be returned (see details for choices)?}
+}
+\value{
+The following shape measure are reurned:
+\describe{
+  \item{\code{"Variance"}}{Life table variance}
+  \item{\code{"Entropy"}}{Life table entropy}
+  \item{\code{"Gini"}}{Life table Gini coefficient - Pascariu (2016)}
+  \item{\code{"Gini2"}}{Life table Gini coefficient - Shkolnikov (2014)}
+  \item{\code{"Gini3"}}{Life table Gini coefficient - Danko (2016)}
+  \item{\code{"Gini_v"}}{A variant of Gini coefficient - Wrycza et al. (2015)}
+  \item{\code{"mu_bar"}}{Weighted Harmonic Mean of the Hazard Rate}
+  \item{\code{"mxRatio"}}{Mortality Ratio - Wrycza et al. (2015)}
+  \item{\code{"exRatio"}}{Life Expectancy Ratio - Wrycza et al. (2015)}
+  \item{\code{"ACFM"}}{Average of Change in Force of Mortality
+  with respect to lx - Wrycza et al. (2015)}
+  \item{\code{"PSMAD"}}{Probability to Survive up to the Mean Age at Death
+   - Wrycza et al. (2015)}
+  \item{\code{"CV"}}{Life table coefficient of variation.}
+  \item{\code{"all"}}{All of the above measures.}
+}
 }
 \description{
 Get life table shape measures from pace-shape object.
-}
-\details{
-The type argument accepts the following strings:
-\describe{
-  \item{\code{"LTentr"}}{Life table entropy.}
-  \item{\code{"LTgini"}}{Life table Gini coefficient - Pascariu implementation.}
-  \item{\code{"LTgini2"}}{Life table Gini coefficient - Shkolnikov implementation.}
-  \item{\code{"LTcv"}}{Life table coefficient of variation.}
-  \item{\code{"all"}}{All of the above measures.}
-}
 }
 \examples{
 pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)

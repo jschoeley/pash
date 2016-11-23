@@ -12,7 +12,8 @@ your data.
 }
 \details{
 First: Ceate a pace-shape object from either a life-table column or a
-population matrix using one of the input function: \code{\link{Inputlx}}.
+population matrix using one of the input function: \code{\link{Inputlx}},
+\code{\link{Inputmx}}.
 
 Second: Calculate pace measures with \code{\link{GetPace}}, calculate shape
 measures with \code{\link{GetShape}}, standardize a life table by pace and
