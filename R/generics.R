@@ -39,14 +39,13 @@ print.pash <- function (x, radix = 10000, big.mark = ",", ...) {
 #' @export
 summary.pash <- function (object, ...) {
   lt = object[["lt"]]
-  cat("A life table with", length(lt$x), "age groups.\nSource:",
-      attr(object, "source")$type, "\n\n")
+  cat("A life table with", length(lt$x), "age groups.\nSource:\n\n")
   cat("Average life expectancy :",
       formatC(lt$ex[1], format = "f", digits = 2), attr(object, "time_unit"), "\n")
   cat("Avg. e0 lost upon death :",
       formatC(EDagger(lt$nax, lt$nx, lt$ndx, lt$ex), format = "f", digits = 2), attr(object, "time_unit"), "\n")
   cat("Life table entropy      :",
-      formatC(GetShape(object, type = "LTentr"), format = "f", digits = 3))
+      formatC(GetShape(object)['Entropy'], format = "f", digits = 3))
 }
 
 #' Convert Pace-Shape Object to Data Frame

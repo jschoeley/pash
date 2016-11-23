@@ -3,11 +3,14 @@
 \name{LifetableGini2}
 \alias{LifetableGini2}
 \title{Life Table Gini-Coefficient}
+\source{
+Shkolnikov and Andreev (2014)
+}
 \usage{
 LifetableGini2(nax, nx, lx, ex)
 }
 \description{
-Another discrete formulation of the Gini-Coeffcient
+Discrete formulation of the Gini-Coeffcient
 }
 \seealso{
 LifetableGini

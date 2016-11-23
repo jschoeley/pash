@@ -3,6 +3,9 @@
 \name{eDaggerx}
 \alias{eDaggerx}
 \title{Average Years of Life Lost due to Death in Age x}
+\source{
+Vaupel et al. (2016)
+}
 \usage{
 eDaggerx(nax, nx, ex)
 }
