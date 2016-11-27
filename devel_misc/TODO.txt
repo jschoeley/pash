@@ -1,0 +1,15 @@
+- Fix Behavior of Last Age at Death Function
+- add vignette
+
+- InputDxNx
+- InputSurv
+- Inputqx
+- InputMatrix
+
+- add k to DiffAge
+
+- implement PCLM to estimate nax
+- implement additional shape measures
+- change names of nax methods
+
+- find better behavior of naxMidpoint, naxConstantnmx1 when last age group is open

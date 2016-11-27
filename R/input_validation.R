@@ -1,162 +1,153 @@
-# Test if Object is Pace-Shape
+#' Difference Age Vector
+#'
+#' Get width of age groups from differenced age vector.
+#'
+#' @param x Start of age interval.
+#' @param last_open Is the last age group open (TRUE) or closed (FALSE,
+#'   default).
+#'
+#' @return The widths of the age groups as a numeric vector of \code{length(x)}.
+#'
+#' @details
+#' If the last age group is closed it is assumed to have the same width as the
+#' preceeding age group. If the last age group is open, the width is set to
+#' \code{NA}.
+#'
+#' @keywords internal
+DiffAge <- function (x, last_open = FALSE) {
+  k  = length(x)
+  nx = diff(x)
+  if (identical(last_open, FALSE)) nx = c(nx, nx[k-1])
+  if (identical(last_open, TRUE)) nx = c(nx, NA)
+  return(nx)
+}
+
+# Various Validation Functions --------------------------------------------
+
+#' Test if Object is Pace-Shape
+#' @keywords internal
 TestClass <- function (x) {
-  if (!is.pash(x)) stop("x is not a pace-shape object.", call. = FALSE)
+  if (!is.pash(x)) { stop("x is not a pace-shape object.", call. = FALSE) }
 }
 
-# Test for NAs in Function Parameters
-TestNA <- function (x, name) {
-  if (any(is.na(x))) stop(paste("NA found in", name, "input."), call. = FALSE)
-}
-
-# Test if Last Value in nx is NA
-TestLastnxNA <- function (x) {
-  if (!is.na(rev(x)[1L])) warning("Last value in nx vector must be NA if the last age group is open. Last value is set to NA.", call. = FALSE)
-}
-
-# Set Last Value in Vector to NA
+#' Set Last Value in Vector to NA
+#' @keywords internal
 SetLastToNA <- function (x) {
   x[length(x)] = NA
   return(x)
 }
 
-# Test if Vector is Same Length as Age Vector
-TestLength <- function (a, x, name_a) {
-  if (!identical(length(a), length(x))) stop(paste("Input", name_a, "is not of same length as age vector."), call. = FALSE)
-}
-
-# Test if Age Vector Matches nx Vector
+#' Test if Age Vector Matches nx Vector
+#' @keywords internal
 TestnxMatchx <- function (x, nx) {
-  if(any(diff(x) != nx[-length(nx)])) stop("Provided Age and nx vectors don't match.", call. = FALSE)
+  if(any(diff(x) != nx[-length(nx)])) { stop("Provided Age and nx vectors don't match.", call. = FALSE) }
 }
 
-# Validate Age
-ValidateAge <- function (x) {
-  TestNA(x, "x")
-  if (!is.numeric(x)) stop("Age must be numeric.", call. = FALSE)
-  if (any(x < 0L)) stop("Age can't be negative.", call. = FALSE)
-  if (is.unsorted(x)) stop("Age must be provided in increasing order.", call. = FALSE)
+#' Check Input for NA, NaN and Inf
+#' @keywords internal
+IsNANanInf <- function (x, name_x, test = 1:3) {
+  if (any(is.na(x)) && !any(is.nan(x)) && 1 %in% test) { stop(paste(name_x, "must not contain NA."), call. = FALSE) }
+  if (any(is.nan(x)) && 2 %in% test) { stop(paste(name_x, "must not contain NaN."), call. = FALSE) }
+  if (any(is.infinite(x)) && 3 %in% test) { stop(paste(name_x, "must not contain (-)Inf."), call. = FALSE) }
 }
 
-# Validate lx
+# Validate Input Data -----------------------------------------------------
+
+#' Validate lx
+#' @keywords internal
 Validatelx <- function (lx) {
-  if (!is.numeric(lx)) stop("lx must be numeric.", call. = FALSE)
-  if (any(lx < 0L)) stop("lx can't be negative.", call. = FALSE)
-  if (is.unsorted(rev(lx))) stop("lx must be monotonically decreasing.", call. = FALSE)
+  if (!is.numeric(lx)) { stop("lx must be numeric.", call. = FALSE) }
+  if (any(lx < 0L)) { stop("lx can't be negative.", call. = FALSE) }
+  if (is.unsorted(rev(lx))) { stop("lx must be monotonically decreasing.", call. = FALSE) }
 }
 
-# Validate mx
+#' Validate mx
+#' @keywords internal
 Validatemx <- function (mx) {
-  if (!is.numeric(mx)) stop("mx must be numeric.", call. = FALSE)
-  if (any(mx < 0L)) stop("mx can't be negative.", call. = FALSE)
+  if (!is.numeric(mx)) { stop("mx must be numeric.", call. = FALSE) }
+  if (any(mx < 0L)) { stop("mx must not be negative.", call. = FALSE) }
 }
 
+# Validate Parameters -----------------------------------------------------
 
-# Validate nax, nx, last open specifications
-ValidateOptions <- function (x, nax, nx, k, last_open) {
+#' Validate Age
+#' @keywords internal
+ValidateAge <- function (x) {
+  IsNANanInf(x, "The age vector")
+  if (!is.numeric(x)) { stop("Age must be numeric.", call. = FALSE) }
+  if (!(length(x) > 1L)) { stop("The age vector must contain more than a single age group.", call. = FALSE) }
+  if (any(x < 0L)) { stop("Age must not be negative.", call. = FALSE) }
+  if (!all(diff(x) > 0L)) { stop("The age vector must be arranged in increasing order.", call. = FALSE) }
+}
 
-  if (is.character(nax) && !all(nax %in% c("midpoint", "constant_nmx"))) {
-    stop("nax method must be either 'midpoint' or 'constant_nmx'.", call. = FALSE)
+#' Validate last_open
+#' @keywords internal
+ValidateLastOpen <- function (last_open) {
+  IsNANanInf(last_open, "last_open")
+  if (!is.logical(last_open)) { stop("last_open must be logical.", call. = FALSE) }
+  if (!identical(length(last_open), 1L)) { stop("last_open must be scalar.", call. = FALSE) }
+}
+
+#' Validate nx
+#' @keywords internal
+Validatenx <- function (nx, x, last_open) {
+  IsNANanInf(nx, "nx", test = 2:3)
+  # numeric nx
+  if (is.numeric(nx)) {
+    # numeric vector nx
+    if (length(nx) > 1L) {
+      if (!identical(length(nx), length(x))) { stop("nx vector must be of same length as x.", call. = FALSE) }
+      nx_mode = "vector"
+      nx_ = nx
+      if (identical(last_open, TRUE)) { nx_ = SetLastToNA(nx_) }
+    } else {
+      # numeric scalar nx
+      if (!identical(length(nx), 1L)) { stop("nx must be of same length as x or scalar.", call. = FALSE) }
+      if (is.na(nx)) { stop("nx must not be NA if scalar.") }
+      nx_mode = "scalar"
+      nx_ = rep(nx, length(x))
+      if (identical(last_open, TRUE)) { nx_ = SetLastToNA(nx_) }
+    }
+    TestnxMatchx(x, nx_)
+  } else { # character nx
+    if (!is.character(nx)) {stop("nx must be numeric or character.") }
+    if (!identical(length(nx), 1L)) { stop("nx must be scalar if character.") }
+    if (!identical(nx, "auto")) { stop("nx must be 'auto' if character.") }
+    nx_mode = "auto"
+    nx_ = DiffAge(x, last_open = last_open)
   }
 
-  # for all combinations of possible nax and nx modes,
-  # do the appropriate checks and operations
+  return(list(nx = nx_, nx_mode = nx_mode))
 
-  if (identical(last_open, TRUE)) {
-    if (identical(nax, "midpoint") || identical(nax, "constant_nmx")) {
-      #warning("Midpoint or constant nmx method used in conjuction with open last age group. nax from preceeding age group will stand in for nax in open last age group.", call. = FALSE)
+}
 
-      if (!identical(nx, "auto") && identical(length(nx), 1L)) {
-        TestNA(nx, "nx")
-        nx = rep(nx, k)
-        TestnxMatchx(x, nx)
-      }
-      if (!identical(length(nx), 1L)) {
-        TestNA(nx[-k], "nx")
-        nx = rep(nx, k)
-        if (!TestLastnxNA(nx)) nx = SetLastToNA(nx)
-        TestLength(nx, x , "nx")
-      }
+#' Validate nax
+#' @keywords internal
+Validatenax <- function (nax, x, nx, last_open) {
+  IsNANanInf(nax, "nax")
+  # numeric nax
+  if (is.numeric(nax)) {
+    # numeric vector nax
+    if (length(nax) > 1L) {
+      if (!identical(length(nax), length(x))) { stop("nax vector must be of same length as x.", call. = FALSE) }
+      nax_mode = "vector"
+      nax_ = nax
+    } else {
+      # numeric scalar nax
+      if (!identical(length(nax), 1L)) { stop("nax must be of same length as x or scalar.", call. = FALSE) }
+      nax_mode = "scalar"
+      nax_ = rep(nax, length(x))
     }
-
-    if (!identical(nax, "midpoint") && !identical(nax, "constant_nmx") && identical(length(nax), 1L)) {
-      warning("Provided nax scalar value will be used for open last age group.", call. = FALSE)
-      TestNA(nax, "nax"); nax = rep(nax, k)
-
-      if (!identical(nx, "auto") && identical(length(nx), 1L)) {
-        TestNA(nx, "nx")
-        nx = rep(nx, k); nx = SetLastToNA(nx)
-        TestnxMatchx(x, nx)
-      }
-      if (!identical(length(nx), 1L)) {
-        TestNA(nx[-k], "nx")
-        if (!TestLastnxNA(nx)) nx = SetLastToNA(nx)
-        TestLength(nx, x, "nx")
-        TestnxMatchx(x, nx)
-      }
-    }
-
-    if (!identical(length(nax), 1L)) {
-      TestNA(nax, "nax"); TestLength(nax, x, "nax")
-
-      if (!identical(nx, "auto") && identical(length(nx), 1L)) {
-        TestNA(nx, "nx")
-        nx = rep(nx, k); nx = SetLastToNA(nx)
-        TestnxMatchx(x, nx)
-      }
-      if (!identical(length(nx), 1L)) {
-        TestNA(nx[-k], "nx")
-        if (!TestLastnxNA(nx)) nx = SetLastToNA(nx)
-        TestnxMatchx(x, nx)
-        TestLength(nx, x, "nx")
-      }
-    }
+    if (any(nax_ > nx)) { stop("nax must not be larger than nx.", call. = FALSE) }
+  } else { # character nax
+    if (!is.character(nax)) { stop("nax must be numeric or character.") }
+    if (!identical(length(nax), 1L)) { stop("nax must be scalar if character.") }
+    if (!(nax %in% c("midpoint", "constant_nmx"))) { stop("nax mode must be either 'midpoint' or 'constant_nmx'.") }
+    if (identical(last_open, TRUE) && identical(nax, "midpoint")) { warning("Open last age group and nax midpoint method specified: nax of last age group will be imputed by nax of second to last age group.", call. = FALSE) }
+    nax_mode = nax
+    nax_ = nax
   }
 
-  if (identical(last_open, FALSE)) {
-    if (identical(nax, "midpoint") || identical(nax, "constant_nmx")) {
-
-      if (!identical(nx, "auto") && identical(length(nx), 1L)) {
-        TestNA(nx, "nx")
-        nx = rep(nx, k); nx = SetLastToNA(nx)
-        TestnxMatchx(x, nx)
-      }
-      if (!identical(length(nx), 1L)) {
-        TestNA(nx, "nx")
-        TestLength(nx, x, "nx")
-        TestnxMatchx(x, nx)
-      }
-    }
-
-    if (!identical(nax, "midpoint") && !identical(nax, "constant_nmx") && identical(length(nax), 1L)) {
-      TestNA(nax, "nax"); nax = rep(nax, k)
-
-      if (!identical(nx, "auto") && identical(length(nx), 1L)) {
-        TestNA(nx, "nx"); rep(nx, k)
-        TestnxMatchx(x, nx)
-      }
-      if (!identical(length(nx), 1L)) {
-        TestNA(nx, "nx")
-        TestLength(nx, x, "nx")
-        TestnxMatchx(x, nx)
-      }
-    }
-
-    if (!identical(length(nax), 1L)) {
-      TestNA(nax, "nax"); TestLength(nax, x, "nax")
-
-      if (!identical(nx, "auto") && identical(length(nx), 1L)) {
-        TestNA(nx, "nx")
-        nx = rep(nx, k)
-        TestnxMatchx(x, nx)
-      }
-      if (!identical(length(nx), 1L)) {
-        TestNA(nx, "nx")
-        TestLength(nx, x, "nx")
-        TestnxMatchx(x, nx)
-      }
-    }
-  }
-
-  return(list(nax = nax, nx = nx))
+  return(list(nax = nax_, nax_mode = nax_mode))
 
 }
