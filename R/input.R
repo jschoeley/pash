@@ -214,6 +214,8 @@ Inputlx <- function (x, lx,
   Tx = rev(cumsum(rev(nLx)))
   # ex: life expectancy at age x
   ex = Tx/lx_
+  # when lx becomes 0 ex becomes NaN. set it to 0
+  ex[is.nan(ex)] = 0
 
   # Construct pash object ---------------------------------------------------
 
@@ -342,6 +344,9 @@ Inputnmx <- function (x, nmx,
   Tx = rev(cumsum(rev(nLx)))
   # ex: life expectancy at age x
   ex = Tx/lx
+  # when lx becomes 0 ex becomes NaN. set it to 0
+  ex[is.nan(ex)] = 0
+
 
   # Construct pash object ---------------------------------------------------
 

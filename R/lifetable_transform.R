@@ -75,8 +75,8 @@ StandardizeLT <- function(pash, pace = "e0", q = 0.5) {
   }
 
   # standardize age
-  x_s =  lt$x  / pace
-  nx_s = lt$nx  / pace
+  x_s =  lt$x / pace
+  nx_s = lt$nx / pace
   # standardize nmx
   nmx_s = lt$nmx*pace
   # standardize ex

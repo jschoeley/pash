@@ -40,4 +40,16 @@ pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
 StandardizeLT(pash)
 StandardizeLT(pash, pace = "qlx")
 RebaseLT(pash, 25)
+
+library(dplyr)
+library(ggplot2)
+
+sweden5x5 %>%
+  group_by(sex, period) %>%
+  do({
+    pash = Inputnmx(x = .$x, nmx = .$nmx)
+    data.frame(e0 = GetPace(pash, type = "e0"),
+               H  = GetShape(pash, type = "LTentr"))
+  }) %>%
+  ggplot(aes(x = e0, y = H, color = sex)) + geom_point()
 ```
