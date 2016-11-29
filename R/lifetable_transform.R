@@ -47,15 +47,19 @@ RebaseLT <- function (pash, origin = 0) {
   return(pash)
 }
 
-#' Standardize Life-table By Pace and Shape
+#' Standardize Life-table By Pace
 #'
 #' @param pash A pace-shape object.
 #' @param pace Measure of pace used for standardization (default e0).
 #' @param q Quantile specification for age where q percent of the life-table
 #'   population is still alive (defaults to median).
 #'
-#' @return A pace-shape standardized life table in form of a data frame. Note
+#' @return A pace standardized life table in form of a data frame. Note
 #' that this is not a pace-shape object anymore.
+#'
+#' @source Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015.
+#'   "Quantifying the Shape of Aging." PLOS ONE 10 (3): 1–18.
+#'   doi:10.1371/journal.pone.0119163.
 #'
 #' @examples
 #' # generate a pace-shape object

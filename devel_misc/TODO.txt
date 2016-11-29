@@ -13,3 +13,5 @@
 - change names of nax methods
 
 - find better behavior of naxMidpoint, naxConstantnmx1 when last age group is open
+
+- head and tail method

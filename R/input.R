@@ -334,7 +334,7 @@ Inputnmx <- function (x, nmx,
   nqx[k] = 1
   npx = 1-nqx
   # lx
-  lx = 1*cumprod(npx)
+  lx = c(1, 1*cumprod(npx))[-k]
   # ndx: lifetable deaths in age group [x, x+n)
   ndx = c(lx[-k] - lx[-1L], lx[k])
   # nLx: amount of subject-time at risk in age group [x, x+n)
