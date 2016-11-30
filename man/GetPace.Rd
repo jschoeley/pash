@@ -38,8 +38,8 @@ the x and l(x) at the boundaries of the interval containing l(x) = q. Then we
 return the x where l(x) = q by either:
 \describe{
   \item{linear interpolation}{In case of nax = \code{"scalar" | "vector" |
-  "midpoint"} then x = (-x1*q+x0*q-x0*y1+x1*y0)/(y0-y1).}
-  \item{exponential interpolation}{In case of nax = \code{"constant_nmx"}
+  "udd"} then x = (-x1*q+x0*q-x0*y1+x1*y0)/(y0-y1).}
+  \item{exponential interpolation}{In case of nax = \code{"cfm"}
   then x = ((x0-x1)*log(y)-x0*log(y1)+x1*log(y0))/(log(y0)-log(y1))}
 }
 }
@@ -50,7 +50,7 @@ GetPace(pash)
 # the age only 30\% of the life-table population reaches
 GetPace(pash, q = 0.3)
 # the estimate changes with changing nax assumptions
-pash <- Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, nax = "constant_nmx")
+pash <- Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, nax = "cfm")
 GetPace(pash, q = 0.3)
 }
 

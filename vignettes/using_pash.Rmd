@@ -58,7 +58,7 @@ Inputnmx(x = swe$x, nmx = swe$nmx, last_open = TRUE)
 We can change the details of the life-table calculation.
 
 ```{r}
-Inputnmx(x = swe$x, nmx = swe$nmx, last_open = TRUE, nax = "constant_nmx")
+Inputnmx(x = swe$x, nmx = swe$nmx, last_open = TRUE, nax = "cfm")
 ```
 
 ### Create a life-table from a survival curve

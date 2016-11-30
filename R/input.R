@@ -1,8 +1,9 @@
 # nax Calculation ---------------------------------------------------------
 
-#' nax Midpoint
+#' Calculate nax From nx Using Uniform Distribution of Deaths Assumption
 #'
-#' Get life-table nax values from nx using the midpoint assumption.
+#' Get life-table nax values from nx using the "uniform distribution of deaths"
+#' (midpoint) assumption.
 #'
 #' @param nx Width of age interval [x, x+n).
 #' @param k  Number of age groups.
@@ -14,12 +15,12 @@
 #' nax is NA for last open age group.
 #'
 #' @keywords internal
-naxMidpoint <- function (nx, k, last_open) {
+naxUDD <- function (nx, k, last_open) {
   nax = 0.5*nx
   return(nax)
 }
 
-#' nax Constant nmx (nqx)
+#' Calculate nax From nqx Using Constant Force of Mortality Assumption
 #'
 #' Get life-table nax values from nqx using the constant nmx assumption.
 #'
@@ -42,7 +43,7 @@ naxMidpoint <- function (nx, k, last_open) {
 #' If the last age group is open we set the last nax to NA.
 #'
 #' @keywords internal
-naxConstantnmx1 <- function (x, nx, nqx, npx, k, last_open) {
+naxCFMfromnqx <- function (x, nx, nqx, npx, k, last_open) {
   nax = -nx/nqx - nx/log(npx) + nx
   if (identical(last_open, FALSE)) {
     # the analytic expression above can't return a nax value for the
@@ -61,7 +62,7 @@ naxConstantnmx1 <- function (x, nx, nqx, npx, k, last_open) {
   return(nax)
 }
 
-#' nax Constant nmx (nmx)
+#' Calculate nax From nmx Using Constant Force of Mortality Assumption
 #'
 #' Get life-table nax values from nmx using the constant nmx assumption.
 #'
@@ -81,7 +82,7 @@ naxConstantnmx1 <- function (x, nx, nqx, npx, k, last_open) {
 #' nax[k] = 1/nmx[k]
 #'
 #' @keywords internal
-naxConstantnmx2 <- function (nx, nmx, k, last_open) {
+naxCFMfromnmx <- function (nx, nmx, k, last_open) {
   nax = nx + 1/nmx - nx/(1 - exp(-nx*nmx))
   if (identical(last_open, TRUE)){
     nax[k] = 1/nmx[k]
@@ -99,47 +100,46 @@ naxConstantnmx2 <- function (nx, nmx, k, last_open) {
 #' @param x Start of the age interval.
 #' @param lx Probability to survive up until age x.
 #' @param nax Subject-time alive in [x, x+n) for those who die in same interval
-#'   (either numeric scalar, numeric vector or one of \code{c("midpoint",
-#'   "constant_nmx")}).
+#'   (either numeric scalar, numeric vector or one of \code{c("udd", "cfm")}).
 #' @param nx Width of age interval [x, x+n) (either numeric scalar, numeric
 #'   vector or \code{"auto"}).
 #' @param last_open Is the last age group open (TRUE) or closed (FALSE,
 #'   default).
 #' @param time_unit The unit of the ages (by default "years").
 #'
-#' @section nx handling:
-#'   For nx you may provide either a numeric scalar, a numeric vector, or
-#'   let the function determine the width for you (\code{"auto"}, default). A
-#'   scalar will be recycled for each age group. A vector must be as long as the
-#'   age vector and allows you to specify the width of each age group
-#'   separately. If the last age group is supposed to be open make sure that the
-#'   last value of your nx vector is NA. By default the width of the age groups
-#'   is calculated from differencing the age vector.
+#' @section nx handling: For nx you may provide either a numeric scalar, a
+#'   numeric vector, or let the function determine the width for you
+#'   (\code{"auto"}, default). A scalar will be recycled for each age group. A
+#'   vector must be as long as the age vector and allows you to specify the
+#'   width of each age group separately. If the last age group is supposed to be
+#'   open make sure that the last value of your nx vector is NA. By default the
+#'   width of the age groups is calculated from differencing the age vector.
 #'
-#' @section nax handling:
-#'   nax may be provided as either a numeric scalar, a numeric vector, or
-#'   calculated via the \code{midpoint} method (default) or the constant nmx
-#'   assumption (option "\code{constant_nmx}").
+#' @section nax handling: nax may be provided as either a numeric scalar, a
+#'   numeric vector, or calculated via the \code{udd} method (default) or the
+#'   constant force of mortality assumption (option "\code{cfm}").
 #'
-#'   The midpoint method assumes a linear decline of the l(x) function over the
-#'   width of an age group, implying that those who die in that age group die on
-#'   average halfway into it (uniform distibution of deaths within age group):
+#'   The uniform distribution of deaths method assumes a linear decline of the
+#'   l(x) function over the width of an age group, implying that those who die
+#'   in that age group die on average halfway into it (also known as the
+#'   "midpoint" assumption):
 #'
 #'   nax = n/2 (see Preston, 2001, p. 46)
 #'
 #'   Assuming the mortality rate during age interval [x, x+n) to be constant
 #'   implies an exponentially declining l(x) function within [x, x+n) and will
-#'   produce nax values smaller than those calculated via the midpoint method.
-#'   Preston (2001), p. 46 provides an expression for nax given the assumption
-#'   of constant mortality. Restating this expression in terms of nqx and npx
-#'   leads to:
+#'   produce nax values smaller than those calculated via the uniform
+#'   distribution of deaths method. Preston (2001), p. 46 provides an expression
+#'   for nax given the assumption of constant mortality. Restating this
+#'   expression in terms of nqx and npx leads to:
 #'
 #'   nax = -n/nqx - n/ln(npx) + n
 #'
-#'   If the last age group is open and the midpoint or constant_nmx method is
-#'   used, then the last nmx value is log-linearly extrapolated based on the
-#'   preceding two nmx and the nax, and ex for the last age group calculated
-#'   using the constant hazard assumption.
+#'   If the last age group is open and the uniform distribution of deaths (udd)
+#'   or constant force of mortality (cfm) method is used, then the last nmx
+#'   value is log-linearly extrapolated based on the preceding two nmx and the
+#'   nax, and ex for the last age group calculated using the constant hazard
+#'   assumption.
 #'
 #' @source Preston, Samuel H., Patric Heuveline, and Michel Guillot. 2001.
 #'   Demography. Oxford, UK: Blackwell.
@@ -151,10 +151,10 @@ naxConstantnmx2 <- function (nx, nmx, k, last_open) {
 #' # open last age group
 #' Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, last_open = TRUE)
 #' # different nax assumptions
-#' Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, nax = "constant_nmx")
+#' Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, nax = "cfm")
 #' @export
 Inputlx <- function (x, lx,
-                     nax = "midpoint",
+                     nax = "udd",
                      nx = "auto",
                      last_open = FALSE,
                      time_unit = "years") {
@@ -190,11 +190,11 @@ Inputlx <- function (x, lx,
 
   # nax: amount of subject-time at risk in age group [x, x+n)
   # contributed by those who die in that age group
-  if (identical(nax_, "midpoint")) {
-    nax_ = naxMidpoint(nx_, k, last_open)
+  if (identical(nax_, "udd")) {
+    nax_ = naxUDD(nx_, k, last_open)
   }
-  if (identical(nax_, "constant_nmx")) {
-    nax_ = naxConstantnmx1(x, nx_, nqx, npx, k, last_open)
+  if (identical(nax_, "cfm")) {
+    nax_ = naxCFMfromnqx(x, nx_, nqx, npx, k, last_open)
   }
 
   # nLx: amount of subject-time at risk in age group [x, x+n)
@@ -206,7 +206,7 @@ Inputlx <- function (x, lx,
       # width of the open age group is unknown). therefore we log-linearly
       # extrapolate nmx based on the preceding two nmx and calculate nLx of the
       # last age group using the constant hazard assumption.
-      if (val_nax[["nax_mode"]] %in% c("midpoint", "constant_nmx")) {
+      if (val_nax[["nax_mode"]] %in% c("udd", "cfm")) {
         nmx[k] = LinearExtrapolation(x = x[c(k-2, k-1)], y = nmx[c(k-2, k-1)],
                                      xextra = x[k], loga = TRUE)
         nax_[k] = 1/nmx[k]
@@ -251,8 +251,8 @@ Inputlx <- function (x, lx,
 #' @param x Start of the age interval.
 #' @param nmx Mortality rate in age interval [x, x+nx).
 #' @param nax Subject-time alive in [x, x+n) for those who die in same interval
-#'   (either numeric scalar, numeric vector or one of \code{c("midpoint",
-#'   "constant_nmx")}).
+#'   (either numeric scalar, numeric vector or one of \code{c("udd",
+#'   "cfm")}).
 #' @param nx Width of age interval [x, x+n) (either numeric scalar, numeric
 #'   vector or \code{"auto"}).
 #' @param last_open Is the last age group open (TRUE) or closed (FALSE,
@@ -270,21 +270,22 @@ Inputlx <- function (x, lx,
 #'   assumed to be equal to the width of the preceeding age group.
 #'
 #' @section nax handling: nax may be provided as either a numeric scalar, a
-#'   numeric vector, or calculated via the \code{midpoint} method (default) or
-#'   the constant nmx assumption (option "\code{constant_nmx}").
+#'   numeric vector, or calculated via the \code{udd} method (default) or the
+#'   constant force of mortality assumption (option "\code{cfm}").
 #'
-#'   The midpoint method assumes a linear decline of the l(x) function over the
-#'   width of an age group, implying that those who die in that age group die on
-#'   average halfway into it (uniform distibution of deaths within age group):
+#'   The uniform distribution of deaths method assumes a linear decline of the
+#'   l(x) function over the width of an age group, implying that those who die
+#'   in that age group die on average halfway into it (also known as the
+#'   "midpoint" assumption):
 #'
 #'   nax = n/2 (see Preston, 2001, p. 46)
 #'
 #'   Assuming the mortality rate during age interval [x, x+n) to be constant
 #'   implies an exponentially declining l(x) function within [x, x+n) and will
-#'   produce nax values smaller than those calculated via the midpoint method.
-#'   Preston (2001), p. 46 provides an expression for nax given the assumption
-#'   of constant mortality. Restating this expression in terms of nqx and npx
-#'   leads to:
+#'   produce nax values smaller than those calculated via the uniform
+#'   distribution of deaths method. Preston (2001), p. 46 provides an expression
+#'   for nax given the assumption of constant mortality. Restating this
+#'   expression in terms of nqx and npx leads to:
 #'
 #'   nax = -n/nqx - n/ln(npx) + n
 #'
@@ -295,11 +296,11 @@ Inputlx <- function (x, lx,
 #'
 #' @examples
 #' swe <- subset(sweden5x5, sex == "female" & period == "1940-1944")[c("x", "nmx")]
-#' Inputnmx(x = swe$x, nmx = swe$nmx, last_open = TRUE, nax = "constant_nmx")
+#' Inputnmx(x = swe$x, nmx = swe$nmx, last_open = TRUE, nax = "cfm")
 #'
 #' @export
 Inputnmx <- function (x, nmx,
-                      nax = "midpoint",
+                      nax = "udd",
                       nx = "auto",
                       last_open = FALSE,
                       time_unit = "years") {
@@ -323,11 +324,11 @@ Inputnmx <- function (x, nmx,
 
   # nax: amount of subject-time at risk in age group [x, x+n)
   # contributed by those who die in that age group
-  if (identical(nax_, "midpoint")) {
-    nax_ = naxMidpoint(nx_, k, last_open)
+  if (identical(nax_, "udd")) {
+    nax_ = naxUDD(nx_, k, last_open)
   }
-  if (identical(nax_, "constant_nmx")) {
-    nax_ = naxConstantnmx2(nx_, nmx, k, last_open)
+  if (identical(nax_, "cfm")) {
+    nax_ = naxCFMfromnmx(nx_, nmx, k, last_open)
   }
 
   # nqx from nmx and nax

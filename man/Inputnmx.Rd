@@ -8,7 +8,7 @@ Preston, Samuel H., Patric Heuveline, and Michel Guillot. 2001.
   Demography. Oxford, UK: Blackwell.
 }
 \usage{
-Inputnmx(x, nmx, nax = "midpoint", nx = "auto", last_open = FALSE,
+Inputnmx(x, nmx, nax = "udd", nx = "auto", last_open = FALSE,
   time_unit = "years")
 }
 \arguments{
@@ -17,8 +17,8 @@ Inputnmx(x, nmx, nax = "midpoint", nx = "auto", last_open = FALSE,
 \item{nmx}{Mortality rate in age interval [x, x+nx).}
 
 \item{nax}{Subject-time alive in [x, x+n) for those who die in same interval
-(either numeric scalar, numeric vector or one of \code{c("midpoint",
-"constant_nmx")}).}
+(either numeric scalar, numeric vector or one of \code{c("udd",
+"cfm")}).}
 
 \item{nx}{Width of age interval [x, x+n) (either numeric scalar, numeric
 vector or \code{"auto"}).}
@@ -49,27 +49,28 @@ is calculated and a pace-shape object constructed.
 
 \section{nax handling}{
  nax may be provided as either a numeric scalar, a
-  numeric vector, or calculated via the \code{midpoint} method (default) or
-  the constant nmx assumption (option "\code{constant_nmx}").
+  numeric vector, or calculated via the \code{udd} method (default) or the
+  constant force of mortality assumption (option "\code{cfm}").
 
-  The midpoint method assumes a linear decline of the l(x) function over the
-  width of an age group, implying that those who die in that age group die on
-  average halfway into it (uniform distibution of deaths within age group):
+  The uniform distribution of deaths method assumes a linear decline of the
+  l(x) function over the width of an age group, implying that those who die
+  in that age group die on average halfway into it (also known as the
+  "midpoint" assumption):
 
   nax = n/2 (see Preston, 2001, p. 46)
 
   Assuming the mortality rate during age interval [x, x+n) to be constant
   implies an exponentially declining l(x) function within [x, x+n) and will
-  produce nax values smaller than those calculated via the midpoint method.
-  Preston (2001), p. 46 provides an expression for nax given the assumption
-  of constant mortality. Restating this expression in terms of nqx and npx
-  leads to:
+  produce nax values smaller than those calculated via the uniform
+  distribution of deaths method. Preston (2001), p. 46 provides an expression
+  for nax given the assumption of constant mortality. Restating this
+  expression in terms of nqx and npx leads to:
 
   nax = -n/nqx - n/ln(npx) + n
 }
 \examples{
 swe <- subset(sweden5x5, sex == "female" & period == "1940-1944")[c("x", "nmx")]
-Inputnmx(x = swe$x, nmx = swe$nmx, last_open = TRUE, nax = "constant_nmx")
+Inputnmx(x = swe$x, nmx = swe$nmx, last_open = TRUE, nax = "cfm")
 
 }
 

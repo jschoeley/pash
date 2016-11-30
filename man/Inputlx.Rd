@@ -8,7 +8,7 @@ Preston, Samuel H., Patric Heuveline, and Michel Guillot. 2001.
   Demography. Oxford, UK: Blackwell.
 }
 \usage{
-Inputlx(x, lx, nax = "midpoint", nx = "auto", last_open = FALSE,
+Inputlx(x, lx, nax = "udd", nx = "auto", last_open = FALSE,
   time_unit = "years")
 }
 \arguments{
@@ -17,8 +17,7 @@ Inputlx(x, lx, nax = "midpoint", nx = "auto", last_open = FALSE,
 \item{lx}{Probability to survive up until age x.}
 
 \item{nax}{Subject-time alive in [x, x+n) for those who die in same interval
-(either numeric scalar, numeric vector or one of \code{c("midpoint",
-"constant_nmx")}).}
+(either numeric scalar, numeric vector or one of \code{c("udd", "cfm")}).}
 
 \item{nx}{Width of age interval [x, x+n) (either numeric scalar, numeric
 vector or \code{"auto"}).}
@@ -36,47 +35,47 @@ Given an age vector and corresponding survival probabilities a complete
 lifetable is calculated and a pace-shape object constructed.
 }
 \section{nx handling}{
-
-  For nx you may provide either a numeric scalar, a numeric vector, or
-  let the function determine the width for you (\code{"auto"}, default). A
-  scalar will be recycled for each age group. A vector must be as long as the
-  age vector and allows you to specify the width of each age group
-  separately. If the last age group is supposed to be open make sure that the
-  last value of your nx vector is NA. By default the width of the age groups
-  is calculated from differencing the age vector.
+ For nx you may provide either a numeric scalar, a
+  numeric vector, or let the function determine the width for you
+  (\code{"auto"}, default). A scalar will be recycled for each age group. A
+  vector must be as long as the age vector and allows you to specify the
+  width of each age group separately. If the last age group is supposed to be
+  open make sure that the last value of your nx vector is NA. By default the
+  width of the age groups is calculated from differencing the age vector.
 }
 
 \section{nax handling}{
+ nax may be provided as either a numeric scalar, a
+  numeric vector, or calculated via the \code{udd} method (default) or the
+  constant force of mortality assumption (option "\code{cfm}").
 
-  nax may be provided as either a numeric scalar, a numeric vector, or
-  calculated via the \code{midpoint} method (default) or the constant nmx
-  assumption (option "\code{constant_nmx}").
-
-  The midpoint method assumes a linear decline of the l(x) function over the
-  width of an age group, implying that those who die in that age group die on
-  average halfway into it (uniform distibution of deaths within age group):
+  The uniform distribution of deaths method assumes a linear decline of the
+  l(x) function over the width of an age group, implying that those who die
+  in that age group die on average halfway into it (also known as the
+  "midpoint" assumption):
 
   nax = n/2 (see Preston, 2001, p. 46)
 
   Assuming the mortality rate during age interval [x, x+n) to be constant
   implies an exponentially declining l(x) function within [x, x+n) and will
-  produce nax values smaller than those calculated via the midpoint method.
-  Preston (2001), p. 46 provides an expression for nax given the assumption
-  of constant mortality. Restating this expression in terms of nqx and npx
-  leads to:
+  produce nax values smaller than those calculated via the uniform
+  distribution of deaths method. Preston (2001), p. 46 provides an expression
+  for nax given the assumption of constant mortality. Restating this
+  expression in terms of nqx and npx leads to:
 
   nax = -n/nqx - n/ln(npx) + n
 
-  If the last age group is open and the midpoint or constant_nmx method is
-  used, then the last nmx value is log-linearly extrapolated based on the
-  preceding two nmx and the nax, and ex for the last age group calculated
-  using the constant hazard assumption.
+  If the last age group is open and the uniform distribution of deaths (udd)
+  or constant force of mortality (cfm) method is used, then the last nmx
+  value is log-linearly extrapolated based on the preceding two nmx and the
+  nax, and ex for the last age group calculated using the constant hazard
+  assumption.
 }
 \examples{
 Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
 # open last age group
 Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, last_open = TRUE)
 # different nax assumptions
-Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, nax = "constant_nmx")
+Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, nax = "cfm")
 }
 

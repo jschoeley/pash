@@ -142,7 +142,7 @@ Validatenax <- function (nax, x, nx, last_open) {
   } else { # character nax
     if (!is.character(nax)) { stop("nax must be numeric or character.") }
     if (!identical(length(nax), 1L)) { stop("nax must be scalar if character.") }
-    if (!(nax %in% c("midpoint", "constant_nmx"))) { stop("nax mode must be either 'midpoint' or 'constant_nmx'.") }
+    if (!(nax %in% c("udd", "cfm"))) { stop("nax mode must be either 'udd' or 'cfm'.") }
     nax_mode = nax
     nax_ = nax
   }

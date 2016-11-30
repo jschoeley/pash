@@ -50,7 +50,7 @@ NULL
 #' length(x). NA, NaN, Inf, -Inf are not allowed.
 #'
 #' Argument \code{type} must be one of \code{c("lx", "nmx")}. Argument
-#' \code{nax_mode} must be one of \code{c("midpoint", "constant_nmx",
+#' \code{nax_mode} must be one of \code{c("udd", "cfm",
 #' "vector", "scalar")}.
 #'
 #' @return An S3 object of class \code{pash}.

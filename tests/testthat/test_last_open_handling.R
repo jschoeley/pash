@@ -4,16 +4,16 @@ library(pash)
 
 test_that("handling of last_open works for Inputlx()", {
   expect_equal(Inputlx(x = prestons_lx$x, lx = prestons_lx$lx,
-                       nax = "midpoint", last_open = TRUE)[["lt"]][["ex"]][1],
+                       nax = "udd", last_open = TRUE)[["lt"]][["ex"]][1],
                72.95989, tolerance = 0.00001, scale = 1)
   expect_message(Inputlx(x = prestons_lx$x, lx = prestons_lx$lx,
-                         nax = "midpoint", last_open = TRUE),
+                         nax = "udd", last_open = TRUE),
                  "nmx of open age group log-linearly extrapolated based on preceding two nmx")
   expect_equal(Inputlx(x = prestons_lx$x, lx = prestons_lx$lx,
-                       nax = "constant_nmx", last_open = TRUE)[["lt"]][["ex"]][1],
+                       nax = "cfm", last_open = TRUE)[["lt"]][["ex"]][1],
                72.82386, tolerance = 0.00001, scale = 1)
   expect_message(Inputlx(x = prestons_lx$x, lx = prestons_lx$lx,
-                         nax = "constant_nmx", last_open = TRUE),
+                         nax = "cfm", last_open = TRUE),
                  "nmx of open age group log-linearly extrapolated based on preceding two nmx")
   expect_equal(Inputlx(x = prestons_lx$x, lx = prestons_lx$lx,
                        nax = 2.5, last_open = TRUE)[["lt"]][["ex"]][1],
@@ -29,10 +29,10 @@ swe <- subset(sweden5x5, sex == "female" & period == "1940-1944")[c("x", "nmx")]
 
 test_that("handling of last_open works for Inputlx()", {
   expect_equal(Inputnmx(x = swe$x, nmx = swe$nmx,
-                       nax = "midpoint", last_open = TRUE)[["lt"]][["ex"]][1],
+                       nax = "udd", last_open = TRUE)[["lt"]][["ex"]][1],
                69.18587, tolerance = 0.00001, scale = 1)
   expect_equal(Inputnmx(x = swe$x, nmx = swe$nmx,
-                        nax = "constant_nmx", last_open = TRUE)[["lt"]][["ex"]][1],
+                        nax = "cfm", last_open = TRUE)[["lt"]][["ex"]][1],
                69.12739, tolerance = 0.00001, scale = 1)
   expect_equal(Inputnmx(x = swe$x, nmx = swe$nmx,
                         nax = 2.5, last_open = TRUE)[["lt"]][["ex"]][1],

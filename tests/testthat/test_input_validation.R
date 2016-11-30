@@ -85,11 +85,11 @@ test_that("errors in nax input are catched", {
   expect_error(Validatenax(nax = as.character(rep(0.5, 11)), x = 0:11, nx = 1, last_open = FALSE),
                "nax must be scalar if character.")
   expect_error(Validatenax(nax = "auto", x = 0:11, nx = 1, last_open = FALSE),
-               "nax mode must be either 'midpoint' or 'constant_nmx'.")
-  expect_equal(Validatenax(nax = "midpoint", x = 0:11, nx = 1, last_open = FALSE)[["nax_mode"]],
-               "midpoint")
-  expect_equal(Validatenax(nax = "constant_nmx", x = 0:11, nx = 1, last_open = FALSE)[["nax_mode"]],
-               "constant_nmx")
+               "nax mode must be either 'udd' or 'cfm'.")
+  expect_equal(Validatenax(nax = "udd", x = 0:11, nx = 1, last_open = FALSE)[["nax_mode"]],
+               "udd")
+  expect_equal(Validatenax(nax = "cfm", x = 0:11, nx = 1, last_open = FALSE)[["nax_mode"]],
+               "cfm")
   expect_equal(Validatenax(nax = rep(0.5, 12), x = 0:11, nx = 1, last_open = FALSE)[["nax_mode"]],
                "vector")
   expect_error(Validatenax(nax = rep(0.5, 11), x = 0:11, nx = 1, last_open = FALSE),
