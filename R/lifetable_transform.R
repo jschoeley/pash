@@ -31,18 +31,18 @@ RebaseLT <- function (pash, origin = 0) {
   # so that rebase is reversible
   lt = attr(pash, "non_destructive_copy")
   # drop age intervals smaller than origin
-  pash[["lt"]] = lt[lt$x >= origin,]
+  pash[["lt"]] = lt[lt[["x"]] >= origin,]
   # rebase lx
-  pash[["lt"]]$lx = pash[["lt"]]$lx / pash[["lt"]]$lx[1]
+  pash[["lt"]][["lx"]] = pash[["lt"]][["lx"]] / pash[["lt"]][["lx"]][1]
   # rebase ndx
-  pash[["lt"]]$ndx = pash[["lt"]]$ndx / sum(pash[["lt"]]$ndx)
+  pash[["lt"]][["ndx"]] = pash[["lt"]][["ndx"]] / sum(pash[["lt"]][["ndx"]])
   # rebase nLx
-  pash[["lt"]]$nLx = pash[["lt"]]$nx*(pash[["lt"]]$lx-pash[["lt"]]$ndx) +
-    pash[["lt"]]$nax*pash[["lt"]]$ndx
+  pash[["lt"]][["nLx"]] = pash[["lt"]][["nx"]]*(pash[["lt"]][["lx"]]-pash[["lt"]][["ndx"]]) +
+    pash[["lt"]][["nax"]]*pash[["lt"]][["ndx"]]
   # rebase Tx
-  pash[["lt"]]$Tx = rev(cumsum(rev(pash[["lt"]]$nLx)))
+  pash[["lt"]][["Tx"]] = rev(cumsum(rev(pash[["lt"]][["nLx"]])))
   # rebase ex
-  pash[["lt"]]$ex = pash[["lt"]]$Tx / pash[["lt"]]$lx
+  pash[["lt"]][["ex"]] = pash[["lt"]][["Tx"]] / pash[["lt"]][["lx"]]
 
   return(pash)
 }
@@ -72,23 +72,23 @@ RebaseLT <- function (pash, origin = 0) {
 StandardizeLT <- function(pash, pace = "e0", q = 0.5) {
 
   lt = pash[["lt"]]
-  if (identical(pace, "e0")) {pace = TotalLifeExpectancy(lt$ex)}
+  if (identical(pace, "e0")) {pace = TotalLifeExpectancy(lt[["ex"]])}
   if (identical(pace, "qlx")) {
-    pace = SurvivalQuantile(lt$x, lt$nx, lt$lx, q,
+    pace = SurvivalQuantile(lt[["x"]], lt[["nx"]], lt[["lx"]], q,
                             nax_mode = attr(pash, "nax_mode"))
   }
 
   # standardize age
-  x_s =  lt$x / pace
-  nx_s = lt$nx / pace
+  x_s =  lt[["x"]] / pace
+  nx_s = lt[["nx"]] / pace
   # standardize nmx
-  nmx_s = lt$nmx*pace
+  nmx_s = lt[["nmx"]]*pace
   # standardize ex
-  ex_s = lt$ex / pace
+  ex_s = lt[["ex"]] / pace
 
   # return standardized LT
   return(
-    data.frame(x = lt$x, nx = lt$nx, x_s, nx_s, nmx_s,
-               lx_s  = lt$lx, ex_s)
+    data.frame(x = lt[["x"]], nx = lt[["nx"]], x_s, nx_s, nmx_s,
+               lx_s  = lt[["lx"]], ex_s)
   )
 }

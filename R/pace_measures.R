@@ -46,12 +46,12 @@ GetPace <- function (pash, type = "all", q = 0.5) {
   lt = pash[["lt"]]
   if (identical(type, "e0")) {S = c(e0 = TotalLifeExpectancy(lt$ex))}
   if (identical(type, "qlx")) {
-    S = c(qlx = SurvivalQuantile(lt$x, lt$nx, lt$lx, q,
+    S = c(qlx = SurvivalQuantile(lt[["x"]], lt[["nx"]], lt[["lx"]], q,
                                  nax_mode = attr(pash, "nax_mode")))
   }
   if (identical(type, "all")) {
-    S = c(e0 =  TotalLifeExpectancy(lt$ex),
-          qlx = SurvivalQuantile(lt$x, lt$nx, lt$lx, q,
+    S = c(e0 =  TotalLifeExpectancy(lt[["ex"]]),
+          qlx = SurvivalQuantile(lt[["x"]], lt[["nx"]], lt[["lx"]], q,
                                  nax_mode = attr(pash, "nax_mode")))
   }
   return(S)
@@ -59,7 +59,7 @@ GetPace <- function (pash, type = "all", q = 0.5) {
 
 # Total Life Expectancy
 TotalLifeExpectancy <- function (ex) {
-  return(ex[1])
+  return(ex[1L])
 }
 
 # Survival Quantile
@@ -74,7 +74,7 @@ SurvivalQuantile <- function (x, nx, lx, q, nax_mode) {
     qlx = x[which(lx == q)[1L]] # could be more than 1 if lx stays flat, return 1st
   } else {
     # else, find the two lx's enclosing the the true quantile and interpolate
-    lo = rev(which(lx>q))[1]; up = which(lx<q)[1]
+    lo = rev(which(lx>q))[1L]; up = which(lx<q)[1]
     x0 = x[lo]; x1 = x[up]
     y0 = lx[lo]; y1 = lx[up]
     # linear interpolation between two lx in case of udd nax method
