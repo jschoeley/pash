@@ -62,17 +62,6 @@ TotalLifeExpectancy <- function (ex) {
   return(ex[1])
 }
 
-# Get Exact x for a Given y Based on Linear Interpolation Between Two Points
-LinearInterpolation <- function (x0, x1, y0, y1, y) {
-  x = (-x1*y+x0*y-x0*y1+x1*y0)/(y0-y1)
-  return(x)
-}
-# Get Exact x for a Given y Based on Exponential Interpolation Between Two Points
-ExponentialInterpolation <- function (x0, x1, y0, y1, y) {
-  x = ((x0-x1)*log(y) - x0*log(y1) + x1*log(y0)) / (log(y0)-log(y1))
-  return(x)
-}
-
 # Survival Quantile
 SurvivalQuantile <- function (x, nx, lx, q, nax_mode) {
   # add 0 to l(x) vector so that a result is returned in case l(k) > q

@@ -11,15 +11,11 @@
 #' @return The nax as a numeric vector of \code{length(nx)}.
 #'
 #' @details
-#' If the last age group is open then set its nax value to that of the
-#' preceeding age group.
+#' nax is NA for last open age group.
 #'
 #' @keywords internal
 naxMidpoint <- function (nx, k, last_open) {
   nax = 0.5*nx
-  if (identical(last_open, TRUE)) {
-    nax[k] = nax[k-1L]
-  }
   return(nax)
 }
 
@@ -40,28 +36,27 @@ naxMidpoint <- function (nx, k, last_open) {
 #' For all age groups but the last we calculate:
 #' nax = -nx/nqx - nx/log(npx) + nx
 #'
-#' If the last age group is closed we extrapolate the last nax from the
-#' preceeding nax.
+#' If the last age group is closed we linearly extrapolate the last nax from the
+#' preceding two nax.
 #'
-#' If the last age group is open we set the last nax to that of the preceeding
-#' nax.
+#' If the last age group is open we set the last nax to NA.
 #'
 #' @keywords internal
 naxConstantnmx1 <- function (x, nx, nqx, npx, k, last_open) {
   nax = -nx/nqx - nx/log(npx) + nx
   if (identical(last_open, FALSE)) {
-    nAx = nax/nx
-    regress_nAx = log(nAx / (1-nAx))[-k]; regress_x = x[-k]
     # the analytic expression above can't return a nax value for the
     # last age group (when survivorship hits 0). Therefore we extrapolate
-    # the last nax value based on loess regression of the nax values
-    pred = stats::predict(stats::loess(regress_nAx~regress_x,
-                                       control = stats::loess.control(surface = "direct")),
-                          data.frame(regress_x = x[k]))
-    nax[k] = exp(pred)/(1+exp(pred))*nx[k]
+    # the last nax value based on the preceding 2 nax values
+    nAx = nax/nx
+    nAk = LinearExtrapolation(x = x[c(k-2, k-1)], y = nAx[c(k-2, k-1)],
+                              xextra = x[k], loga = FALSE)
+    nax[k] = nAk*nx[k]
   }
   if (identical(last_open, TRUE)) {
-    nax[k] = nax[k-1L]
+    # without knowing the width of the last age group there is no way to know
+    # the last nax value
+    nax[k] = NA
   }
   return(nax)
 }
@@ -119,9 +114,7 @@ naxConstantnmx2 <- function (nx, nmx, k, last_open) {
 #'   age vector and allows you to specify the width of each age group
 #'   separately. If the last age group is supposed to be open make sure that the
 #'   last value of your nx vector is NA. By default the width of the age groups
-#'   is calculated from differencing the age vector. Should the last age group
-#'   be closed, the width of the last age group is assumed to be equal to the
-#'   width of the preceeding age group.
+#'   is calculated from differencing the age vector.
 #'
 #' @section nax handling:
 #'   nax may be provided as either a numeric scalar, a numeric vector, or
@@ -143,11 +136,10 @@ naxConstantnmx2 <- function (nx, nmx, k, last_open) {
 #'
 #'   nax = -n/nqx - n/ln(npx) + n
 #'
-#'   If the last age group is open and the midpoint method is used, then the
-#'   last nax value is set to that of the preceeding age group.
-#'
-#'   If the last age group is open and the constant nmx method is used, then the
-#'   last nax value is extrapolated from the preceeding nax values.
+#'   If the last age group is open and the midpoint or constant_nmx method is
+#'   used, then the last nmx value is log-linearly extrapolated based on the
+#'   preceding two nmx and the nax, and ex for the last age group calculated
+#'   using the constant hazard assumption.
 #'
 #' @source Preston, Samuel H., Patric Heuveline, and Michel Guillot. 2001.
 #'   Demography. Oxford, UK: Blackwell.
@@ -156,7 +148,8 @@ naxConstantnmx2 <- function (nx, nmx, k, last_open) {
 #'
 #' @examples
 #' Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
-#'
+#' # open last age group
+#' Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, last_open = TRUE)
 #' # different nax assumptions
 #' Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, nax = "constant_nmx")
 #' @export
@@ -205,11 +198,26 @@ Inputlx <- function (x, lx,
   }
 
   # nLx: amount of subject-time at risk in age group [x, x+n)
-  # The nx handling needs to be improved in case of open age groups
-  nx_ = if (identical(last_open, TRUE)) c(nx_[-k], nx_[k-1L]) else nx_
   nLx = nx_*(lx_-ndx) + nax_*ndx
   # nmx: life table mortality rate in age group [x, x+n]
   nmx = ndx/nLx
+    if (identical(last_open, TRUE)) {
+      # in case of an open age group nmx will be NA for this age group (as the
+      # width of the open age group is unknown). therefore we log-linearly
+      # extrapolate nmx based on the preceding two nmx and calculate nLx of the
+      # last age group using the constant hazard assumption.
+      if (val_nax[["nax_mode"]] %in% c("midpoint", "constant_nmx")) {
+        nmx[k] = LinearExtrapolation(x = x[c(k-2, k-1)], y = nmx[c(k-2, k-1)],
+                                     xextra = x[k], loga = TRUE)
+        nax_[k] = 1/nmx[k]
+        nLx[k] = nax_[k]*lx_[k]
+        message("Inputlx() and last_open = TRUE: nmx of open age group log-linearly extrapolated based on preceding two nmx.")
+      }
+      if (val_nax[["nax_mode"]] %in% c("scalar", "vector")) {
+        nLx[k] = nax_[k]*lx_[k]
+        nmx[k] = ndx[k]/nLx[k]
+      }
+    }
   # Tx: amount of subject-time at risk above age group [x, x+n)
   Tx = rev(cumsum(rev(nLx)))
   # ex: life expectancy at age x
@@ -280,13 +288,6 @@ Inputlx <- function (x, lx,
 #'
 #'   nax = -n/nqx - n/ln(npx) + n
 #'
-#'   If the last age group is open and the midpoint method is used, then the
-#'   last nax value is set to that of the preceeding age group.
-#'
-#'   If the last age group is open and the constant nmx method is used, we
-#'   calculate the last nax as the remaining life expectancy at x. Given the
-#'   constant hazard assumption that is: nax[k] = 1/nmx[k]
-#'
 #' @source Preston, Samuel H., Patric Heuveline, and Michel Guillot. 2001.
 #'   Demography. Oxford, UK: Blackwell.
 #'
@@ -346,7 +347,6 @@ Inputnmx <- function (x, nmx,
   ex = Tx/lx
   # when lx becomes 0 ex becomes NaN. set it to 0
   ex[is.nan(ex)] = 0
-
 
   # Construct pash object ---------------------------------------------------
 

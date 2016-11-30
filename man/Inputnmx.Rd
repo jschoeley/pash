@@ -66,13 +66,6 @@ is calculated and a pace-shape object constructed.
   leads to:
 
   nax = -n/nqx - n/ln(npx) + n
-
-  If the last age group is open and the midpoint method is used, then the
-  last nax value is set to that of the preceeding age group.
-
-  If the last age group is open and the constant nmx method is used, we
-  calculate the last nax as the remaining life expectancy at x. Given the
-  constant hazard assumption that is: nax[k] = 1/nmx[k]
 }
 \examples{
 swe <- subset(sweden5x5, sex == "female" & period == "1940-1944")[c("x", "nmx")]

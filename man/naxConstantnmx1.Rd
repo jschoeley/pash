@@ -28,11 +28,10 @@ Get life-table nax values from nqx using the constant nmx assumption.
 For all age groups but the last we calculate:
 nax = -nx/nqx - nx/log(npx) + nx
 
-If the last age group is closed we extrapolate the last nax from the
-preceeding nax.
+If the last age group is closed we linearly extrapolate the last nax from the
+preceding two nax.
 
-If the last age group is open we set the last nax to that of the preceeding
-nax.
+If the last age group is open we set the last nax to NA.
 }
 \keyword{internal}
 

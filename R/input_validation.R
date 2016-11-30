@@ -75,7 +75,7 @@ Validatemx <- function (mx) {
 ValidateAge <- function (x) {
   IsNANanInf(x, "The age vector")
   if (!is.numeric(x)) { stop("Age must be numeric.", call. = FALSE) }
-  if (!(length(x) > 1L)) { stop("The age vector must contain more than a single age group.", call. = FALSE) }
+  if (!(length(x) > 2L)) { stop("The age vector must contain at least 3 age groups.", call. = FALSE) }
   if (any(x < 0L)) { stop("Age must not be negative.", call. = FALSE) }
   if (!all(diff(x) > 0L)) { stop("The age vector must be arranged in increasing order.", call. = FALSE) }
 }
@@ -143,7 +143,6 @@ Validatenax <- function (nax, x, nx, last_open) {
     if (!is.character(nax)) { stop("nax must be numeric or character.") }
     if (!identical(length(nax), 1L)) { stop("nax must be scalar if character.") }
     if (!(nax %in% c("midpoint", "constant_nmx"))) { stop("nax mode must be either 'midpoint' or 'constant_nmx'.") }
-    if (identical(last_open, TRUE) && identical(nax, "midpoint")) { warning("Open last age group and nax midpoint method specified: nax of last age group will be imputed by nax of second to last age group.", call. = FALSE) }
     nax_mode = nax
     nax_ = nax
   }

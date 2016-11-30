@@ -43,9 +43,7 @@ lifetable is calculated and a pace-shape object constructed.
   age vector and allows you to specify the width of each age group
   separately. If the last age group is supposed to be open make sure that the
   last value of your nx vector is NA. By default the width of the age groups
-  is calculated from differencing the age vector. Should the last age group
-  be closed, the width of the last age group is assumed to be equal to the
-  width of the preceeding age group.
+  is calculated from differencing the age vector.
 }
 
 \section{nax handling}{
@@ -69,15 +67,15 @@ lifetable is calculated and a pace-shape object constructed.
 
   nax = -n/nqx - n/ln(npx) + n
 
-  If the last age group is open and the midpoint method is used, then the
-  last nax value is set to that of the preceeding age group.
-
-  If the last age group is open and the constant nmx method is used, then the
-  last nax value is extrapolated from the preceeding nax values.
+  If the last age group is open and the midpoint or constant_nmx method is
+  used, then the last nmx value is log-linearly extrapolated based on the
+  preceding two nmx and the nax, and ex for the last age group calculated
+  using the constant hazard assumption.
 }
 \examples{
 Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
-
+# open last age group
+Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, last_open = TRUE)
 # different nax assumptions
 Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, nax = "constant_nmx")
 }

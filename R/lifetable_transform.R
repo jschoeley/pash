@@ -58,7 +58,7 @@ RebaseLT <- function (pash, origin = 0) {
 #' that this is not a pace-shape object anymore.
 #'
 #' @source Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015.
-#'   "Quantifying the Shape of Aging." PLOS ONE 10 (3): 1–18.
+#'   "Quantifying the Shape of Aging." PLOS ONE 10 (3): 1-18.
 #'   doi:10.1371/journal.pone.0119163.
 #'
 #' @examples

@@ -19,7 +19,7 @@ test_that("errors in age input are catched", {
   expect_error(ValidateAge(c(0:10, Inf)), "The age vector must not contain \\(-\\)Inf.")
   expect_error(ValidateAge(c(0:10, -Inf)), "The age vector must not contain \\(-\\)Inf.")
   expect_error(ValidateAge(as.character(0:10)), "Age must be numeric.")
-  expect_error(ValidateAge(0), "The age vector must contain more than a single age group.")
+  expect_error(ValidateAge(0), "The age vector must contain at least 3 age groups.")
   expect_error(ValidateAge(-5:5), "Age must not be negative.")
   expect_error(ValidateAge(c(0,0,1)), "The age vector must be arranged in increasing order.")
   expect_error(ValidateAge(c(0,2,1)), "The age vector must be arranged in increasing order.")
@@ -86,8 +86,6 @@ test_that("errors in nax input are catched", {
                "nax must be scalar if character.")
   expect_error(Validatenax(nax = "auto", x = 0:11, nx = 1, last_open = FALSE),
                "nax mode must be either 'midpoint' or 'constant_nmx'.")
-  expect_warning(Validatenax(nax = "midpoint", x = 0:11, nx = 1, last_open = TRUE),
-                 "Open last age group and nax midpoint method specified: nax of last age group will be imputed by nax of second to last age group.")
   expect_equal(Validatenax(nax = "midpoint", x = 0:11, nx = 1, last_open = FALSE)[["nax_mode"]],
                "midpoint")
   expect_equal(Validatenax(nax = "constant_nmx", x = 0:11, nx = 1, last_open = FALSE)[["nax_mode"]],

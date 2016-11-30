@@ -2,7 +2,12 @@
 % Please edit documentation in R/lifetable_transform.R
 \name{StandardizeLT}
 \alias{StandardizeLT}
-\title{Standardize Life-table By Pace and Shape}
+\title{Standardize Life-table By Pace}
+\source{
+Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015.
+  "Quantifying the Shape of Aging." PLOS ONE 10 (3): 1-18.
+  doi:10.1371/journal.pone.0119163.
+}
 \usage{
 StandardizeLT(pash, pace = "e0", q = 0.5)
 }
@@ -15,11 +20,11 @@ StandardizeLT(pash, pace = "e0", q = 0.5)
 population is still alive (defaults to median).}
 }
 \value{
-A pace-shape standardized life table in form of a data frame. Note
+A pace standardized life table in form of a data frame. Note
 that this is not a pace-shape object anymore.
 }
 \description{
-Standardize Life-table By Pace and Shape
+Standardize Life-table By Pace
 }
 \examples{
 # generate a pace-shape object

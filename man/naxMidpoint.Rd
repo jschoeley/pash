@@ -20,8 +20,7 @@ The nax as a numeric vector of \code{length(nx)}.
 Get life-table nax values from nx using the midpoint assumption.
 }
 \details{
-If the last age group is open then set its nax value to that of the
-preceeding age group.
+nax is NA for last open age group.
 }
 \keyword{internal}
 
