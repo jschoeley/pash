@@ -30,7 +30,7 @@ swe <- subset(sweden5x5, sex == "female" & period == "1940-1944")[c("x", "nmx")]
 test_that("handling of last_open works for Inputlx()", {
   expect_equal(Inputnmx(x = swe$x, nmx = swe$nmx,
                        nax = "udd", last_open = TRUE)[["lt"]][["ex"]][1],
-               69.18587, tolerance = 0.00001, scale = 1)
+               69.30855, tolerance = 0.00001, scale = 1)
   expect_equal(Inputnmx(x = swe$x, nmx = swe$nmx,
                         nax = "cfm", last_open = TRUE)[["lt"]][["ex"]][1],
                69.12739, tolerance = 0.00001, scale = 1)

@@ -90,6 +90,38 @@ naxCFMfromnmx <- function (nx, nmx, k, last_open) {
   return(nax)
 }
 
+#' Convert Death Rates to Death Probabilities
+#'
+#' @param nmx Mortality rate in age interval [x, x+nx).
+#' @param nax Subject-time alive in [x, x+n) for those who die in same interval.
+#' @param nx Width of age interval [x, x+n).
+#' @param mode Conversion formula. "chiang", "cfm", or "udd".
+#'
+#' @details Chiangs formula for the nmx->nqx conversion is
+#'
+#' nqx = nx*nmx / (1+(nx-nax)*nmx).
+#'
+#' It may produce probabilities > 1 in cases where age groups are wide, hazards
+#' are high and the nax is approximated using the uniform distribution of deaths
+#' or the constant force of mortality assumption. Therefore in these cases we
+#' use other conversion formulas.
+#'
+#' nqx = 1 - exp(-nmx*nx),
+#'
+#' assuming a constant force of mortality within the age interval [x, x+n), and
+#'
+#' nqx = 1 - (1-nmx / (1+0.5*nmx))^nx,
+#'
+#' assuming a uniform distribution of deaths within the age interval [x, x+n).
+#'
+#' @keywords internal
+nmxTonqx <- function (nmx, nax, nx, mode) {
+  if (identical(mode, "chiang")) { nqx = nx*nmx / (1+(nx-nax)*nmx) }
+  if (identical(mode, "cfm")) { nqx = 1 - exp(-nmx*nx) }
+  if (identical(mode, "udd")) { nqx = 1 - (1-nmx / (1+0.5*nmx))^nx }
+  return(nqx)
+}
+
 # Input lx ----------------------------------------------------------------
 
 #' Convert a Life-table Survivorship Function to a Pace-Shape Object
@@ -190,10 +222,10 @@ Inputlx <- function (x, lx,
 
   # nax: amount of subject-time at risk in age group [x, x+n)
   # contributed by those who die in that age group
-  if (identical(nax_, "udd")) {
+  if (identical(val_nax[["nax_mode"]], "udd")) {
     nax_ = naxUDD(nx_, k, last_open)
   }
-  if (identical(nax_, "cfm")) {
+  if (identical(val_nax[["nax_mode"]], "cfm")) {
     nax_ = naxCFMfromnqx(x, nx_, nqx, npx, k, last_open)
   }
 
@@ -324,15 +356,23 @@ Inputnmx <- function (x, nmx,
 
   # nax: amount of subject-time at risk in age group [x, x+n)
   # contributed by those who die in that age group
-  if (identical(nax_, "udd")) {
+  if (identical(val_nax[["nax_mode"]], "udd")) {
     nax_ = naxUDD(nx_, k, last_open)
   }
-  if (identical(nax_, "cfm")) {
+  if (identical(val_nax[["nax_mode"]], "cfm")) {
     nax_ = naxCFMfromnmx(nx_, nmx, k, last_open)
   }
 
   # nqx from nmx and nax
-  nqx = nx_*nmx / (1+(nx_-nax_)*nmx)
+  if (identical(val_nax[["nax_mode"]], "udd")) {
+    nqx = nmxTonqx(nmx, nax_, nx_, mode = "udd")
+  }
+  if (identical(val_nax[["nax_mode"]], "cfm")) {
+    nqx = nmxTonqx(nmx, nax_, nx_, mode = "cfm")
+  }
+  if (val_nax[["nax_mode"]] %in% c("scalar", "vector")) {
+    nqx = nmxTonqx(nmx, nax_, nx_, mode = "chiang")
+  }
   nqx[k] = 1
   npx = 1-nqx
   # lx
