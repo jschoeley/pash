@@ -2,7 +2,7 @@
 % Please edit documentation in R/shape_measures.R
 \name{GetShape}
 \alias{GetShape}
-\title{Life-table Shape Measures}
+\title{Life Table Shape Measures}
 \source{
 Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015.
 "Quantifying the Shape of Aging." PLOS ONE 10 (3): 1-18. doi:10.1371/journal.pone.0119163.
@@ -19,18 +19,28 @@ GetShape(pash, type = "all")
 
 \item{type}{Which shape measure should be returned (default \code{"all"})?}
 }
-\description{
-Get life-table shape measures from pace-shape object.
-}
-\details{
-The type argument accepts the following strings:
+\value{
+The following shape measure are reurned:
 \describe{
-  \item{\code{"LTentr"}}{Life table entropy.}
-  \item{\code{"LTgini"}}{Life table Gini coefficient - Pascariu implementation.}
-  \item{\code{"LTgini2"}}{Life table Gini coefficient - Shkolnikov implementation.}
-  \item{\code{"LTcv"}}{Life table coefficient of variation.}
+  \item{\code{"Variance"}}{Life table variance}
+  \item{\code{"Entropy"}}{Life table entropy}
+  \item{\code{"Gini"}}{Life table Gini coefficient - Pascariu (2016)}
+  \item{\code{"Gini2"}}{Life table Gini coefficient - Shkolnikov (2014)}
+  \item{\code{"Gini3"}}{Life table Gini coefficient - Danko (2016)}
+  \item{\code{"Gini_v"}}{A variant of Gini coefficient - Wrycza et al. (2015)}
+  \item{\code{"mu_bar"}}{Weighted Harmonic Mean of the Hazard Rate}
+  \item{\code{"mxRatio"}}{Mortality Ratio - Wrycza et al. (2015)}
+  \item{\code{"exRatio"}}{Life Expectancy Ratio - Wrycza et al. (2015)}
+  \item{\code{"ACFM"}}{Average of Change in Force of Mortality
+  with respect to lx - Wrycza et al. (2015)}
+  \item{\code{"PSMAD"}}{Probability to Survive up to the Mean Age at Death
+   - Wrycza et al. (2015)}
+  \item{\code{"CV"}}{Life table coefficient of variation.}
   \item{\code{"all"}}{All of the above measures.}
 }
+}
+\description{
+Get life table shape measures from pace-shape object.
 }
 \examples{
 pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
