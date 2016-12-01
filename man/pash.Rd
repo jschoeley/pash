@@ -11,8 +11,8 @@ wide array of pace and shape metrics and use them to standardize and compare
 your data.
 }
 \details{
-First: Ceate a pace-shape object from either a life-table column or a
-population matrix using one of the input function: \code{\link{Inputlx}}.
+First: Create a pace-shape object using one of the input functions:
+\code{\link{Inputlx}}, \code{\link{Inputnmx}}.
 
 Second: Calculate pace measures with \code{\link{GetPace}}, calculate shape
 measures with \code{\link{GetShape}}, standardize a life table by pace and

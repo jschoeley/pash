@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{Pace-shape object.}
 
-\item{radix}{Initial life table population.}
+\item{radix}{Initial life-table population.}
 
 \item{big.mark}{See \code{\link{formatC}}.}
 

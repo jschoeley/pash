@@ -2,12 +2,12 @@
 % Please edit documentation in R/shape_measures.R
 \name{LifetableGini}
 \alias{LifetableGini}
-\title{Life Table Gini-Coefficient}
+\title{Life Table Gini-Coefficient (Pascariu)}
 \usage{
 LifetableGini(nax, nx, lx, ex)
 }
 \description{
-Life Table Gini-Coefficient
+Life Table Gini-Coefficient (Pascariu)
 }
 \seealso{
 LifetableGini2

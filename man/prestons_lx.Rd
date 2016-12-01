@@ -7,7 +7,7 @@
 \format{A data frame with 19 rows and 2 variables:
   \describe{
     \item{x}{Start of age interval in years.}
-    \item{lx}{Life table survivors at age x.}
+    \item{lx}{Life-table survivors at age x.}
   }}
 \source{
 Preston, Samuel H., Patric Heuveline, and Michel Guillot. 2001.
@@ -18,7 +18,7 @@ prestons_lx
 }
 \description{
 An abridged period life-table lx column for Austrian males in 1992 used in
-an example on life table construction in Preston's demography textbook.
+an example on life-table construction in Preston's demography textbook.
 }
 \keyword{datasets}
 
