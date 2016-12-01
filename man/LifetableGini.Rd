@@ -2,15 +2,18 @@
 % Please edit documentation in R/shape_measures.R
 \name{LifetableGini}
 \alias{LifetableGini}
-\title{Life Table Gini-Coefficient (Pascariu)}
+\title{Life Table Gini-Coefficient}
+\source{
+Pascariu (2016)
+}
 \usage{
 LifetableGini(nax, nx, lx, ex)
 }
 \description{
-Life Table Gini-Coefficient (Pascariu)
+Discrete formulation of the Gini-Coeffcient
 }
 \seealso{
-LifetableGini2
+\code{\link{LifetableGini}}
 }
 \keyword{internal}
 

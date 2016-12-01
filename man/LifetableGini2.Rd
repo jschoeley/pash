@@ -2,12 +2,15 @@
 % Please edit documentation in R/shape_measures.R
 \name{LifetableGini2}
 \alias{LifetableGini2}
-\title{Life Table Gini-Coefficient (Shkolnikov)}
+\title{Life Table Gini-Coefficient}
+\source{
+Shkolnikov and Andreev (2014)
+}
 \usage{
 LifetableGini2(nax, nx, lx, ex)
 }
 \description{
-Life Table Gini-Coefficient (Shkolnikov)
+Discrete formulation of the Gini-Coeffcient
 }
 \seealso{
 LifetableGini
