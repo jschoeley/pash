@@ -1,4 +1,4 @@
-#' Life Table Shape Measures
+#' Life-table Shape Measures
 #'
 #' Get life table shape measures from pace-shape object.
 #'
@@ -18,7 +18,7 @@
 #'   \item{\code{"mxRatio"}}{Mortality Ratio - Wrycza et al. (2015)}
 #'   \item{\code{"exRatio"}}{Life Expectancy Ratio - Wrycza et al. (2015)}
 #'   \item{\code{"ACFM"}}{Average of Change in Force of Mortality
-#'   with respect to lx - Wrycza et al. (2015)}
+#'     with respect to lx - Wrycza et al. (2015)}
 #'   \item{\code{"PSMAD"}}{Probability to Survive up to the Mean Age at Death
 #'    - Wrycza et al. (2015)}
 #'   \item{\code{"CV"}}{Life table coefficient of variation.}
@@ -36,30 +36,28 @@
 #' GetShape(pash)
 #'
 #' @export
-GetShape <- function(pash, type = 'all') {
+GetShape <- function(pash, type = "all") {
   TestClass(pash)
   with(pash[["lt"]],
        {
-         shapes <- c(Variance = LifetableVar(nax, nx, ex, ndx),
-                     Entropy  = LifetableEntropy(nax, nx, ndx, ex),
-                     Gini    = LifetableGini(nax, nx, lx, ex),
-                     Gini2   = LifetableGini2(nax, nx, lx, ex),
-                     Gini3   = LifetableGini3(nax, nx, lx, ex, ndx),
-                     Gini_v  = LifetableGini4(nax, nx, lx, ex),
-                     mu_bar  = mu_bar(ex),
-                     mxRatio = mortalityRatio(x, nx, nmx, ex),
-                     exRatio = LER(x, nx, ex),
-                     ACFM    = ACFM(nmx, ndx, ex),
-                     PSMAD   = PSMAD(x, nx, lx, ex),
-                     CV      = LifetableCV(nax, nx, ex, ndx))
-         if (type == 'all') { S = shapes } else {S = shapes[paste(type)]}
-         out <- round(S, 6)
-         return(out)
+         shapes = c(Entropy  = LifetableEntropy(nax, nx, ndx, ex),
+                    Gini     = LifetableGini(nax, nx, lx, ex),
+                    CV       = LifetableCV(nax, nx, ex, ndx),
+                    Variance = LifetableVar(nax, nx, ex, ndx),
+                    mu_bar   = mu_bar(ex),
+                    mxRatio  = MortalityRatio(x, nx, nmx, ex),
+                    exRatio  = LER(x, nx, ex),
+                    ACFM     = ACFM(nmx, ndx, ex),
+                    PSMAD    = PSMAD(x, nx, lx, ex),
+                    Gini2    = LifetableGini2(nax, nx, lx, ex),
+                    Gini3    = LifetableGini3(nax, nx, lx, ex, ndx),
+                    Gini_v   = LifetableGini4(nax, nx, lx, ex))
+         if (identical(type, "all")) { S = shapes } else { S = shapes[type] }
+         return(S)
        })
 }
 
-# Shape functions -------------------------------------------------------
-
+# Shape Functions ---------------------------------------------------------
 
 #' Life Table Variance
 #'
@@ -67,9 +65,9 @@ GetShape <- function(pash, type = 'all') {
 #' @source Pascariu (2016)
 #' @keywords internal
 LifetableVar <- function(nax, nx, ex, ndx) {
-  nAx <- nax/nx
-  Vx = nAx * c(ex[-1L], 0) + (1 - nAx) * ex
-  Vx = Vx ^ 2 * ndx * nx
+  nAx = nax/nx
+  Vx = nAx*c(ex[-1L], 0) + (1-nAx)*ex
+  Vx = Vx^2 * ndx*nx
   V  = sum(Vx)
   return(V)
 }
@@ -101,8 +99,8 @@ EDagger <- function(nax, nx, ndx, ex) {
 #' @keywords internal
 LifetableGini <- function(nax, nx, lx, ex) {
   nAx <- nax/nx
-  Gx = nAx * c(lx[-1L], 0) + (1 - nAx) * lx
-  Gx = Gx ^ 2 * nx
+  Gx = nAx * c(lx[-1L], 0) + (1-nAx)*lx
+  Gx = Gx^2 * nx
   G  = 1 - 1/ex[1L]*sum(Gx)
   return(G)
 }
@@ -116,8 +114,8 @@ LifetableGini <- function(nax, nx, lx, ex) {
 LifetableGini2 <- function(nax, nx, lx, ex) {
   nAx  = nax/nx
   lx_1 = c(lx[-1L], 0)
-  Gx   = lx_1 ^ 2 + nAx*(lx ^ 2 - lx_1 ^ 2)
-  Gx   = Gx * nx
+  Gx   = lx_1^2 + nAx*(lx^2 - lx_1^2)
+  Gx   = Gx*nx
   G    = 1 - 1/ex[1L] * sum(Gx)
   return(G)
 }
@@ -131,9 +129,9 @@ LifetableGini2 <- function(nax, nx, lx, ex) {
 #' @keywords internal
 LifetableGini3 <- function(nax, nx, lx, ex, ndx) {
   lx_1 = c(lx[-1L], 0)
-  Gx   = (lx ^ 2 + lx_1 ^ 2)/2 - (ndx ^ 2)/6
-  Gx   = Gx * nx
-  G    = 1 - 1/ex[1L] * sum(Gx)
+  Gx   = (lx^2 + lx_1^2)/2 - (ndx^2)/6
+  Gx   = Gx*nx
+  G    = 1 - 1/ex[1L]*sum(Gx)
   return(G)
 }
 
@@ -144,8 +142,8 @@ LifetableGini3 <- function(nax, nx, lx, ex, ndx) {
 #' @keywords internal
 LifetableGini4 <- function(nax, nx, lx, ex) {
   nAx = nax/nx
-  Gx  = nAx * c(lx[-1L], 0) + (1 - nAx) * lx
-  Gx  = Gx ^ 2 * nx
+  Gx  = nAx*c(lx[-1L], 0) + (1-nAx)*lx
+  Gx  = Gx^2 * nx
   G   = 2/ex[1L] * sum(Gx) - 1
   return(G)
 }
@@ -161,8 +159,8 @@ mu_bar <- function(ex){ 1/ex[1L] }
 #' @keywords internal
 ACFM <- function(nmx, ndx, ex){
   acfm_x = (nmx - nmx[1L]) * ndx
-  ACFM   = 1 - exp(-ex[1L] * sum(acfm_x))
-  return(ACFM)
+  acfm   = 1 - exp(-ex[1L] * sum(acfm_x))
+  return(acfm)
 }
 
 #' Life Table Entropy
@@ -170,7 +168,7 @@ ACFM <- function(nmx, ndx, ex){
 #' @keywords internal
 LifetableEntropy <- function(nax, nx, ndx, ex) {
   ed = EDagger(nax, nx, ndx, ex)
-  H  = 1 - ed / ex[1L]
+  H  = 1 - ed/ex[1L]
   return(H)
 }
 
@@ -186,7 +184,7 @@ LifetableCV <- function(nax, nx, ex, ndx) {
 #' Find and compute values that depend on ex
 #' eg: m(x) when x = e(x)
 #' @keywords internal
-findvalue <- function(measure, x, nx, ex){
+FindValue <- function(measure, x, nx, ex){
   # I know this looks crazy!
   e0     = ex[1L]
   e0_    = max(x[(x - e0) <= 0]) # find the floor of e0 value
@@ -201,9 +199,9 @@ findvalue <- function(measure, x, nx, ex){
 #' Mortality Ratio
 #'
 #' @keywords internal
-mortalityRatio <- function(x, nx, nmx, ex){
+MortalityRatio <- function(x, nx, nmx, ex){
   m0   = nmx[1L]
-  m_e0 = findvalue(measure = nmx, x, nx, ex)
+  m_e0 = FindValue(measure = nmx, x, nx, ex)
   MR   = 1 - m0/m_e0
   return(MR)
 }
@@ -212,7 +210,7 @@ mortalityRatio <- function(x, nx, nmx, ex){
 #'
 #' @keywords internal
 PSMAD <- function(x, nx, lx, ex){
-  l_e0  = findvalue(measure = lx, x, nx, ex)
+  l_e0  = FindValue(measure = lx, x, nx, ex)
   psmad = 1 - log(l_e0)
   return(psmad)
 }
@@ -222,10 +220,7 @@ PSMAD <- function(x, nx, lx, ex){
 #' @keywords internal
 LER <- function(x, nx, ex){
   e0   = ex[1L]
-  e_e0 = findvalue(measure = ex, x, nx, ex)
+  e_e0 = FindValue(measure = ex, x, nx, ex)
   ler  =  1 - e_e0/e0
   return(ler)
 }
-
-
-

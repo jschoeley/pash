@@ -120,10 +120,10 @@ pash
 
 Calculate shape measures on the re-based life-table.
 
-# ```{r}
-# GetPace(pash)
-# GetShape(pash)
-# ```
+```{r}
+GetPace(pash)
+GetShape(pash)
+```
 
 Re-basing is a non-destructive operation and thus can be reversed:
 
