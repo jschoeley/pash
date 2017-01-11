@@ -1,0 +1,416 @@
+---
+title: "Shape measures and their implementation"
+author: "Marius Pascariu and Jonas Schöley"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{shape}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width = 100)
+knitr::opts_chunk$set(tidy = FALSE, size = "small")
+```
+
+Notation
+--------
+
+--------------------------------- ------------------------------------------------
+$x$                               Start of age group
+$\theta = min(x)$                 Smallest values of $x$. First age group in the lifetable (usually $\theta = 0$).
+$n_x$                             Width of age group $x$ as $[x, x+n_x)$
+$e_x$                             Remaining life-expectancy at age $x$
+${}_na_x$                         Avg. time spent in $[x, x+n_x)$ when dying there
+$l_x$                             Probability of surviving until $x$. Important assumption: $l_\theta = 1$
+$f_x$                             Probability density function of ages at death
+${}_nd_x$                         Expected number of deaths in $[x, x+n_x)$
+$\omega$                          Highest age group in life-table
+${}_nA_x = \frac{a_x} {n_x}$      Avg. fraction of interval alive when dying there
+$\mu_x$                           Force of mortality at age $x$ or hazard rate.
+$\overline{\mu}$                  Weighted harmonic mean of the hazard rate. $\overline{\mu} = \frac{1}{e_\theta}$ 
+$m_x$                             Age-specific death rate at age $x$
+Let $k \in \mathbb{R}$, then             
+$\lfloor k \rfloor$               Integer part of $k$.
+$\lceil k \rceil$                 $\lfloor k \rfloor + 1$
+$\text{frac}(k)$                  $k - \lfloor k \rfloor$
+--------------------------------- ------------------------------------------------
+
+Shape measures in *pash*
+------------------------
+
+### Life-table variance, `Variance`, $\sigma^2$
+
+Variance of the age at death.
+
+#### Continous
+
+$$
+\sigma^2 = \int\limits_{\theta}^{\infty} e(x)^2f(x) \text{ d}x
+$$
+
+#### Discrete
+
+$$
+\sigma^2 = \sum_{x=\theta}^{\omega-n_x} {}_nf_x[{}_nA_xe_{x+n_x}+(1-{}_nA_x)e_x]^2
+$$
+
+#### *pash* implementation
+
+```{r eval=FALSE}
+LifetableVar <- function(nax, nx, ex, ndx) {
+  nAx = nax/nx
+  Vx = nAx*c(ex[-1L], 0) + (1-nAx)*ex
+  Vx = Vx^2 * ndx*nx
+  V  = sum(Vx)
+  return(V)
+}
+```
+
+### Average Number of Life-Years Lost Due to Death, `EDagger`, $e^\dagger$
+Discrete expression by Vaupel et al. (2016).
+
+#### Continous
+
+$$
+e^\dagger = \int\limits_{\theta}^{\infty} e(x)f(x) \text{ d}x 
+$$
+
+#### Discrete
+
+$$
+e^\dagger = \sum_{x=\theta}^{\omega - n} 
+{}_nf_x \left[ {}_nA_x e_{x+n} + (1-{}_nA_x) e_x \right]
+$$
+
+#### *pash* implementation
+
+```{r}
+# Average Years of Life Lost due to Death in Age x
+eDaggerx <- function(nax, nx, ex) {
+  nAx = nax/nx
+  edx = (nAx * c(ex[-1L], 0) + (1 - nAx) * ex)
+  return(edx)
+}
+
+# Total Life Years Lost due to Death
+EDagger <- function(nax, nx, ndx, ex) {
+  edx = eDaggerx(nax, nx, ex)
+  ed  = sum(ndx*edx)
+  return(ed)
+}
+```
+
+### Entropy, `Entropy`, $H$
+
+$$
+\text{H} = 1 - \frac{e^\dagger}{e_\theta}
+$$
+
+#### *pash* implementation
+
+```{r}
+# Life Table Entropy
+LifetableEntropy <- function(nax, nx, ndx, ex) {
+  ed = EDagger(nax, nx, ndx, ex)
+  H  = 1 - ed / ex[1L]
+  return(H)
+}
+```
+
+### Life-table Gini coefficient variant 1, `Gini`, $G$
+
+Gini coefficient of the age-at-death distribution, $G$, is originally defined as a property of the Lorenz curve, and it is commonly used for measuring and analyzing inter-individual inequality in the length of life. Discrete expression by Pascariu (2016).
+
+#### Continous
+
+$$
+\text{G} = 1 - \frac{1}{e_\theta} \int\limits_{\theta}^{\infty} l(x)^2 \text{ d}x
+$$
+
+#### Discrete
+
+$$
+\text{G} = 1 - \frac{1}{e_\theta} \sum_{x = \theta}^{\omega-n} 
+\left[ {}_nA_x l_{x+n} + (1-{}_nA_x)l_x \right]^2
+$$
+
+#### *pash* implementation
+
+```{r}
+LifetableGini <- function(nax, nx, lx, ex) {
+  nAx <- nax/nx
+  Gx = nAx * c(lx[-1L], 0) + (1-nAx)*lx
+  Gx = Gx^2 * nx
+  G  = 1 - 1/ex[1L]*sum(Gx)
+  return(G)
+}
+```
+
+### Life-table Gini coefficient variant 2, `Gini2`, $G_2$
+
+Gini coefficient of the age-at-death distribution. Discrete expression by [4].
+
+#### Continous
+
+$$
+\text{G}_2 = G = 1 - \frac{1}{e_\theta} \int\limits_{\theta}^{\infty} l(x)^2 \text{ d}x
+$$
+
+#### Discrete
+
+$$
+\text{G}_2 = 1 - \frac{1}{e_\theta} 
+\left[\sum_{x=\theta}^{\omega-n} l_x^2 + a_x \left( l_x^2 - l_{x+n}^2 \right) \right]
+$$
+
+
+#### *pash* implementation
+
+```{r}
+LifetableGini2 <- function(nax, nx, lx, ex) {
+  nAx  = nax/nx
+  lx_1 = c(lx[-1L], 0)
+  Gx   = lx_1^2 + nAx*(lx^2 - lx_1^2)
+  Gx   = Gx*nx
+  G    = 1 - 1/ex[1L] * sum(Gx)
+  return(G)
+}
+```
+
+### Life-table Gini coefficient variant 3, `Gini3`, $G_3$
+
+Gini coefficient of the age-at-death distribution. Discrete expression by Danko (2016).
+
+#### Continous
+
+$$
+\text{G}_3 = \text{G} = 1 - \frac{1}{e_\theta} 
+\int\limits_{\theta}^{\infty} l(x)^2 \text{ d}x
+$$
+
+#### Discrete
+
+$$
+\text{G}_3 = 1 - \frac{1}{e_\theta} \sum_{x=\theta}^{\omega-n} 
+\left( \frac{l_x^2 + l_{x+n}^2}{2} - \frac{d_x^2}{6} \right)
+$$
+
+#### Discrete derivation:
+
+#### *pash* implementation
+
+```{r}
+LifetableGini3 <- function(nax, nx, lx, ex, ndx) {
+  lx_1 = c(lx[-1L], 0)
+  Gx   = (lx^2 + lx_1^2)/2 - (ndx^2)/6
+  Gx   = Gx*nx
+  G    = 1 - 1/ex[1L]*sum(Gx)
+  return(G)
+}
+```
+
+### A variant of the life-table Gini coefficient, `Gini_v`, $G_v$
+
+The variant of the Gini coefficient of the age-at-death distribution as stated in [3]. Discrete expression by Pascariu (2016).
+
+#### Continous
+
+$$
+\begin{aligned}
+\text{G}_v & = 1 - 2G \\
+& = \frac{2}{e_\theta} \int\limits_{\theta}^{\infty} l(x)^2 \text{ d}x - 1
+\end{aligned}
+$$
+
+#### Discrete
+
+$$
+\text{G}_v = \frac{2}{e_\theta} \sum_{x=\theta}^{\omega - n} 
+\left[ {}_nA_x l_{x+n} + (1- {}_nA_x)l_x \right]^2 - 1
+$$
+
+#### *pash* implementation
+
+```{r}
+LifetableGini4 <- function(nax, nx, lx, ex) {
+  nAx = nax/nx
+  Gx  = nAx*c(lx[-1L], 0) + (1-nAx)*lx
+  Gx  = Gx^2 * nx
+  G   = 2/ex[1L] * sum(Gx) - 1
+  return(G)
+}
+```
+
+### Mortality ratio, `mxRatio`, $\text{MR}$
+
+The ratio between mortality at age 0 and mortality at the age of total life-expectancy. First suggested by [1], further developed by [3].
+
+#### Continous
+
+$$
+\text{MR} = 1 - \frac{\mu(\theta)}{\mu(e(\theta))}
+$$
+
+#### Discrete
+
+$$
+\text{MR} = 1 - \frac{m_\theta}{m_{e_\theta}}
+$$
+where,
+$$
+m_{e_\theta} \approx \frac{1}{n_{\lfloor e_\theta \rfloor}} 
+\left[ l_{\lfloor e_\theta \rfloor} (n_{\lfloor e_\theta \rfloor} - \text{frac}(e_\theta)) + l_{\lceil e_\theta \rceil} \text{frac}(e_\theta) \right]
+$$
+
+#### *pash* implementation
+
+```{r}
+MortalityRatio <- function(x, nx, nmx, ex){
+  m0   = nmx[1L]
+  m_e0 = FindValue(measure = nmx, x, nx, ex)
+  MR   = 1 - m0/m_e0
+  return(MR)
+}
+
+FindValue <- function(measure, x, nx, ex){
+  # I know this looks crazy!
+  e0     = ex[1L]
+  e0_    = max(x[(x - e0) <= 0])       # find the floor of e0 value
+  m_e0_  = measure[x == e0_]           # find the floor of nmx (when x = e0_)
+  n_e0_  = nx[x == e0_]
+  m_e0up = measure[x == (e0_ + n_e0_)] # find the ceiling of nmx (when x = e0_ + nx)
+  E0     = e0 - e0_                    # frac(e0)
+  M_e0   = (m_e0_*(n_e0_ - E0) + m_e0up * E0) / n_e0_
+  return(M_e0)
+}
+```
+
+### Life expectancy ratio, `exRatio`, $\text{LER}$
+
+The ratio between remaining life expectancy at the age of total life expectancy and total life expectancy. Suggested by [3].
+
+#### Continous
+
+$$
+\text{LER} = 1 - \frac{e(e(\theta))}{e(\theta)}
+$$
+
+#### Discrete
+
+$$
+\text{LER} = 1 - \frac{e_{e_\theta}^\ast}{e_\theta}
+$$
+where,
+$$
+e_{e(\theta)}^\ast \approx \frac{1}{n_{\lfloor e_\theta \rfloor}} 
+\left[ e_{\lfloor e_\theta \rfloor} (n_{\lfloor e_\theta \rfloor} - \text{frac}(e_\theta)) + e_{\lceil e_\theta \rceil} \text{frac}(e_\theta) \right]
+$$
+
+#### *pash* implementation
+
+```{r}
+LER <- function(x, nx, ex){
+  e0   = ex[1L]
+  e_e0 = FindValue(measure = ex, x, nx, ex)
+  ler  =  1 - e_e0/e0
+  return(ler)
+}
+```
+
+### Average change in force of mortality wrt $l_x$, `ACFM`, $\text{ACFM}$
+
+A rescaled variant of the average lifetime change of the hazard of death divided by average mortality. Suggested by [3].
+
+#### Continous
+
+$$
+\text{ACFM} = 1 - \exp{\left[- \int\limits_{\theta}^{\infty} 
+\frac{\mu(x) - \mu(\theta)}{\overline{\mu}} f(x) \text{ d}x \right]}
+$$
+
+#### Discrete
+
+$$
+\text{ACFM} = 1 - \exp{\left[ -e_\theta \sum_{x=\theta}^{\omega} (m_x - m_\theta) {}_nf_x \right]}
+$$
+
+#### *pash* implementation
+
+```{r}
+ACFM <- function(nmx, ndx, ex){
+  acfm_x = (nmx - nmx[1L]) * ndx
+  acfm   = 1 - exp(-ex[1L] * sum(acfm_x))
+  return(acfm)
+}
+```
+
+### Probability to survive up to mean age at death, `PSMAD`, $\text{PSMAD}$
+
+A rescaled variant of the probability to survive up to the mean age at death. Suggested by [3].
+
+#### Continous
+
+$$
+\text{PSMAD} = 1 + \log{l(e(\theta))}
+$$
+
+#### Discrete
+
+$$
+\text{PSMAD} = 1 + \log{(l_{e_\theta}^\ast)}
+$$
+where
+$$
+l_{e_\theta}^\ast \approx \frac{1}{n_{\lfloor e_\theta \rfloor}} 
+\left[ l_{\lfloor e_\theta \rfloor} (n_{\lfloor e_\theta \rfloor} - \text{frac}(e_\theta)) + l_{\lceil e_\theta \rceil} \text{frac}(e_\theta) \right]
+$$
+
+#### *pash* implementation
+
+```{r}
+PSMAD <- function(x, nx, lx, ex){
+  l_e0  = FindValue(measure = lx, x, nx, ex)
+  psmad = 1 - log(l_e0)
+  return(psmad)
+}
+```
+
+### Life-table coefficient of variation, `CV`, $\text{CV}$
+
+A rescaled variant of the coefficient of variation in the age at death. Suggested by [3].
+
+#### Continous
+
+$$
+\text{CV} = \frac{1}{e(\theta)}
+\sqrt{\int \limits_{\theta}^{\infty} (x - e(\theta))^2 f(x) \text{ d}x}
+$$
+
+#### Discrete
+
+$$
+\text{CV} = \frac{\sigma}{e_\theta}
+$$
+
+#### *pash* implementation
+
+```{r}
+LifetableCV <- function(nax, nx, ex, ndx) {
+  Var = LifetableVar(nax, nx, ex, ndx)
+  CV  = sqrt(Var)/ex[1L]
+  return(CV)
+}
+```
+
+References
+----------
+
+[1]: Baudisch, Annette. 2011. "The Pace and Shape of Ageing." Methods in Ecology and Evolution 2 (4): 375–82. doi:10.1111/j.2041-210X.2010.00087.x.
+
+[2]: Wrycza, Tomasz, and Annette Baudisch. 2014. "The Pace of Aging: Intrinsic Time Scales in Demography." Demographic Research 30 (1): 1571–90. doi:10.4054/DemRes.2014.30.57.
+
+[3]: Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015. "Quantifying the Shape of Aging."" PLOS ONE 10 (3): 1–18. doi:10.1371/journal.pone.0119163.
+
+[4]: Shkolnikov, Vladimir, Evgueni Andreev, and Alexander Z. Begun. 2003. "Gini Coefficient as a Life Table Function."" Demographic Research 8 (17): 305-58. doi:10.4054/DemRes.2003.8.11.
