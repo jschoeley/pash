@@ -57,7 +57,7 @@ IsNANanInf <- function (x, name_x, test = 1:3) {
 #' @keywords internal
 Validatelx <- function (lx) {
   if (!is.numeric(lx)) { stop("lx must be numeric.", call. = FALSE) }
-  if (any(lx < 0L)) { stop("lx can't be negative.", call. = FALSE) }
+  if (any(lx < 0)) { stop("lx can't be negative.", call. = FALSE) }
   if (is.unsorted(rev(lx))) { stop("lx must be monotonically decreasing.", call. = FALSE) }
 }
 
@@ -65,7 +65,39 @@ Validatelx <- function (lx) {
 #' @keywords internal
 Validatemx <- function (mx) {
   if (!is.numeric(mx)) { stop("mx must be numeric.", call. = FALSE) }
-  if (any(mx < 0L)) { stop("mx must not be negative.", call. = FALSE) }
+  if (any(mx < 0)) { stop("mx must not be negative.", call. = FALSE) }
+}
+
+#' Validate nqx
+#' @keywords internal
+Validatenqx <- function (nqx) {
+  if (!is.numeric(nqx)) stop("nqx must be numeric.", call. = FALSE)
+  if (any(nqx < 0L) | any(nqx > 1)) stop("nqx can only take values in [0,1].", call. = FALSE)
+}
+
+# Validate / Modify the last nqx to close the life table
+ValidateLastnqx <- function(x, nqx, nax, nx, last_open) {
+
+  # k: number of age-groups
+  k = length(x)
+
+  # Unclosed life table with open last age group
+  if(last_open && nqx[k] != 1) {
+    nqx[k] = 1
+    warning("The last nqx has been overwritten and set to 1 to close the life-table.")
+  }
+
+  # Unclosed life table with closed last age group
+  if(!last_open && nqx[k] != 1) {
+    x = c(x, 2*x[k] - x[k - 1])
+    nqx = c(nqx, 1)
+    if (length(nx) > 1L) nx = c(nx, NA)
+    if (length(nax) > 1L) nax = c(nax, NA)
+    last_open = TRUE
+    warning("An additional last-open age group with nqx = 1 has been added to close the life-table.")
+  }
+
+  return(list(x = x, nqx = nqx, nax = nax, nx = nx, last_open = last_open))
 }
 
 # Validate Parameters -----------------------------------------------------

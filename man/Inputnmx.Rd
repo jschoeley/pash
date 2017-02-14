@@ -2,10 +2,10 @@
 % Please edit documentation in R/input.R
 \name{Inputnmx}
 \alias{Inputnmx}
-\title{Convert a Life-table Mortality Rate Function to a Pace-Shape Object}
+\title{Convert a Life-table Mortality Rate Function into a Pace-Shape Object}
 \source{
-Preston, Samuel H., Patric Heuveline, and Michel Guillot. 2001.
-  Demography. Oxford, UK: Blackwell.
+Preston, Samuel H., Patrick Heuveline, and Michel Guillot (2001).
+  Demography: Measuring and modeling population processes. Oxford: Blackwell.
 }
 \usage{
 Inputnmx(x, nmx, nax = "udd", nx = "auto", last_open = FALSE,
@@ -17,14 +17,12 @@ Inputnmx(x, nmx, nax = "udd", nx = "auto", last_open = FALSE,
 \item{nmx}{Mortality rate in age interval [x, x+nx).}
 
 \item{nax}{Subject-time alive in [x, x+n) for those who die in same interval
-(either numeric scalar, numeric vector or one of \code{c("udd",
-"cfm")}).}
+(either numeric scalar, numeric vector or one of \code{c("udd", "cfm")}).}
 
 \item{nx}{Width of age interval [x, x+n) (either numeric scalar, numeric
 vector or \code{"auto"}).}
 
-\item{last_open}{Is the last age group open (TRUE) or closed (FALSE,
-default).}
+\item{last_open}{Is the last age group open (TRUE) or closed (FALSE, default)?}
 
 \item{time_unit}{The unit of the ages (by default "years").}
 }
@@ -40,33 +38,33 @@ is calculated and a pace-shape object constructed.
   numeric vector, or let the function determine the width for you
   (\code{"auto"}, default). A scalar will be recycled for each age group. A
   vector must be as long as the age vector and allows you to specify the
-  width of each age group separately. If the last age group is supposed to be
-  open make sure that the last value of your nx vector is NA. By default the
-  width of the age groups is calculated from differencing the age vector.
-  Should the last age group be closed, the width of the last age group is
-  assumed to be equal to the width of the preceeding age group.
+  width of each age group separately. By default, the width of the age
+  groups are calculated from differencing the age vector. If the last age
+  group is supposed to be open make sure that the last value of your nx
+  vector is NA. Should the last age group be closed, the width of the last
+  age group is assumed to be equal to the width of the preceeding age group.
 }
 
 \section{nax handling}{
  nax may be provided as either a numeric scalar, a
-  numeric vector, or calculated via the \code{udd} method (default) or the
-  constant force of mortality assumption (option "\code{cfm}").
+  numeric vector, or calculated via the uniform distribution of deaths
+  (\code{udd}) method (default) or the constant force of mortality assumption
+  (option \code{cfm}).
 
-  The uniform distribution of deaths method assumes a linear decline of the
-  l(x) function over the width of an age group, implying that those who die
-  in that age group die on average halfway into it (also known as the
-  "midpoint" assumption):
+  The (\code{udd}) method assumes a linear decline of the l(x) function over
+  the width of an age group, implying that those who die in that age group
+  die on average halfway into it (also known as the "midpoint" assumption):
 
-  nax = n/2 (see Preston, 2001, p. 46)
+  nax = n/2 (see Preston et al. 2001, p. 46)
 
   Assuming the mortality rate during age interval [x, x+n) to be constant
-  implies an exponentially declining l(x) function within [x, x+n) and will
-  produce nax values smaller than those calculated via the uniform
-  distribution of deaths method. Preston (2001), p. 46 provides an expression
-  for nax given the assumption of constant mortality. Restating this
-  expression in terms of nqx and npx leads to:
+  (\code{cfm} method) implies an exponentially declining l(x) function
+  within [x, x+n) and will produce nax values smaller than those calculated
+  via the \code{udd} method. Preston et al. (2001, p. 46) provide an expression
+  for nax given the assumption of constant mortality. Restating this expression
+  in terms of nqx and npx leads to:
 
-  nax = -n/nqx - n/ln(npx) + n
+  nax = -n/nqx - n/log(npx) + n
 }
 \examples{
 swe <- subset(sweden5x5, sex == "female" & period == "1940-1944")[c("x", "nmx")]
