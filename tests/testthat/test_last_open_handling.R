@@ -41,3 +41,28 @@ test_that("handling of last_open works for Inputlx()", {
                         nax = c(rep(2.5, 23), 4), last_open = TRUE)[["lt"]][["ex"]][1],
                69.12228, tolerance = 0.0001, scale = 1)
 })
+
+# Test Inputnqx() ---------------------------------------------------------
+
+swe <- subset(sweden5x5, sex == "male" & period == "1945-1949")[c("x", "nqx")]
+
+test_that("handling of last_open works for Inputnqx()", {
+  expect_equal(Inputnqx(x = swe$x, nqx = swe$nqx,
+                       nax = "udd", last_open = TRUE)[["lt"]][["ex"]][1],
+               68.53095, tolerance = 0.0001, scale = 1)
+  expect_message(Inputnqx(x = swe$x, nqx = swe$nqx,
+                         nax = "udd", last_open = TRUE),
+                 "nmx of open age group log-linearly extrapolated based on preceding two nmx")
+  expect_equal(Inputnqx(x = swe$x, nqx = swe$nqx,
+                       nax = "cfm", last_open = TRUE)[["lt"]][["ex"]][1],
+               68.34164, tolerance = 0.0001, scale = 1)
+  expect_message(Inputnqx(x = swe$x, nqx = swe$nqx,
+                         nax = "cfm", last_open = TRUE),
+                 "nmx of open age group log-linearly extrapolated based on preceding two nmx")
+  expect_equal(Inputnqx(x = swe$x, nqx = swe$nqx,
+                        nax = 2.5, last_open = TRUE)[["lt"]][["ex"]][1],
+               68.5916, tolerance = 0.0001, scale = 1)
+  expect_equal(Inputnqx(x = swe$x, nqx = swe$nqx,
+                        nax = c(rep(2.5, 23), 5), last_open = TRUE)[["lt"]][["ex"]][1],
+               68.5916, tolerance = 0.0001, scale = 1)
+})
