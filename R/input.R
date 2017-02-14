@@ -524,11 +524,6 @@ Inputnqx <- function (x, nqx,
       message("Inputnqx() and last_open = TRUE: nmx of open age group log-linearly extrapolated based on preceding two nmx.")
     }
     if (val_nax[["nax_mode"]] %in% c("scalar", "vector")) {
-      if (is.na(nax_[k])) {
-        nax_[k] = LinearExtrapolation(x = x_[c(k-2, k-1)], y = nax_[c(k-2, k-1)],
-                                      xextra = x_[k], loga = FALSE)
-        warning("The nax for the open age group has been linearly extrapolated based on the two preceding nax values.")
-      }
       nLx[k] = nax_[k]*lx[k]
       nmx[k] = ndx[k]/nLx[k]
     }
