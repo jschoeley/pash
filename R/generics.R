@@ -17,10 +17,10 @@ print.pash <- function (x, radix = 10000, big.mark = ",", ...) {
     nmx = formatC(lt[["nmx"]],       format   = "e", digits = 3),
     nqx = formatC(lt[["nqx"]],       format   = "e", digits = 3),
     npx = formatC(lt[["npx"]],       format   = "e", digits = 3),
-    lx  = formatC(ceiling(lt[["lx"]]*radix),  format   = "d", digits = 0, big.mark = big.mark),
-    ndx = formatC(ceiling(lt[["ndx"]]*radix), format   = "d", digits = 0, big.mark = big.mark),
-    nLx = formatC(ceiling(lt[["nLx"]]*radix), format   = "d", digits = 0, big.mark = big.mark),
-    Tx  = formatC(ceiling(lt[["Tx"]]*radix),  format   = "d", digits = 0, big.mark = big.mark),
+    lx  = formatC(round(lt[["lx"]]*radix, 0),  format = "d", digits = 0, big.mark = big.mark),
+    ndx = formatC(round(lt[["ndx"]]*radix, 0), format = "d", digits = 0, big.mark = big.mark),
+    nLx = formatC(round(lt[["nLx"]]*radix, 0), format = "d", digits = 0, big.mark = big.mark),
+    Tx  = formatC(round(lt[["Tx"]]*radix, 0),  format = "d", digits = 0, big.mark = big.mark),
     ex  = formatC(lt[["ex"]],        format   = "f", digits = 2)
   )
   cat("A life table with", length(lt[["x"]]), "age groups.\n")
