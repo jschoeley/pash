@@ -17,8 +17,8 @@
 DiffAge <- function (x, last_open = FALSE) {
   k  = length(x)
   nx = diff(x)
-  if (identical(last_open, FALSE)) nx = c(nx, nx[k-1])
-  if (identical(last_open, TRUE)) nx = c(nx, NA)
+  if (identical(last_open, FALSE)) { nx = c(nx, nx[k-1]) }
+  if (identical(last_open, TRUE)) { nx = c(nx, NA) }
   return(nx)
 }
 
@@ -71,8 +71,8 @@ Validatemx <- function (mx) {
 #' Validate nqx
 #' @keywords internal
 Validatenqx <- function (nqx) {
-  if (!is.numeric(nqx)) stop("nqx must be numeric.", call. = FALSE)
-  if (any(nqx < 0L) | any(nqx > 1)) stop("nqx can only take values in [0,1].", call. = FALSE)
+  if (!is.numeric(nqx)) { stop("nqx must be numeric.", call. = FALSE) }
+  if (any(nqx < 0) || any(nqx > 1)) { stop("nqx can only take values in [0,1].", call. = FALSE) }
 }
 
 # Validate / Modify the last nqx to close the life table
@@ -81,18 +81,19 @@ ValidateLastnqx <- function(x, nqx, nax, nx, last_open) {
   # k: number of age-groups
   k = length(x)
 
-  # Unclosed life table with open last age group
-  if(last_open && nqx[k] != 1) {
+  # set last nqx to 1 if last age group is open and last nqx is not 1
+  if (isTRUE(last_open) && nqx[k] != 1) {
     nqx[k] = 1
     warning("The last nqx has been overwritten and set to 1 to close the life-table.")
   }
 
-  # Unclosed life table with closed last age group
-  if(!last_open && nqx[k] != 1) {
-    x = c(x, 2*x[k] - x[k - 1])
+  # add an additional last open age group with nqx = 1 to a life table with
+  # closed last age group where nqx is not 1
+  if (!isTRUE(last_open) && nqx[k] != 1) {
+    x = c(x, x[k]+nx[k])
     nqx = c(nqx, 1)
-    if (length(nx) > 1L) nx = c(nx, NA)
-    if (length(nax) > 1L) nax = c(nax, NA)
+    nx = c(nx, NA)
+    nax = c(nax, NA)
     last_open = TRUE
     warning("An additional last-open age group with nqx = 1 has been added to close the life-table.")
   }
