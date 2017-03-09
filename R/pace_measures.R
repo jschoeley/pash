@@ -12,6 +12,7 @@
 #' \describe{
 #'   \item{\code{"e0"}}{Total life expectancy.}
 #'   \item{\code{"qlx"}}{Age where q percent of the life table population is still alive.}
+#'   \item{\code{"cdr"}}{The average mortality rate over all ages (crude death rate).}
 #'   \item{\code{"all"}}{All of the above measures}
 #' }
 #'
@@ -44,23 +45,39 @@
 GetPace <- function (pash, type = "all", q = 0.5) {
   TestClass(pash)
   lt = pash[["lt"]]
-  if (identical(type, "e0")) {S = c(e0 = TotalLifeExpectancy(lt$ex))}
+  if (identical(type, "e0")) {S = c(e0 = TotalLifeExpectancy(lt[["ex"]]))}
   if (identical(type, "qlx")) {
     S = c(qlx = SurvivalQuantile(lt[["x"]], lt[["nx"]], lt[["lx"]], q,
                                  nax_mode = attr(pash, "nax_mode")))
   }
+  if (identical(type, "cdr")) {S = c(cdr = CDR(lt[["ex"]]))}
   if (identical(type, "all")) {
     S = c(e0 =  TotalLifeExpectancy(lt[["ex"]]),
           qlx = SurvivalQuantile(lt[["x"]], lt[["nx"]], lt[["lx"]], q,
-                                 nax_mode = attr(pash, "nax_mode")))
+                                 nax_mode = attr(pash, "nax_mode")),
+          cdr = CDR(lt[["ex"]]))
   }
   return(S)
 }
 
-# Total Life Expectancy
+#' Total Life Expectancy
+#'
+#' @keywords internal
 TotalLifeExpectancy <- function (ex) {
   return(ex[1L])
 }
+
+#' Crude Death Rate
+#'
+#' @details The Crude Death Rate is the inverse of the total life-expectancy. It
+#'   can also be understood as the weighted harmonic mean of the force of
+#'   mortality, i.e. mu-bar.
+#'
+#' @source Wrycza, Tomasz, and Annette Baudisch. 2014.
+#' "The Pace of Aging: Intrinsic Time Scales in Demography."
+#' Demographic Research 30 (1): 1571-90. doi:10.4054/DemRes.2014.30.57.
+#' @keywords internal
+CDR <- function (ex) { return(1/TotalLifeExpectancy(ex)) }
 
 # Survival Quantile
 SurvivalQuantile <- function (x, nx, lx, q, nax_mode) {

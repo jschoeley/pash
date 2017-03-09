@@ -14,7 +14,6 @@
 #'   \item{\code{"Gini2"}}{Life table Gini coefficient - Shkolnikov (2014)}
 #'   \item{\code{"Gini3"}}{Life table Gini coefficient - Danko (2016)}
 #'   \item{\code{"Gini_v"}}{A variant of Gini coefficient - Wrycza et al. (2015)}
-#'   \item{\code{"mu_bar"}}{Weighted Harmonic Mean of the Hazard Rate}
 #'   \item{\code{"mxRatio"}}{Mortality Ratio - Wrycza et al. (2015)}
 #'   \item{\code{"exRatio"}}{Life Expectancy Ratio - Wrycza et al. (2015)}
 #'   \item{\code{"ACFM"}}{Average of Change in Force of Mortality
@@ -44,7 +43,6 @@ GetShape <- function(pash, type = "all") {
                     Gini     = LifetableGini(nax, nx, lx, ex),
                     CV       = LifetableCV(x, ndx, nax, ex),
                     Variance = LifetableVar(x, ndx, nax, ex),
-                    mu_bar   = mu_bar(ex),
                     mxRatio  = MortalityRatio(x, nx, nmx, ex),
                     exRatio  = LER(x, nx, ex),
                     ACFM     = ACFM(nmx, ndx, ex),
@@ -144,11 +142,6 @@ LifetableGini4 <- function(nax, nx, lx, ex) {
   G   = 2/ex[1L] * sum(Gx) - 1
   return(G)
 }
-
-#' Weighted Harmonic Mean of the Hazard Rate
-#'
-#' @keywords internal
-mu_bar <- function(ex){ 1/ex[1L] }
 
 #' Average of Change in Force of Mortality with respect to lx
 #'

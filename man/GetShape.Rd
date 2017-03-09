@@ -28,7 +28,6 @@ The following shape measure are reurned:
   \item{\code{"Gini2"}}{Life table Gini coefficient - Shkolnikov (2014)}
   \item{\code{"Gini3"}}{Life table Gini coefficient - Danko (2016)}
   \item{\code{"Gini_v"}}{A variant of Gini coefficient - Wrycza et al. (2015)}
-  \item{\code{"mu_bar"}}{Weighted Harmonic Mean of the Hazard Rate}
   \item{\code{"mxRatio"}}{Mortality Ratio - Wrycza et al. (2015)}
   \item{\code{"exRatio"}}{Life Expectancy Ratio - Wrycza et al. (2015)}
   \item{\code{"ACFM"}}{Average of Change in Force of Mortality
