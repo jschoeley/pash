@@ -16,4 +16,3 @@ Discrete formulation of the Gini-Coeffcient
 \code{\link{LifetableGini}}
 }
 \keyword{internal}
-

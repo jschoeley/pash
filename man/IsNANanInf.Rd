@@ -10,4 +10,3 @@ IsNANanInf(x, name_x, test = 1:3)
 Check Input for NA, NaN and Inf
 }
 \keyword{internal}
-

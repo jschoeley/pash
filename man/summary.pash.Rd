@@ -15,4 +15,3 @@
 Summary method for the pace-shape object.
 }
 \keyword{internal}
-

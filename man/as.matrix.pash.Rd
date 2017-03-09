@@ -15,4 +15,3 @@
 Method to convert a pace-shape object to a matrix.
 }
 \keyword{internal}
-

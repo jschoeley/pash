@@ -21,4 +21,3 @@ An abridged period life-table lx column for Austrian males in 1992 used in
 an example on life-table construction in Preston's demography textbook.
 }
 \keyword{datasets}
-

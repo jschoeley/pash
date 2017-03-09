@@ -26,4 +26,3 @@ LinearExtrapolation(x = 1:2, y = c(1, 2), xextra = 3, loga = TRUE)
 
 }
 \keyword{internal}
-

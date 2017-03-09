@@ -13,4 +13,3 @@ ACFM(nmx, ndx, ex)
 Average of Change in Force of Mortality with respect to lx
 }
 \keyword{internal}
-

@@ -10,4 +10,3 @@ PSMAD(x, nx, lx, ex)
 Probability to Survive up to the Mean Age at Death
 }
 \keyword{internal}
-

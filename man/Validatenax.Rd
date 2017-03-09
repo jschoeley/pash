@@ -10,4 +10,3 @@ Validatenax(nax, x, nx, last_open)
 Validate nax
 }
 \keyword{internal}
-

@@ -12,4 +12,3 @@ Find and compute values that depend on ex
 eg: m(x) when x = e(x)
 }
 \keyword{internal}
-

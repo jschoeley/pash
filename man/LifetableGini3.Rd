@@ -17,4 +17,3 @@ Euler-Maclaurins approximation
 LifetableGini
 }
 \keyword{internal}
-

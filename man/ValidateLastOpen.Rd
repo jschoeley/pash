@@ -10,4 +10,3 @@ ValidateLastOpen(last_open)
 Validate last_open
 }
 \keyword{internal}
-

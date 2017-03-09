@@ -37,4 +37,3 @@ nqx = 1 - (1-nmx / (1+0.5*nmx))^nx,
 assuming a uniform distribution of deaths within the age interval [x, x+n).
 }
 \keyword{internal}
-

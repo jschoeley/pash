@@ -66,9 +66,9 @@ is calculated and a pace-shape object constructed.
 
   nax = -n/nqx - n/log(npx) + n
 }
+
 \examples{
 swe <- subset(sweden5x5, sex == "female" & period == "1940-1944")[c("x", "nmx")]
 Inputnmx(x = swe$x, nmx = swe$nmx, last_open = TRUE, nax = "cfm")
 
 }
-

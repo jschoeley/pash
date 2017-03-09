@@ -68,6 +68,7 @@ life-table is calculated and a pace-shape object constructed.
   preceding two nmx and the nax, and the ex for the last age group id
   calculated using the constant hazard assumption.
 }
+
 \examples{
 Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
 # open last age group
@@ -76,4 +77,3 @@ Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, last_open = TRUE)
 Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, nax = "cfm")
 
 }
-

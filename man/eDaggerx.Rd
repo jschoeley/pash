@@ -13,4 +13,3 @@ eDaggerx(nax, nx, ex)
 Average Years of Life Lost due to Death in Age x
 }
 \keyword{internal}
-

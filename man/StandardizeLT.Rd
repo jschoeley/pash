@@ -34,4 +34,3 @@ StandardizeLT(pash)
 StandardizeLT(pash, pace = "qlx", q = 0.9)
 
 }
-

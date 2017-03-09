@@ -10,4 +10,3 @@ mu_bar(ex)
 Weighted Harmonic Mean of the Hazard Rate
 }
 \keyword{internal}
-

@@ -10,4 +10,3 @@ Validatenx(nx, x, last_open)
 Validate nx
 }
 \keyword{internal}
-

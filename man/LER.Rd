@@ -10,4 +10,3 @@ LER(x, nx, ex)
 Life Expectancy Ratio
 }
 \keyword{internal}
-

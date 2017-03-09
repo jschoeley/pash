@@ -10,4 +10,3 @@ TestClass(x)
 Test if Object is Pace-Shape
 }
 \keyword{internal}
-

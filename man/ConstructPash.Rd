@@ -68,5 +68,5 @@ Argument \code{type} must be one of \code{c("lx", "nmx")}. Argument
 Only use when writing new Input functions. For pace-shape object construction
 use the existing Input functions.
 }
-\keyword{internal}
 
+\keyword{internal}

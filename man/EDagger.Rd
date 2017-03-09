@@ -10,4 +10,3 @@ EDagger(nax, nx, ndx, ex)
 Total Life Years Lost due to Death
 }
 \keyword{internal}
-

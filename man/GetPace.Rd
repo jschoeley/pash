@@ -43,6 +43,7 @@ return the x where l(x) = q by either:
   then x = ((x0-x1)*log(y)-x0*log(y1)+x1*log(y0))/(log(y0)-log(y1))}
 }
 }
+
 \examples{
 pash <- Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
 GetPace(pash)
@@ -53,4 +54,3 @@ GetPace(pash, q = 0.3)
 pash <- Inputlx(x = prestons_lx$x, lx = prestons_lx$lx, nax = "cfm")
 GetPace(pash, q = 0.3)
 }
-

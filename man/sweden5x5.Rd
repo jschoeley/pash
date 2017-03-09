@@ -36,4 +36,3 @@ Infant and early childhood mortality are given in 1 and 4 year age
   Human Mortality database.
 }
 \keyword{datasets}
-

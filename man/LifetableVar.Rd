@@ -4,13 +4,12 @@
 \alias{LifetableVar}
 \title{Life Table Variance}
 \source{
-Pascariu (2016)
+Schoeley (2017)
 }
 \usage{
-LifetableVar(nax, nx, ex, ndx)
+LifetableVar(x, ndx, nax, ex)
 }
 \description{
 Discrete formulation of variance
 }
 \keyword{internal}
-

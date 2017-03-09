@@ -10,4 +10,3 @@ LifetableEntropy(nax, nx, ndx, ex)
 Life Table Entropy
 }
 \keyword{internal}
-

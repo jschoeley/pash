@@ -10,4 +10,3 @@ MortalityRatio(x, nx, nmx, ex)
 Mortality Ratio
 }
 \keyword{internal}
-

@@ -42,8 +42,8 @@ GetShape <- function(pash, type = "all") {
        {
          shapes = c(Entropy  = LifetableEntropy(nax, nx, ndx, ex),
                     Gini     = LifetableGini(nax, nx, lx, ex),
-                    CV       = LifetableCV(nax, nx, ex, ndx),
-                    Variance = LifetableVar(nax, nx, ex, ndx),
+                    CV       = LifetableCV(x, ndx, nax, ex),
+                    Variance = LifetableVar(x, ndx, nax, ex),
                     mu_bar   = mu_bar(ex),
                     mxRatio  = MortalityRatio(x, nx, nmx, ex),
                     exRatio  = LER(x, nx, ex),
@@ -62,14 +62,11 @@ GetShape <- function(pash, type = "all") {
 #' Life Table Variance
 #'
 #' Discrete formulation of variance
-#' @source Pascariu (2016)
+#' @source Schoeley (2017)
 #' @keywords internal
-LifetableVar <- function(nax, nx, ex, ndx) {
-  nAx = nax/nx
-  Vx = nAx*c(ex[-1L], 0) + (1-nAx)*ex
-  Vx = Vx^2 * ndx*nx
-  V  = sum(Vx)
-  return(V)
+LifetableVar <- function(x, ndx, nax, ex) {
+  var = sum(ndx*(x+nax-ex[1L])^2)
+  return(var)
 }
 
 #' Average Years of Life Lost due to Death in Age x
@@ -78,7 +75,7 @@ LifetableVar <- function(nax, nx, ex, ndx) {
 #' @keywords internal
 eDaggerx <- function(nax, nx, ex) {
   nAx = nax/nx
-  edx = (nAx * c(ex[-1L], 0) + (1 - nAx) * ex)
+  edx = (nAx*c(ex[-1L], 0) + (1-nAx)*ex)
   return(edx)
 }
 
@@ -175,9 +172,9 @@ LifetableEntropy <- function(nax, nx, ndx, ex) {
 #' Life Table Coefficient of Variation
 #'
 #' @keywords internal
-LifetableCV <- function(nax, nx, ex, ndx) {
-  Var = LifetableVar(nax, nx, ex, ndx)
-  CV  = sqrt(Var)/ex[1L]
+LifetableCV <- function(x, ndx, nax, ex) {
+  var = LifetableVar(x, ndx, nax, ex)
+  CV  = sqrt(var)/ex[1L]
   return(CV)
 }
 

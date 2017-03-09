@@ -10,4 +10,3 @@ TestnxMatchx(x, nx)
 Test if Age Vector Matches nx Vector
 }
 \keyword{internal}
-

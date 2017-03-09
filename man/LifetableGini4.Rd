@@ -16,4 +16,3 @@ Life Table Gini-Coefficient Variant
 LifetableGini
 }
 \keyword{internal}
-

@@ -10,4 +10,3 @@ ExponentialInterpolation(x0, x1, y0, y1, y)
 Get exact x for a given y based on exponential interpolation between two points.
 }
 \keyword{internal}
-

@@ -10,4 +10,3 @@ Validatenqx(nqx)
 Validate nqx
 }
 \keyword{internal}
-

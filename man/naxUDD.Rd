@@ -24,4 +24,3 @@ Get life-table nax values from nx using the "uniform distribution of deaths"
 nax is NA for last open age group.
 }
 \keyword{internal}
-

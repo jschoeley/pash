@@ -72,9 +72,9 @@ is calculated and a pace-shape object constructed.
   preceding two nmx and the nax, and the ex for the last age group id
   calculated using the constant hazard assumption.
 }
+
 \examples{
 swe <- subset(sweden5x5, sex == "female" & period == "1940-1944")[c("x", "nqx")]
 Inputnqx(x = swe$x, nqx = swe$nqx, last_open = TRUE, nax = "udd")
 
 }
-

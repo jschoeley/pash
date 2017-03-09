@@ -10,4 +10,3 @@ SetLastToNA(x)
 Set Last Value in Vector to NA
 }
 \keyword{internal}
-

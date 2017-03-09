@@ -24,4 +24,3 @@ preceeding age group. If the last age group is open, the width is set to
 \code{NA}.
 }
 \keyword{internal}
-

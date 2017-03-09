@@ -19,4 +19,3 @@
 Printing method for a pace-shape object
 }
 \keyword{internal}
-

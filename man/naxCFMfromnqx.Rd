@@ -34,4 +34,3 @@ preceding two nax.
 If the last age group is open we set the last nax to NA.
 }
 \keyword{internal}
-

@@ -30,4 +30,3 @@ expectancy at x. Given the constant hazard assumption that is:
 nax[k] = 1/nmx[k]
 }
 \keyword{internal}
-

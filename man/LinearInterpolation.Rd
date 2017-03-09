@@ -10,4 +10,3 @@ LinearInterpolation(x0, x1, y0, y1, y)
 Get exact x for a given y based on linear interpolation between two points.
 }
 \keyword{internal}
-

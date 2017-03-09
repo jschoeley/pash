@@ -19,4 +19,3 @@ measures with \code{\link{GetShape}}, standardize a life table by pace and
 shape with \code{\link{StandardizeLT}}, rebase your life table to a different
 age with \code{\link{RebaseLT}}.
 }
-

@@ -13,4 +13,3 @@ is.pash(x)
 Method to test if an object is of class \code{pash}.
 }
 \keyword{internal}
-
