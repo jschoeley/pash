@@ -4,15 +4,12 @@
 \alias{LifetableGini}
 \title{Life Table Gini-Coefficient}
 \source{
-Pascariu (2016)
+Schoeley (2017)
 }
 \usage{
-LifetableGini(nax, nx, lx, ex)
+LifetableGini(x, nax, ndx, ex)
 }
 \description{
 Discrete formulation of the Gini-Coeffcient
-}
-\seealso{
-\code{\link{LifetableGini}}
 }
 \keyword{internal}

@@ -1,0 +1,2 @@
+- fix bug: No Entropy and Gini Shape measures when LastOpen = TRUE
+- feature: add input checks for shape and pace selection

@@ -6,10 +6,6 @@
 \source{
 Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015.
 "Quantifying the Shape of Aging." PLOS ONE 10 (3): 1-18. doi:10.1371/journal.pone.0119163.
-
-Vladimir, Shkolnikov M. and Evgheny, Andreev M. 2010.
-"Spreadsheet for calculation of life-table dispersion measures". Demographic Research.
-\url{http://www.demogr.mpg.de/papers/technicalreports/tr-2010-001.pdf}
 }
 \usage{
 GetShape(pash, type = "all")
@@ -24,10 +20,7 @@ The following shape measure are reurned:
 \describe{
   \item{\code{"Variance"}}{Life table variance}
   \item{\code{"Entropy"}}{Life table entropy}
-  \item{\code{"Gini"}}{Life table Gini coefficient - Pascariu (2016)}
-  \item{\code{"Gini2"}}{Life table Gini coefficient - Shkolnikov (2014)}
-  \item{\code{"Gini3"}}{Life table Gini coefficient - Danko (2016)}
-  \item{\code{"Gini_v"}}{A variant of Gini coefficient - Wrycza et al. (2015)}
+  \item{\code{"Gini"}}{Life table Gini coefficient - Schoeley (2017)}
   \item{\code{"mxRatio"}}{Mortality Ratio - Wrycza et al. (2015)}
   \item{\code{"exRatio"}}{Life Expectancy Ratio - Wrycza et al. (2015)}
   \item{\code{"ACFM"}}{Average of Change in Force of Mortality

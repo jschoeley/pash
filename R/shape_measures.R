@@ -10,10 +10,7 @@
 #' \describe{
 #'   \item{\code{"Variance"}}{Life table variance}
 #'   \item{\code{"Entropy"}}{Life table entropy}
-#'   \item{\code{"Gini"}}{Life table Gini coefficient - Pascariu (2016)}
-#'   \item{\code{"Gini2"}}{Life table Gini coefficient - Shkolnikov (2014)}
-#'   \item{\code{"Gini3"}}{Life table Gini coefficient - Danko (2016)}
-#'   \item{\code{"Gini_v"}}{A variant of Gini coefficient - Wrycza et al. (2015)}
+#'   \item{\code{"Gini"}}{Life table Gini coefficient - Schoeley (2017)}
 #'   \item{\code{"mxRatio"}}{Mortality Ratio - Wrycza et al. (2015)}
 #'   \item{\code{"exRatio"}}{Life Expectancy Ratio - Wrycza et al. (2015)}
 #'   \item{\code{"ACFM"}}{Average of Change in Force of Mortality
@@ -26,9 +23,6 @@
 #'
 #' @source Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015.
 #' "Quantifying the Shape of Aging." PLOS ONE 10 (3): 1-18. doi:10.1371/journal.pone.0119163.
-#' @source Vladimir, Shkolnikov M. and Evgheny, Andreev M. 2010.
-#' "Spreadsheet for calculation of life-table dispersion measures". Demographic Research.
-#' \url{http://www.demogr.mpg.de/papers/technicalreports/tr-2010-001.pdf}
 #'
 #' @examples
 #' pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
@@ -40,16 +34,13 @@ GetShape <- function(pash, type = "all") {
   with(pash[["lt"]],
        {
          shapes = c(Entropy  = LifetableEntropy(nax, nx, ndx, ex),
-                    Gini     = LifetableGini(nax, nx, lx, ex),
+                    Gini     = LifetableGini(x, nax, ndx, ex),
                     CV       = LifetableCV(x, ndx, nax, ex),
                     Variance = LifetableVar(x, ndx, nax, ex),
                     mxRatio  = MortalityRatio(x, nx, nmx, ex),
                     exRatio  = LER(x, nx, ex),
                     ACFM     = ACFM(nmx, ndx, ex),
-                    PSMAD    = PSMAD(x, nx, lx, ex),
-                    Gini2    = LifetableGini2(nax, nx, lx, ex),
-                    Gini3    = LifetableGini3(nax, nx, lx, ex, ndx),
-                    Gini_v   = LifetableGini4(nax, nx, lx, ex))
+                    PSMAD    = PSMAD(x, nx, lx, ex))
          if (identical(type, "all")) { S = shapes } else { S = shapes[type] }
          return(S)
        })
@@ -89,57 +80,14 @@ EDagger <- function(nax, nx, ndx, ex) {
 #' Life Table Gini-Coefficient
 #'
 #' Discrete formulation of the Gini-Coeffcient
-#' @seealso \code{\link{LifetableGini}}
-#' @source Pascariu (2016)
+#' @source Schoeley (2017)
 #' @keywords internal
-LifetableGini <- function(nax, nx, lx, ex) {
-  nAx <- nax/nx
-  Gx = nAx * c(lx[-1L], 0) + (1-nAx)*lx
-  Gx = Gx^2 * nx
-  G  = 1 - 1/ex[1L]*sum(Gx)
-  return(G)
-}
-
-#' Life Table Gini-Coefficient
-#'
-#' Discrete formulation of the Gini-Coeffcient
-#' @seealso LifetableGini
-#' @source Shkolnikov and Andreev (2014)
-#' @keywords internal
-LifetableGini2 <- function(nax, nx, lx, ex) {
-  nAx  = nax/nx
-  lx_1 = c(lx[-1L], 0)
-  Gx   = lx_1^2 + nAx*(lx^2 - lx_1^2)
-  Gx   = Gx*nx
-  G    = 1 - 1/ex[1L] * sum(Gx)
-  return(G)
-}
-
-#' Life Table Gini-Coefficient
-#'
-#' Discrete formulation of the Gini-Coeffcient using
-#' Euler-Maclaurins approximation
-#' @seealso LifetableGini
-#' @source Danko (2016)
-#' @keywords internal
-LifetableGini3 <- function(nax, nx, lx, ex, ndx) {
-  lx_1 = c(lx[-1L], 0)
-  Gx   = (lx^2 + lx_1^2)/2 - (ndx^2)/6
-  Gx   = Gx*nx
-  G    = 1 - 1/ex[1L]*sum(Gx)
-  return(G)
-}
-
-#' Life Table Gini-Coefficient Variant
-#'
-#' @seealso LifetableGini
-#' @source Wrycza et al. (2015) - Pascariu (2016)
-#' @keywords internal
-LifetableGini4 <- function(nax, nx, lx, ex) {
-  nAx = nax/nx
-  Gx  = nAx*c(lx[-1L], 0) + (1-nAx)*lx
-  Gx  = Gx^2 * nx
-  G   = 2/ex[1L] * sum(Gx) - 1
+LifetableGini <- function (x, nax, ndx, ex) {
+  e = rep(1, length(x))
+  D = outer(ndx, ndx)
+  x_ = x+nax
+  X_ = abs(e%*%t(x_) - x_%*%t(e))
+  G = sum(D*X_)/(2*ex[1L])
   return(G)
 }
 

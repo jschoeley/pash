@@ -333,7 +333,7 @@ $$
 #### Discrete
 
 $$
-\text{ACFM} = 1 - \exp{\left[ -e_\theta \sum_{x=\theta}^{\omega} (m_x - m_\theta) {}_nf_x \right]}
+\text{ACFM} = 1 - \exp{\left[ -e_\theta \sum_{x=\theta}^{\omega} (m_x - m_\theta) {}_nd_x \right]}
 $$
 
 #### *pash* implementation
