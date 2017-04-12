@@ -33,7 +33,7 @@ RebaseLT <- function (pash, origin = 0) {
   # drop age intervals smaller than origin
   pash[["lt"]] = lt[lt[["x"]] >= origin,]
   # rebase lx
-  pash[["lt"]][["lx"]] = pash[["lt"]][["lx"]] / pash[["lt"]][["lx"]][1]
+  pash[["lt"]][["lx"]] = pash[["lt"]][["lx"]] / pash[["lt"]][["lx"]][1L]
   # rebase ndx
   pash[["lt"]][["ndx"]] = pash[["lt"]][["ndx"]] / sum(pash[["lt"]][["ndx"]])
   # rebase nLx

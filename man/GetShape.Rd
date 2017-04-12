@@ -18,16 +18,15 @@ GetShape(pash, type = "all")
 \value{
 The following shape measure are reurned:
 \describe{
-  \item{\code{"Variance"}}{Life table variance}
   \item{\code{"Entropy"}}{Life table entropy}
-  \item{\code{"Gini"}}{Life table Gini coefficient - Schoeley (2017)}
+  \item{\code{"Gini"}}{Life table Gini coefficient}
+  \item{\code{"CV"}}{Life table coefficient of variation.}
   \item{\code{"mxRatio"}}{Mortality Ratio - Wrycza et al. (2015)}
   \item{\code{"exRatio"}}{Life Expectancy Ratio - Wrycza et al. (2015)}
   \item{\code{"ACFM"}}{Average of Change in Force of Mortality
     with respect to lx - Wrycza et al. (2015)}
   \item{\code{"PSMAD"}}{Probability to Survive up to the Mean Age at Death
    - Wrycza et al. (2015)}
-  \item{\code{"CV"}}{Life table coefficient of variation.}
   \item{\code{"all"}}{All of the above measures.}
 }
 }

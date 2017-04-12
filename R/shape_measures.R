@@ -8,16 +8,15 @@
 #' @return
 #' The following shape measure are reurned:
 #' \describe{
-#'   \item{\code{"Variance"}}{Life table variance}
 #'   \item{\code{"Entropy"}}{Life table entropy}
-#'   \item{\code{"Gini"}}{Life table Gini coefficient - Schoeley (2017)}
+#'   \item{\code{"Gini"}}{Life table Gini coefficient}
+#'   \item{\code{"CV"}}{Life table coefficient of variation.}
 #'   \item{\code{"mxRatio"}}{Mortality Ratio - Wrycza et al. (2015)}
 #'   \item{\code{"exRatio"}}{Life Expectancy Ratio - Wrycza et al. (2015)}
 #'   \item{\code{"ACFM"}}{Average of Change in Force of Mortality
 #'     with respect to lx - Wrycza et al. (2015)}
 #'   \item{\code{"PSMAD"}}{Probability to Survive up to the Mean Age at Death
 #'    - Wrycza et al. (2015)}
-#'   \item{\code{"CV"}}{Life table coefficient of variation.}
 #'   \item{\code{"all"}}{All of the above measures.}
 #' }
 #'
@@ -36,7 +35,6 @@ GetShape <- function(pash, type = "all") {
          shapes = c(Entropy  = LifetableEntropy(nax, nx, ndx, ex),
                     Gini     = LifetableGini(x, nax, ndx, ex),
                     CV       = LifetableCV(x, ndx, nax, ex),
-                    Variance = LifetableVar(x, ndx, nax, ex),
                     mxRatio  = MortalityRatio(x, nx, nmx, ex),
                     exRatio  = LER(x, nx, ex),
                     ACFM     = ACFM(nmx, ndx, ex),
@@ -47,16 +45,6 @@ GetShape <- function(pash, type = "all") {
 }
 
 # Shape Functions ---------------------------------------------------------
-
-#' Life Table Variance
-#'
-#' Discrete formulation of variance
-#' @source Schoeley (2017)
-#' @keywords internal
-LifetableVar <- function(x, ndx, nax, ex) {
-  var = sum(ndx*(x+nax-ex[1L])^2)
-  return(var)
-}
 
 #' Average Years of Life Lost due to Death in Age x
 #'
@@ -77,6 +65,15 @@ EDagger <- function(nax, nx, ndx, ex) {
   return(ed)
 }
 
+#' Life Table Entropy
+#'
+#' @keywords internal
+LifetableEntropy <- function(nax, nx, ndx, ex) {
+  ed = EDagger(nax, nx, ndx, ex)
+  H  = 1 - ed/ex[1L]
+  return(H)
+}
+
 #' Life Table Gini-Coefficient
 #'
 #' Discrete formulation of the Gini-Coeffcient
@@ -91,23 +88,14 @@ LifetableGini <- function (x, nax, ndx, ex) {
   return(G)
 }
 
-#' Average of Change in Force of Mortality with respect to lx
+#' Life Table Variance
 #'
-#' @source Wrycza et al. (2015)
+#' Discrete formulation of variance
+#' @source Schoeley (2017)
 #' @keywords internal
-ACFM <- function(nmx, ndx, ex){
-  acfm_x = (nmx - nmx[1L]) * ndx
-  acfm   = 1 - exp(-ex[1L] * sum(acfm_x))
-  return(acfm)
-}
-
-#' Life Table Entropy
-#'
-#' @keywords internal
-LifetableEntropy <- function(nax, nx, ndx, ex) {
-  ed = EDagger(nax, nx, ndx, ex)
-  H  = 1 - ed/ex[1L]
-  return(H)
+LifetableVar <- function(x, ndx, nax, ex) {
+  var = sum(ndx*(x+nax-ex[1L])^2)
+  return(var)
 }
 
 #' Life Table Coefficient of Variation
@@ -117,6 +105,16 @@ LifetableCV <- function(x, ndx, nax, ex) {
   var = LifetableVar(x, ndx, nax, ex)
   CV  = sqrt(var)/ex[1L]
   return(CV)
+}
+
+#' Average of Change in Force of Mortality with respect to lx
+#'
+#' @source Wrycza et al. (2015)
+#' @keywords internal
+ACFM <- function(nmx, ndx, ex){
+  acfm_x = (nmx - nmx[1L]) * ndx
+  acfm   = 1 - exp(-ex[1L] * sum(acfm_x))
+  return(acfm)
 }
 
 #' Find and compute values that depend on ex
