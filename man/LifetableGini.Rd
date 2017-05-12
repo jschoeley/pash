@@ -7,7 +7,7 @@
 Schoeley (2017)
 }
 \usage{
-LifetableGini(x, nax, ndx, ex)
+LifetableGini(x, nax, ndx, ex, harmonized)
 }
 \description{
 Discrete formulation of the Gini-Coeffcient

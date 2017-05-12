@@ -4,7 +4,7 @@
 \alias{MortalityRatio}
 \title{Mortality Ratio}
 \usage{
-MortalityRatio(x, nx, nmx, ex)
+MortalityRatio(x, nx, nmx, ex, harmonized)
 }
 \description{
 Mortality Ratio

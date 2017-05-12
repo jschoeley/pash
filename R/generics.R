@@ -13,15 +13,15 @@ print.pash <- function (x, radix = 10000, big.mark = ",", ...) {
   lt = x[["lt"]]
   df = data.frame(
     x   = paste0("[", lt[["x"]], ",", lt[["x"]]+lt[["nx"]], ")"),
-    nax = formatC(lt[["nax"]],       format   = "f", digits = 2, drop0trailing = TRUE),
-    nmx = formatC(lt[["nmx"]],       format   = "e", digits = 3),
-    nqx = formatC(lt[["nqx"]],       format   = "e", digits = 3),
-    npx = formatC(lt[["npx"]],       format   = "e", digits = 3),
+    nax = formatC(lt[["nax"]],                 format = "f", digits = 2, drop0trailing = TRUE),
+    nmx = formatC(lt[["nmx"]],                 format = "e", digits = 3),
+    nqx = formatC(lt[["nqx"]],                 format = "e", digits = 3),
+    npx = formatC(lt[["npx"]],                 format = "e", digits = 3),
     lx  = formatC(round(lt[["lx"]]*radix, 0),  format = "d", digits = 0, big.mark = big.mark),
     ndx = formatC(round(lt[["ndx"]]*radix, 0), format = "d", digits = 0, big.mark = big.mark),
     nLx = formatC(round(lt[["nLx"]]*radix, 0), format = "d", digits = 0, big.mark = big.mark),
     Tx  = formatC(round(lt[["Tx"]]*radix, 0),  format = "d", digits = 0, big.mark = big.mark),
-    ex  = formatC(lt[["ex"]],        format   = "f", digits = 2)
+    ex  = formatC(lt[["ex"]],                  format = "f", digits = 2)
   )
   cat("A life table with", length(lt[["x"]]), "age groups.\n")
   print.data.frame(df, row.names = FALSE, quote = FALSE, ...)
@@ -47,9 +47,9 @@ summary.pash <- function (object, ...) {
       formatC(EDagger(lt[["nax"]], lt[["nx"]], lt[["ndx"]], lt[["ex"]]),
               format = "f", digits = 2), attr(object, "time_unit"))
   cat("\nLife table entropy      :",
-      formatC(GetShape(object, type = "Entropy"), format = "f", digits = 3))
+      formatC(GetShape(object, type = "Entropy", harmonized = FALSE), format = "f", digits = 3))
   cat("\nGini Coefficient        :",
-      formatC(GetShape(object, type = "Gini"), format = "f", digits = 3))
+      formatC(GetShape(object, type = "Gini", harmonized = FALSE), format = "f", digits = 3))
 }
 
 #' Convert Pace-Shape Object to Data Frame

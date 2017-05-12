@@ -4,7 +4,7 @@
 \alias{LifetableCV}
 \title{Life Table Coefficient of Variation}
 \usage{
-LifetableCV(x, ndx, nax, ex)
+LifetableCV(x, ndx, nax, ex, harmonized)
 }
 \description{
 Life Table Coefficient of Variation

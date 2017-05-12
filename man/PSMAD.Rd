@@ -4,7 +4,7 @@
 \alias{PSMAD}
 \title{Probability to Survive up to the Mean Age at Death}
 \usage{
-PSMAD(x, nx, lx, ex)
+PSMAD(x, nx, lx, ex, harmonized)
 }
 \description{
 Probability to Survive up to the Mean Age at Death

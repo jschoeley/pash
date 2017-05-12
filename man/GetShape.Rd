@@ -8,15 +8,18 @@ Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015.
 "Quantifying the Shape of Aging." PLOS ONE 10 (3): 1-18. doi:10.1371/journal.pone.0119163.
 }
 \usage{
-GetShape(pash, type = "all")
+GetShape(pash, type = "all", harmonized = TRUE)
 }
 \arguments{
 \item{pash}{A pace-shape object.}
 
 \item{type}{Which shape measure should be returned (default \code{"all"})?}
+
+\item{harmonized}{Should the harmonized version of the shape measures be
+returned (default \code{TRUE})?}
 }
 \value{
-The following shape measure are reurned:
+The following shape measures are reurned:
 \describe{
   \item{\code{"Entropy"}}{Life table entropy}
   \item{\code{"Gini"}}{Life table Gini coefficient}
@@ -32,6 +35,17 @@ The following shape measure are reurned:
 }
 \description{
 Get life table shape measures from pace-shape object.
+}
+\details{
+If \code{harmonized == TRUE}, then all shape measures are re-scaled so that
+  (1) they are positive for monotonically increasing forces of mortality over
+  age (2), they are negative for monotonically decreasing forces
+  of mortality over age, (3) they are 0 for constant
+  forces of mortality over age, (4) they have a maximum value
+  of 1. See Wrycza etal. (2015) for details.
+
+  If \code{harmonized == FALSE} the shape measures have their conventional
+  scaling.
 }
 \examples{
 pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)

@@ -4,7 +4,7 @@
 \alias{LifetableEntropy}
 \title{Life Table Entropy}
 \usage{
-LifetableEntropy(nax, nx, ndx, ex)
+LifetableEntropy(nax, nx, ndx, ex, harmonized)
 }
 \description{
 Life Table Entropy

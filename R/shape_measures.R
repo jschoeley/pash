@@ -4,9 +4,22 @@
 #'
 #' @param pash A pace-shape object.
 #' @param type Which shape measure should be returned (default \code{"all"})?
+#' @param harmonized Should the harmonized version of the shape measures be
+#'   returned (default \code{TRUE})?
+#'
+#' @details
+#'   If \code{harmonized == TRUE}, then all shape measures are re-scaled so that
+#'   (1) they are positive for monotonically increasing forces of mortality over
+#'   age (2), they are negative for monotonically decreasing forces
+#'   of mortality over age, (3) they are 0 for constant
+#'   forces of mortality over age, (4) they have a maximum value
+#'   of 1. See Wrycza etal. (2015) for details.
+#'
+#'   If \code{harmonized == FALSE} the shape measures have their conventional
+#'   scaling.
 #'
 #' @return
-#' The following shape measure are reurned:
+#' The following shape measures are reurned:
 #' \describe{
 #'   \item{\code{"Entropy"}}{Life table entropy}
 #'   \item{\code{"Gini"}}{Life table Gini coefficient}
@@ -28,23 +41,23 @@
 #' GetShape(pash)
 #'
 #' @export
-GetShape <- function(pash, type = "all") {
+GetShape <- function(pash, type = "all", harmonized = TRUE) {
   TestClass(pash)
   with(pash[["lt"]],
        {
-         shapes = c(Entropy  = LifetableEntropy(nax, nx, ndx, ex),
-                    Gini     = LifetableGini(x, nax, ndx, ex),
-                    CV       = LifetableCV(x, ndx, nax, ex),
-                    mxRatio  = MortalityRatio(x, nx, nmx, ex),
-                    exRatio  = LER(x, nx, ex),
-                    ACFM     = ACFM(nmx, ndx, ex),
-                    PSMAD    = PSMAD(x, nx, lx, ex))
+         shapes = c(Entropy  = LifetableEntropy(nax, nx, ndx, ex, harmonized),
+                    Gini     = LifetableGini(x, nax, ndx, ex, harmonized),
+                    CV       = LifetableCV(x, ndx, nax, ex, harmonized),
+                    mxRatio  = MortalityRatio(x, nx, nmx, ex, harmonized),
+                    exRatio  = LER(x, nx, ex, harmonized),
+                    ACFM     = ACFM(nmx, ndx, ex, harmonized),
+                    PSMAD    = PSMAD(x, nx, lx, ex, harmonized))
          if (identical(type, "all")) { S = shapes } else { S = shapes[type] }
          return(S)
        })
 }
 
-# Shape Functions ---------------------------------------------------------
+# Life-table entropy ------------------------------------------------------
 
 #' Average Years of Life Lost due to Death in Age x
 #'
@@ -68,25 +81,33 @@ EDagger <- function(nax, nx, ndx, ex) {
 #' Life Table Entropy
 #'
 #' @keywords internal
-LifetableEntropy <- function(nax, nx, ndx, ex) {
+LifetableEntropy <- function(nax, nx, ndx, ex, harmonized) {
   ed = EDagger(nax, nx, ndx, ex)
-  H  = 1 - ed/ex[1L]
-  return(H)
+  H  = ed/ex[1L]
+  if (!isTRUE(harmonized)) {S = H}
+  if (isTRUE(harmonized)) {S = 1-H}
+  return(S)
 }
+
+# Life-table Gini coefficient ---------------------------------------------
 
 #' Life Table Gini-Coefficient
 #'
 #' Discrete formulation of the Gini-Coeffcient
 #' @source Schoeley (2017)
 #' @keywords internal
-LifetableGini <- function (x, nax, ndx, ex) {
+LifetableGini <- function (x, nax, ndx, ex, harmonized) {
   e = rep(1, length(x))
   D = outer(ndx, ndx)
   x_ = x+nax
   X_ = abs(e%*%t(x_) - x_%*%t(e))
   G = sum(D*X_)/(2*ex[1L])
-  return(G)
+  if (!isTRUE(harmonized)) {S = G}
+  if (isTRUE(harmonized)) {S = 1-2*G}
+  return(S)
 }
+
+# Life-table coefficient of variation -------------------------------------
 
 #' Life Table Variance
 #'
@@ -101,21 +122,29 @@ LifetableVar <- function(x, ndx, nax, ex) {
 #' Life Table Coefficient of Variation
 #'
 #' @keywords internal
-LifetableCV <- function(x, ndx, nax, ex) {
+LifetableCV <- function(x, ndx, nax, ex, harmonized) {
   var = LifetableVar(x, ndx, nax, ex)
   CV  = sqrt(var)/ex[1L]
-  return(CV)
+  if (!isTRUE(harmonized)) {S = CV}
+  if (isTRUE(harmonized)) {S = 1-CV}
+  return(S)
 }
+
+# ACFM --------------------------------------------------------------------
 
 #' Average of Change in Force of Mortality with respect to lx
 #'
 #' @source Wrycza et al. (2015)
 #' @keywords internal
-ACFM <- function(nmx, ndx, ex){
+ACFM <- function(nmx, ndx, ex, harmonized){
   acfm_x = (nmx - nmx[1L]) * ndx
-  acfm   = 1 - exp(-ex[1L] * sum(acfm_x))
-  return(acfm)
+  D = ex[1L] * sum(acfm_x)
+  if (!isTRUE(harmonized)) {S = D}
+  if (isTRUE(harmonized)) {S = 1-exp(-D)}
+  return(S)
 }
+
+# Mortality ratio ---------------------------------------------------------
 
 #' Find and compute values that depend on ex
 #' eg: m(x) when x = e(x)
@@ -135,28 +164,36 @@ FindValue <- function(measure, x, nx, ex){
 #' Mortality Ratio
 #'
 #' @keywords internal
-MortalityRatio <- function(x, nx, nmx, ex){
+MortalityRatio <- function(x, nx, nmx, ex, harmonized){
   m0   = nmx[1L]
   m_e0 = FindValue(measure = nmx, x, nx, ex)
   MR   = 1 - m0/m_e0
-  return(MR)
+  if (!isTRUE(harmonized)) {S = MR}
+  if (isTRUE(harmonized)) {S = MR}
+  return(S)
 }
+
+# PSMAD -------------------------------------------------------------------
 
 #' Probability to Survive up to the Mean Age at Death
 #'
 #' @keywords internal
-PSMAD <- function(x, nx, lx, ex){
+PSMAD <- function(x, nx, lx, ex, harmonized){
   l_e0  = FindValue(measure = lx, x, nx, ex)
-  psmad = 1 - log(l_e0)
-  return(psmad)
+  if (!isTRUE(harmonized)) {S = l_e0}
+  if (isTRUE(harmonized)) {S = 1 + log(l_e0)}
+  return(S)
 }
+
+# LER ---------------------------------------------------------------------
 
 #' Life Expectancy Ratio
 #'
 #' @keywords internal
-LER <- function(x, nx, ex){
-  e0   = ex[1L]
+LER <- function(x, nx, ex, harmonized){
   e_e0 = FindValue(measure = ex, x, nx, ex)
-  ler  =  1 - e_e0/e0
-  return(ler)
+  ler = e_e0/ex[1L]
+  if (!isTRUE(harmonized)) {S = ler}
+  if (isTRUE(harmonized)) {S = 1-ler}
+  return(S)
 }

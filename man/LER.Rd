@@ -4,7 +4,7 @@
 \alias{LER}
 \title{Life Expectancy Ratio}
 \usage{
-LER(x, nx, ex)
+LER(x, nx, ex, harmonized)
 }
 \description{
 Life Expectancy Ratio

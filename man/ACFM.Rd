@@ -7,7 +7,7 @@
 Wrycza et al. (2015)
 }
 \usage{
-ACFM(nmx, ndx, ex)
+ACFM(nmx, ndx, ex, harmonized)
 }
 \description{
 Average of Change in Force of Mortality with respect to lx
