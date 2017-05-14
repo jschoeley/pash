@@ -2,15 +2,6 @@
 options(width = 100)
 knitr::opts_chunk$set(tidy = FALSE, size = "small")
 
-## ----eval=FALSE-----------------------------------------------------------------------------------
-#  LifetableVar <- function(nax, nx, ex, ndx) {
-#    nAx = nax/nx
-#    Vx = nAx*c(ex[-1L], 0) + (1-nAx)*ex
-#    Vx = Vx^2 * ndx*nx
-#    V  = sum(Vx)
-#    return(V)
-#  }
-
 ## -------------------------------------------------------------------------------------------------
 # Average Years of Life Lost due to Death in Age x
 eDaggerx <- function(nax, nx, ex) {
@@ -26,13 +17,28 @@ EDagger <- function(nax, nx, ndx, ex) {
   return(ed)
 }
 
-## -------------------------------------------------------------------------------------------------
 # Life Table Entropy
 LifetableEntropy <- function(nax, nx, ndx, ex) {
   ed = EDagger(nax, nx, ndx, ex)
   H  = 1 - ed / ex[1L]
   return(H)
 }
+
+## ----eval=FALSE-----------------------------------------------------------------------------------
+#  # Life Table Variance
+#  LifetableVar <- function(x, ndx, nax, ex) {
+#    var = sum(ndx*(x+nax-ex[1L])^2)
+#    return(var)
+#  }
+#  
+#  # Life Table Coefficient of Variation
+#  LifetableCV <- function(x, ndx, nax, ex, harmonized) {
+#    var = LifetableVar(x, ndx, nax, ex)
+#    CV  = sqrt(var)/ex[1L]
+#    if (!isTRUE(harmonized)) {S = CV}
+#    if (isTRUE(harmonized)) {S = 1-CV}
+#    return(S)
+#  }
 
 ## -------------------------------------------------------------------------------------------------
 LifetableGini <- function(nax, nx, lx, ex) {
@@ -59,15 +65,6 @@ LifetableGini3 <- function(nax, nx, lx, ex, ndx) {
   Gx   = (lx^2 + lx_1^2)/2 - (ndx^2)/6
   Gx   = Gx*nx
   G    = 1 - 1/ex[1L]*sum(Gx)
-  return(G)
-}
-
-## -------------------------------------------------------------------------------------------------
-LifetableGini4 <- function(nax, nx, lx, ex) {
-  nAx = nax/nx
-  Gx  = nAx*c(lx[-1L], 0) + (1-nAx)*lx
-  Gx  = Gx^2 * nx
-  G   = 2/ex[1L] * sum(Gx) - 1
   return(G)
 }
 
@@ -111,12 +108,5 @@ PSMAD <- function(x, nx, lx, ex){
   l_e0  = FindValue(measure = lx, x, nx, ex)
   psmad = 1 - log(l_e0)
   return(psmad)
-}
-
-## -------------------------------------------------------------------------------------------------
-LifetableCV <- function(nax, nx, ex, ndx) {
-  Var = LifetableVar(nax, nx, ex, ndx)
-  CV  = sqrt(Var)/ex[1L]
-  return(CV)
 }
 

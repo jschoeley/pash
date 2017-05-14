@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jonas Schöley and Marius Pascariu" />
 
-<meta name="date" content="2017-05-12" />
+<meta name="date" content="2017-05-14" />
 
 <title>Shape measures and their implementation</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Shape measures and their implementation</h1>
 <h4 class="author"><em>Jonas Schöley and Marius Pascariu</em></h4>
-<h4 class="date"><em>2017-05-12</em></h4>
+<h4 class="date"><em>2017-05-14</em></h4>
 
 
 
@@ -79,40 +79,48 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <table>
 <tbody>
 <tr class="odd">
-<td align="left"><span class="math inline">\(x\)</span></td>
-<td align="left">Age (in some unit of time)</td>
+<td align="left"><span class="math inline">\(X\)</span></td>
+<td align="left">Continuous random variable “age at death”</td>
 </tr>
 <tr class="even">
-<td align="left"><span class="math inline">\(\theta = \min(x)\)</span></td>
+<td align="left"><span class="math inline">\(x\)</span></td>
+<td align="left">Lower bound of an age group</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\theta\)</span></td>
 <td align="left">Starting age of life-table (usually <span class="math inline">\(\theta = 0\)</span>)</td>
 </tr>
-<tr class="odd">
-<td align="left"><span class="math inline">\(\omega = \max(x)\)</span></td>
-<td align="left">Maximum age at death</td>
-</tr>
 <tr class="even">
-<td align="left"><span class="math inline">\(n_x\)</span></td>
-<td align="left">Width of age group <span class="math inline">\(x\)</span> as <span class="math inline">\([x, x+n_x)\)</span></td>
-</tr>
-<tr class="odd">
-<td align="left"><span class="math inline">\(f(x)\)</span></td>
-<td align="left">Probability density function of ages at death</td>
-</tr>
-<tr class="even">
-<td align="left"><span class="math inline">\(l(x)\)</span></td>
-<td align="left">Probability of surviving up until <span class="math inline">\(x\)</span>,</td>
+<td align="left"><span class="math inline">\(\omega\)</span></td>
+<td align="left">Lower bound of last life-table age group</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
-<td align="left">Note that: <span class="math inline">\(l_\theta = 1\)</span></td>
+<td align="left">(discrete setting) or highest observed value</td>
 </tr>
 <tr class="even">
-<td align="left"><span class="math inline">\({}_nd_x\)</span></td>
+<td align="left"></td>
+<td align="left">of <span class="math inline">\(X\)</span> (continuous setting)</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(n_x\)</span></td>
+<td align="left">Width of age group <span class="math inline">\(x\)</span> as <span class="math inline">\([x, x+n_x)\)</span></td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(f(x) = P(X=x)\)</span></td>
+<td align="left">Probability density function of ages at death</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\ell(x) = \ell_x = P(X &gt; x)\)</span></td>
+<td align="left">Probability of surviving up until <span class="math inline">\(x\)</span></td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\({}_nd_x = \int_{x}^{x+n}f(x)\,\text{d}x\)</span></td>
 <td align="left">Expected number of deaths in the life-table</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
-<td align="left">population over age interval <span class="math inline">\([x, x+n_x)\)</span></td>
+<td align="left">population over age interval <span class="math inline">\([x, x+n)\)</span></td>
 </tr>
 <tr class="even">
 <td align="left"><span class="math inline">\(\mu(x)\)</span></td>
@@ -123,12 +131,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <td align="left">Expected mortality rate over age interval <span class="math inline">\([x, x+n_x)\)</span></td>
 </tr>
 <tr class="even">
-<td align="left"><span class="math inline">\(e(x)\)</span></td>
+<td align="left"><span class="math inline">\(e(x)=e_x=\int_x^\omega\ell(x)\,\text{d}x\)</span></td>
 <td align="left">Remaining life-expectancy at age <span class="math inline">\(x\)</span></td>
 </tr>
 <tr class="odd">
 <td align="left"><span class="math inline">\({}_na_x\)</span></td>
-<td align="left">Avg. time spent in <span class="math inline">\([x, x+n_x)\)</span> when dying there</td>
+<td align="left">Avg. time spent in <span class="math inline">\([x, x+n)\)</span> when dying there</td>
 </tr>
 <tr class="even">
 <td align="left"><span class="math inline">\({}_nA_x = \frac{{}_na_x} {n_x}\)</span></td>
@@ -155,49 +163,32 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="shape-measures-in-pash" class="section level2">
 <h2>Shape measures in <em>pash</em></h2>
-<div id="life-table-variance-variance-sigma2" class="section level3">
-<h3>Life-table variance, <code>Variance</code>, <span class="math inline">\(\sigma^2\)</span></h3>
-<p>Variance of the age at death.</p>
+<div id="life-table-entropy-entropy-h" class="section level3">
+<h3>Life-table entropy, <code>Entropy</code>, <span class="math inline">\(H\)</span></h3>
+<p>Life-table entropy, also known as Keyfitz’s entropy [5], is the average remaining life-expectancy lost due to death divided by the total life-expectancy. The quantity in the numerator is known as <span class="math inline">\(e^\dagger\)</span> and discussed in [6].</p>
 <div id="continous" class="section level4">
 <h4>Continous</h4>
 <p><span class="math display">\[
-\sigma^2 = \int\limits_{\theta}^{\infty} e(x)^2f(x) \text{ d}x
+H = \frac{e^\dagger} {e(\theta)} = \frac{\int\limits_{x=\theta}^{\omega} e(x)f(x)\,\text{d}x} {e(\theta)}
 \]</span></p>
 </div>
 <div id="discrete" class="section level4">
 <h4>Discrete</h4>
 <p><span class="math display">\[
-\sigma^2 = \sum_{x=\theta}^{\omega-n_x} {}_nf_x[{}_nA_xe_{x+n_x}+(1-{}_nA_x)e_x]^2
+H = \frac{\sum_\limits{x=\theta}^{\omega} {}_nd_x \left[{}_nA_x e_{x+n_x} + (1-{}_nA_x) e_x \right]} {e_\theta},
+\]</span> with</p>
+<p><span class="math display">\[
+{}_nd_\omega \left[{}_nA_\omega e_{\omega+n_\omega} + (1-{}_nA_\omega) e_x \right] = e_\omega
+\]</span></p>
+<p>for the final age group.</p>
+</div>
+<div id="harmonized-transformation" class="section level4">
+<h4>Harmonized Transformation</h4>
+<p><span class="math display">\[
+\text{H}^* = 1-\text{H}
 \]</span></p>
 </div>
 <div id="pash-implementation" class="section level4">
-<h4><em>pash</em> implementation</h4>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">LifetableVar &lt;-<span class="st"> </span>function(nax, nx, ex, ndx) {
-  nAx =<span class="st"> </span>nax/nx
-  Vx =<span class="st"> </span>nAx*<span class="kw">c</span>(ex[-1L], <span class="dv">0</span>) +<span class="st"> </span>(<span class="dv">1</span>-nAx)*ex
-  Vx =<span class="st"> </span>Vx^<span class="dv">2</span> *<span class="st"> </span>ndx*nx
-  V  =<span class="st"> </span><span class="kw">sum</span>(Vx)
-  <span class="kw">return</span>(V)
-}</code></pre></div>
-</div>
-</div>
-<div id="average-number-of-life-years-lost-due-to-death-edagger-edagger" class="section level3">
-<h3>Average Number of Life-Years Lost Due to Death, <code>EDagger</code>, <span class="math inline">\(e^\dagger\)</span></h3>
-<p>Discrete expression by Vaupel et al. (2016).</p>
-<div id="continous-1" class="section level4">
-<h4>Continous</h4>
-<p><span class="math display">\[
-e^\dagger = \int\limits_{\theta}^{\infty} e(x)f(x) \text{ d}x 
-\]</span></p>
-</div>
-<div id="discrete-1" class="section level4">
-<h4>Discrete</h4>
-<p><span class="math display">\[
-e^\dagger = \sum_{x=\theta}^{\omega - n} 
-{}_nf_x \left[ {}_nA_x e_{x+n} + (1-{}_nA_x) e_x \right]
-\]</span></p>
-</div>
-<div id="pash-implementation-1" class="section level4">
 <h4><em>pash</em> implementation</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Average Years of Life Lost due to Death in Age x</span>
 eDaggerx &lt;-<span class="st"> </span>function(nax, nx, ex) {
@@ -211,17 +202,9 @@ EDagger &lt;-<span class="st"> </span>function(nax, nx, ndx, ex) {
   edx =<span class="st"> </span><span class="kw">eDaggerx</span>(nax, nx, ex)
   ed  =<span class="st"> </span><span class="kw">sum</span>(ndx*edx)
   <span class="kw">return</span>(ed)
-}</code></pre></div>
-</div>
-</div>
-<div id="entropy-entropy-h" class="section level3">
-<h3>Entropy, <code>Entropy</code>, <span class="math inline">\(H\)</span></h3>
-<p><span class="math display">\[
-\text{H} = 1 - \frac{e^\dagger}{e_\theta}
-\]</span></p>
-<div id="pash-implementation-2" class="section level4">
-<h4><em>pash</em> implementation</h4>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Life Table Entropy</span>
+}
+
+<span class="co"># Life Table Entropy</span>
 LifetableEntropy &lt;-<span class="st"> </span>function(nax, nx, ndx, ex) {
   ed =<span class="st"> </span><span class="kw">EDagger</span>(nax, nx, ndx, ex)
   H  =<span class="st"> </span><span class="dv">1</span> -<span class="st"> </span>ed /<span class="st"> </span>ex[1L]
@@ -229,9 +212,48 @@ LifetableEntropy &lt;-<span class="st"> </span>function(nax, nx, ndx, ex) {
 }</code></pre></div>
 </div>
 </div>
+<div id="life-table-coefficient-of-variation-cv-textcv" class="section level3">
+<h3>Life-table coefficient of variation, <code>cv</code>, <span class="math inline">\(\text{CV}\)</span></h3>
+<p>The coefficient of variation of the age at death is the standard deviation in the age at death divided by the total life-expectancy.</p>
+<div id="continous-1" class="section level4">
+<h4>Continous</h4>
+<p><span class="math display">\[
+\text{CV}(X) = \frac{\sqrt{\text{Var}(X)}} {E(X)} =\frac{\sqrt{\int_{\theta}^{\omega} f(x)(x-e_0)^2\,\text{d}x}}{e_\theta}.
+\]</span></p>
+</div>
+<div id="discrete-1" class="section level4">
+<h4>Discrete</h4>
+<p><span class="math display">\[
+\text{CV}(X) = \frac{\sqrt{\sum_x {}_nd_x(\bar{x}-e_0)^2}} {e_\theta} = \frac{\sqrt{\sum_x {}_nd_x(x+{}_na_x-e_0)^2}} {e_\theta}.
+\]</span></p>
+</div>
+<div id="harmonized-transformation-1" class="section level4">
+<h4>Harmonized Transformation</h4>
+<p><span class="math display">\[
+\text{CV}^*(X) = 1-\text{CV}(X)
+\]</span></p>
+</div>
+<div id="pash-implementation-1" class="section level4">
+<h4><em>pash</em> implementation</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Life Table Variance</span>
+LifetableVar &lt;-<span class="st"> </span>function(x, ndx, nax, ex) {
+  var =<span class="st"> </span><span class="kw">sum</span>(ndx*(x+nax-ex[1L])^<span class="dv">2</span>)
+  <span class="kw">return</span>(var)
+}
+
+<span class="co"># Life Table Coefficient of Variation</span>
+LifetableCV &lt;-<span class="st"> </span>function(x, ndx, nax, ex, harmonized) {
+  var =<span class="st"> </span><span class="kw">LifetableVar</span>(x, ndx, nax, ex)
+  CV  =<span class="st"> </span><span class="kw">sqrt</span>(var)/ex[1L]
+  if (!<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span>CV}
+  if (<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span><span class="dv">1</span>-CV}
+  <span class="kw">return</span>(S)
+}</code></pre></div>
+</div>
+</div>
 <div id="life-table-gini-coefficient-variant-1-gini-g" class="section level3">
 <h3>Life-table Gini coefficient variant 1, <code>Gini</code>, <span class="math inline">\(G\)</span></h3>
-<p>Gini coefficient of the age-at-death distribution, <span class="math inline">\(G\)</span>, is originally defined as a property of the Lorenz curve, and it is commonly used for measuring and analyzing inter-individual inequality in the length of life. Discrete expression by Pascariu (2016).</p>
+<p>The Gini coefficient of the age-at-death distribution, <span class="math inline">\(G\)</span>, is originally defined as a property of the Lorenz curve, and it is commonly used for measuring and analyzing inter-individual inequality in the length of life. Discrete expression by Pascariu (2016).</p>
 <div id="continous-2" class="section level4">
 <h4>Continous</h4>
 <p><span class="math display">\[
@@ -245,7 +267,7 @@ LifetableEntropy &lt;-<span class="st"> </span>function(nax, nx, ndx, ex) {
 \left[ {}_nA_x l_{x+n} + (1-{}_nA_x)l_x \right]^2
 \]</span></p>
 </div>
-<div id="pash-implementation-3" class="section level4">
+<div id="pash-implementation-2" class="section level4">
 <h4><em>pash</em> implementation</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">LifetableGini &lt;-<span class="st"> </span>function(nax, nx, lx, ex) {
   nAx &lt;-<span class="st"> </span>nax/nx
@@ -272,7 +294,7 @@ LifetableEntropy &lt;-<span class="st"> </span>function(nax, nx, ndx, ex) {
 \left[\sum_{x=\theta}^{\omega-n} l_x^2 + a_x \left( l_x^2 - l_{x+n}^2 \right) \right]
 \]</span></p>
 </div>
-<div id="pash-implementation-4" class="section level4">
+<div id="pash-implementation-3" class="section level4">
 <h4><em>pash</em> implementation</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">LifetableGini2 &lt;-<span class="st"> </span>function(nax, nx, lx, ex) {
   nAx  =<span class="st"> </span>nax/nx
@@ -304,7 +326,7 @@ LifetableEntropy &lt;-<span class="st"> </span>function(nax, nx, ndx, ex) {
 <div id="discrete-derivation" class="section level4">
 <h4>Discrete derivation:</h4>
 </div>
-<div id="pash-implementation-5" class="section level4">
+<div id="pash-implementation-4" class="section level4">
 <h4><em>pash</em> implementation</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">LifetableGini3 &lt;-<span class="st"> </span>function(nax, nx, lx, ex, ndx) {
   lx_1 =<span class="st"> </span><span class="kw">c</span>(lx[-1L], <span class="dv">0</span>)
@@ -315,46 +337,16 @@ LifetableEntropy &lt;-<span class="st"> </span>function(nax, nx, ndx, ex) {
 }</code></pre></div>
 </div>
 </div>
-<div id="a-variant-of-the-life-table-gini-coefficient-gini_v-g_v" class="section level3">
-<h3>A variant of the life-table Gini coefficient, <code>Gini_v</code>, <span class="math inline">\(G_v\)</span></h3>
-<p>The variant of the Gini coefficient of the age-at-death distribution as stated in [3]. Discrete expression by Pascariu (2016).</p>
-<div id="continous-5" class="section level4">
-<h4>Continous</h4>
-<p><span class="math display">\[
-\begin{aligned}
-\text{G}_v &amp; = 1 - 2G \\
-&amp; = \frac{2}{e_\theta} \int\limits_{\theta}^{\infty} l(x)^2 \text{ d}x - 1
-\end{aligned}
-\]</span></p>
-</div>
-<div id="discrete-5" class="section level4">
-<h4>Discrete</h4>
-<p><span class="math display">\[
-\text{G}_v = \frac{2}{e_\theta} \sum_{x=\theta}^{\omega - n} 
-\left[ {}_nA_x l_{x+n} + (1- {}_nA_x)l_x \right]^2 - 1
-\]</span></p>
-</div>
-<div id="pash-implementation-6" class="section level4">
-<h4><em>pash</em> implementation</h4>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">LifetableGini4 &lt;-<span class="st"> </span>function(nax, nx, lx, ex) {
-  nAx =<span class="st"> </span>nax/nx
-  Gx  =<span class="st"> </span>nAx*<span class="kw">c</span>(lx[-1L], <span class="dv">0</span>) +<span class="st"> </span>(<span class="dv">1</span>-nAx)*lx
-  Gx  =<span class="st"> </span>Gx^<span class="dv">2</span> *<span class="st"> </span>nx
-  G   =<span class="st"> </span><span class="dv">2</span>/ex[1L] *<span class="st"> </span><span class="kw">sum</span>(Gx) -<span class="st"> </span><span class="dv">1</span>
-  <span class="kw">return</span>(G)
-}</code></pre></div>
-</div>
-</div>
 <div id="mortality-ratio-mxratio-textmr" class="section level3">
 <h3>Mortality ratio, <code>mxRatio</code>, <span class="math inline">\(\text{MR}\)</span></h3>
 <p>The ratio between mortality at age 0 and mortality at the age of total life-expectancy. First suggested by [1], further developed by [3].</p>
-<div id="continous-6" class="section level4">
+<div id="continous-5" class="section level4">
 <h4>Continous</h4>
 <p><span class="math display">\[
 \text{MR} = 1 - \frac{\mu(\theta)}{\mu(e(\theta))}
 \]</span></p>
 </div>
-<div id="discrete-6" class="section level4">
+<div id="discrete-5" class="section level4">
 <h4>Discrete</h4>
 <p><span class="math display">\[
 \text{MR} = 1 - \frac{m_\theta}{m_{e_\theta}}
@@ -363,7 +355,7 @@ m_{e_\theta} \approx \frac{1}{n_{\lfloor e_\theta \rfloor}}
 \left[ l_{\lfloor e_\theta \rfloor} (n_{\lfloor e_\theta \rfloor} - \text{frac}(e_\theta)) + l_{\lceil e_\theta \rceil} \text{frac}(e_\theta) \right]
 \]</span></p>
 </div>
-<div id="pash-implementation-7" class="section level4">
+<div id="pash-implementation-5" class="section level4">
 <h4><em>pash</em> implementation</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MortalityRatio &lt;-<span class="st"> </span>function(x, nx, nmx, ex){
   m0   =<span class="st"> </span>nmx[1L]
@@ -388,13 +380,13 @@ FindValue &lt;-<span class="st"> </span>function(measure, x, nx, ex){
 <div id="life-expectancy-ratio-exratio-textler" class="section level3">
 <h3>Life expectancy ratio, <code>exRatio</code>, <span class="math inline">\(\text{LER}\)</span></h3>
 <p>The ratio between remaining life expectancy at the age of total life expectancy and total life expectancy. Suggested by [3].</p>
-<div id="continous-7" class="section level4">
+<div id="continous-6" class="section level4">
 <h4>Continous</h4>
 <p><span class="math display">\[
 \text{LER} = 1 - \frac{e(e(\theta))}{e(\theta)}
 \]</span></p>
 </div>
-<div id="discrete-7" class="section level4">
+<div id="discrete-6" class="section level4">
 <h4>Discrete</h4>
 <p><span class="math display">\[
 \text{LER} = 1 - \frac{e_{e_\theta}^\ast}{e_\theta}
@@ -403,7 +395,7 @@ e_{e(\theta)}^\ast \approx \frac{1}{n_{\lfloor e_\theta \rfloor}}
 \left[ e_{\lfloor e_\theta \rfloor} (n_{\lfloor e_\theta \rfloor} - \text{frac}(e_\theta)) + e_{\lceil e_\theta \rceil} \text{frac}(e_\theta) \right]
 \]</span></p>
 </div>
-<div id="pash-implementation-8" class="section level4">
+<div id="pash-implementation-6" class="section level4">
 <h4><em>pash</em> implementation</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">LER &lt;-<span class="st"> </span>function(x, nx, ex){
   e0   =<span class="st"> </span>ex[1L]
@@ -416,20 +408,20 @@ e_{e(\theta)}^\ast \approx \frac{1}{n_{\lfloor e_\theta \rfloor}}
 <div id="average-change-in-force-of-mortality-wrt-l_x-acfm-textacfm" class="section level3">
 <h3>Average change in force of mortality wrt <span class="math inline">\(l_x\)</span>, <code>ACFM</code>, <span class="math inline">\(\text{ACFM}\)</span></h3>
 <p>A rescaled variant of the average lifetime change of the hazard of death divided by average mortality. Suggested by [3].</p>
-<div id="continous-8" class="section level4">
+<div id="continous-7" class="section level4">
 <h4>Continous</h4>
 <p><span class="math display">\[
 \text{ACFM} = 1 - \exp{\left[- \int\limits_{\theta}^{\infty} 
 \frac{\mu(x) - \mu(\theta)}{\overline{\mu}} f(x) \text{ d}x \right]}
 \]</span></p>
 </div>
-<div id="discrete-8" class="section level4">
+<div id="discrete-7" class="section level4">
 <h4>Discrete</h4>
 <p><span class="math display">\[
 \text{ACFM} = 1 - \exp{\left[ -e_\theta \sum_{x=\theta}^{\omega} (m_x - m_\theta) {}_nd_x \right]}
 \]</span></p>
 </div>
-<div id="pash-implementation-9" class="section level4">
+<div id="pash-implementation-7" class="section level4">
 <h4><em>pash</em> implementation</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ACFM &lt;-<span class="st"> </span>function(nmx, ndx, ex){
   acfm_x =<span class="st"> </span>(nmx -<span class="st"> </span>nmx[1L]) *<span class="st"> </span>ndx
@@ -441,13 +433,13 @@ e_{e(\theta)}^\ast \approx \frac{1}{n_{\lfloor e_\theta \rfloor}}
 <div id="probability-to-survive-up-to-mean-age-at-death-psmad-textpsmad" class="section level3">
 <h3>Probability to survive up to mean age at death, <code>PSMAD</code>, <span class="math inline">\(\text{PSMAD}\)</span></h3>
 <p>A rescaled variant of the probability to survive up to the mean age at death. Suggested by [3].</p>
-<div id="continous-9" class="section level4">
+<div id="continous-8" class="section level4">
 <h4>Continous</h4>
 <p><span class="math display">\[
 \text{PSMAD} = 1 + \log{l(e(\theta))}
 \]</span></p>
 </div>
-<div id="discrete-9" class="section level4">
+<div id="discrete-8" class="section level4">
 <h4>Discrete</h4>
 <p><span class="math display">\[
 \text{PSMAD} = 1 + \log{(l_{e_\theta}^\ast)}
@@ -456,7 +448,7 @@ l_{e_\theta}^\ast \approx \frac{1}{n_{\lfloor e_\theta \rfloor}}
 \left[ l_{\lfloor e_\theta \rfloor} (n_{\lfloor e_\theta \rfloor} - \text{frac}(e_\theta)) + l_{\lceil e_\theta \rceil} \text{frac}(e_\theta) \right]
 \]</span></p>
 </div>
-<div id="pash-implementation-10" class="section level4">
+<div id="pash-implementation-8" class="section level4">
 <h4><em>pash</em> implementation</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">PSMAD &lt;-<span class="st"> </span>function(x, nx, lx, ex){
   l_e0  =<span class="st"> </span><span class="kw">FindValue</span>(<span class="dt">measure =</span> lx, x, nx, ex)
@@ -465,38 +457,15 @@ l_{e_\theta}^\ast \approx \frac{1}{n_{\lfloor e_\theta \rfloor}}
 }</code></pre></div>
 </div>
 </div>
-<div id="life-table-coefficient-of-variation-cv-textcv" class="section level3">
-<h3>Life-table coefficient of variation, <code>CV</code>, <span class="math inline">\(\text{CV}\)</span></h3>
-<p>A rescaled variant of the coefficient of variation in the age at death. Suggested by [3].</p>
-<div id="continous-10" class="section level4">
-<h4>Continous</h4>
-<p><span class="math display">\[
-\text{CV} = \frac{1}{e(\theta)}
-\sqrt{\int \limits_{\theta}^{\infty} (x - e(\theta))^2 f(x) \text{ d}x}
-\]</span></p>
-</div>
-<div id="discrete-10" class="section level4">
-<h4>Discrete</h4>
-<p><span class="math display">\[
-\text{CV} = \frac{\sigma}{e_\theta}
-\]</span></p>
-</div>
-<div id="pash-implementation-11" class="section level4">
-<h4><em>pash</em> implementation</h4>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">LifetableCV &lt;-<span class="st"> </span>function(nax, nx, ex, ndx) {
-  Var =<span class="st"> </span><span class="kw">LifetableVar</span>(nax, nx, ex, ndx)
-  CV  =<span class="st"> </span><span class="kw">sqrt</span>(Var)/ex[1L]
-  <span class="kw">return</span>(CV)
-}</code></pre></div>
-</div>
-</div>
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>
-<p>[1]: Baudisch, Annette. 2011. “The Pace and Shape of Ageing.” Methods in Ecology and Evolution 2 (4): 375–82. <a href="doi:10.1111/j.2041-210X.2010.00087.x" class="uri">doi:10.1111/j.2041-210X.2010.00087.x</a>.</p>
-<p>[2]: Wrycza, Tomasz, and Annette Baudisch. 2014. “The Pace of Aging: Intrinsic Time Scales in Demography.” Demographic Research 30 (1): 1571–90. <a href="doi:10.4054/DemRes.2014.30.57" class="uri">doi:10.4054/DemRes.2014.30.57</a>.</p>
-<p>[3]: Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015. “Quantifying the Shape of Aging.”&quot; PLOS ONE 10 (3): 1–18. <a href="doi:10.1371/journal.pone.0119163" class="uri">doi:10.1371/journal.pone.0119163</a>.</p>
-<p>[4]: Shkolnikov, Vladimir, Evgueni Andreev, and Alexander Z. Begun. 2003. “Gini Coefficient as a Life Table Function.”&quot; Demographic Research 8 (17): 305-58. <a href="doi:10.4054/DemRes.2003.8.11" class="uri">doi:10.4054/DemRes.2003.8.11</a>.</p>
+<p>[1]: Baudisch, Annette. 2011. The Pace and Shape of Ageing. Methods in Ecology and Evolution 2 (4): 375–82. <a href="doi:10.1111/j.2041-210X.2010.00087.x" class="uri">doi:10.1111/j.2041-210X.2010.00087.x</a>.</p>
+<p>[2]: Wrycza, Tomasz, and Annette Baudisch. 2014. The Pace of Aging: Intrinsic Time Scales in Demography. Demographic Research 30 (1): 1571–90. <a href="doi:10.4054/DemRes.2014.30.57" class="uri">doi:10.4054/DemRes.2014.30.57</a>.</p>
+<p>[3]: Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015. Quantifying the Shape of Aging.&quot; PLOS ONE 10 (3): 1–18. <a href="doi:10.1371/journal.pone.0119163" class="uri">doi:10.1371/journal.pone.0119163</a>.</p>
+<p>[4]: Shkolnikov, Vladimir, Evgueni Andreev, and Alexander Z. Begun. 2003. Gini Coefficient as a Life Table Function. Demographic Research 8 (17): 305-58. <a href="doi:10.4054/DemRes.2003.8.11" class="uri">doi:10.4054/DemRes.2003.8.11</a>.</p>
+<p>[5]: Keyfitz, N., &amp; Caswell, H. 2005. Applied Mathematical Demography (3rd ed.). New York, NY: Springer.</p>
+<p>[6]: Vaupel, J. W., &amp; Romo, V. C. (2003). Decomposing change in life expectancy: a bouquet of formulas in honor of Nathan Keyfitz’s 90th birthday. Demography, 40(2), 201-216.</p>
 </div>
 
 

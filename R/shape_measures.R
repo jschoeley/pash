@@ -59,13 +59,14 @@ GetShape <- function(pash, type = "all", harmonized = TRUE) {
 
 # Life-table entropy ------------------------------------------------------
 
-#' Average Years of Life Lost due to Death in Age x
+#' Average Life-Expectancy in Age x
 #'
 #' @source Vaupel et al. (2016)
 #' @keywords internal
-eDaggerx <- function(nax, nx, ex) {
+EDaggerx <- function(nax, nx, ex) {
   nAx = nax/nx
   edx = (nAx*c(ex[-1L], 0) + (1-nAx)*ex)
+  edx[length(edx)] = ex[length(ex)]
   return(edx)
 }
 
@@ -73,7 +74,7 @@ eDaggerx <- function(nax, nx, ex) {
 #'
 #' @keywords internal
 EDagger <- function(nax, nx, ndx, ex) {
-  edx = eDaggerx(nax, nx, ex)
+  edx = EDaggerx(nax, nx, ex)
   ed  = sum(ndx*edx)
   return(ed)
 }

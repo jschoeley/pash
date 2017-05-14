@@ -9,7 +9,7 @@ pash 0.0.3
 
 ### FIXES
 
-- the life-table Gini coefficient, variance and coefficient of variation now work with open ended life-tables (closes #16)
+- all life-table shape measures now work on open ended life-tables (closes #16)
 - the life-table variance and coefficient of variation measures now return consistent values for single year and abridged life-tables
 - print method for pash object no longer produces incoherent values for ndx and lx due to integer truncation in last age groups (closes #15)
 
