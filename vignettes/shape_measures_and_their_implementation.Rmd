@@ -1,6 +1,6 @@
 ---
 title: "Shape measures and their implementation"
-author: "Marius Pascariu and Jonas Schöley"
+author: "Jonas Schöley and Marius Pascariu"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -17,71 +17,59 @@ knitr::opts_chunk$set(tidy = FALSE, size = "small")
 Notation
 --------
 
---------------------------------- ------------------------------------------------
-$x$                               Start of age group
-$\theta = min(x)$                 Smallest values of $x$. First age group in the lifetable (usually $\theta = 0$).
-$n_x$                             Width of age group $x$ as $[x, x+n_x)$
-$e_x$                             Remaining life-expectancy at age $x$
-${}_na_x$                         Avg. time spent in $[x, x+n_x)$ when dying there
-$l_x$                             Probability of surviving until $x$. Important assumption: $l_\theta = 1$
-$f_x$                             Probability density function of ages at death
-${}_nd_x$                         Expected number of deaths in $[x, x+n_x)$
-$\omega$                          Highest age group in life-table
-${}_nA_x = \frac{a_x} {n_x}$      Avg. fraction of interval alive when dying there
-$\mu_x$                           Force of mortality at age $x$ or hazard rate.
-$\overline{\mu}$                  Weighted harmonic mean of the hazard rate. $\overline{\mu} = \frac{1}{e_\theta}$ 
-$m_x$                             Age-specific death rate at age $x$
-Let $k \in \mathbb{R}$, then             
-$\lfloor k \rfloor$               Integer part of $k$.
-$\lceil k \rceil$                 $\lfloor k \rfloor + 1$
-$\text{frac}(k)$                  $k - \lfloor k \rfloor$
---------------------------------- ------------------------------------------------
+------------------------------------------ ------------------------------------------------
+$X$                                        Continuous random variable "age at death"
+$x$                                        Lower bound of an age group
+$\theta$                                   Starting age of life-table (usually $\theta = 0$)
+$\omega$                                   Lower bound of last life-table age group
+                                           (discrete setting) or highest observed value
+                                           of $X$ (continuous setting)
+$n_x$                                      Width of age group $x$ as $[x, x+n_x)$
+$f(x) = P(X=x)$                            Probability density function of ages at death
+$\ell(x) = \ell_x = P(X > x)$              Probability of surviving up until $x$
+${}_nd_x = \int_{x}^{x+n}f(x)\,\text{d}x$  Expected number of deaths in the life-table
+                                           population over age interval $[x, x+n)$
+$\mu(x)$                                   Force of mortality at age $x$ (hazard of death)
+${}_nm_x$                                  Expected mortality rate over age interval $[x, x+n_x)$
+$e(x)=e_x=\int_x^\omega\ell(x)\,\text{d}x$ Remaining life-expectancy at age $x$
+${}_na_x$                                  Avg. time spent in $[x, x+n)$ when dying there
+${}_nA_x = \frac{{}_na_x} {n_x}$           Avg. fraction of interval alive when dying there
+Let $k \in \mathbb{R}$, then                                 
+$\lfloor k \rfloor$                        Integer part of $k$.
+$\lceil k \rceil$                          $\lfloor k \rfloor + 1$
+$\text{frac}(k)$                           $k - \lfloor k \rfloor$
+------------------------------------------ ------------------------------------------------
 
 Shape measures in *pash*
 ------------------------
 
-### Life-table variance, `Variance`, $\sigma^2$
+### Life-table entropy, `Entropy`, $H$
 
-Variance of the age at death.
+Life-table entropy, also known as Keyfitz's entropy [5], is the average remaining life-expectancy lost due to death divided by the total life-expectancy. The quantity in the numerator is known as $e^\dagger$ and discussed in [6].
 
 #### Continous
 
 $$
-\sigma^2 = \int\limits_{\theta}^{\infty} e(x)^2f(x) \text{ d}x
+H = \frac{e^\dagger} {e(\theta)} = \frac{\int\limits_{x=\theta}^{\omega} e(x)f(x)\,\text{d}x} {e(\theta)}
 $$
 
 #### Discrete
 
 $$
-\sigma^2 = \sum_{x=\theta}^{\omega-n_x} {}_nf_x[{}_nA_xe_{x+n_x}+(1-{}_nA_x)e_x]^2
+H = \frac{\sum_\limits{x=\theta}^{\omega} {}_nd_x \left[{}_nA_x e_{x+n_x} + (1-{}_nA_x) e_x \right]} {e_\theta},
 $$
-
-#### *pash* implementation
-
-```{r eval=FALSE}
-LifetableVar <- function(nax, nx, ex, ndx) {
-  nAx = nax/nx
-  Vx = nAx*c(ex[-1L], 0) + (1-nAx)*ex
-  Vx = Vx^2 * ndx*nx
-  V  = sum(Vx)
-  return(V)
-}
-```
-
-### Average Number of Life-Years Lost Due to Death, `EDagger`, $e^\dagger$
-Discrete expression by Vaupel et al. (2016).
-
-#### Continous
+with
 
 $$
-e^\dagger = \int\limits_{\theta}^{\infty} e(x)f(x) \text{ d}x 
+{}_nd_\omega \left[{}_nA_\omega e_{\omega+n_\omega} + (1-{}_nA_\omega) e_x \right] = e_\omega
 $$
 
-#### Discrete
+for the final age group.
+
+#### Harmonized Transformation
 
 $$
-e^\dagger = \sum_{x=\theta}^{\omega - n} 
-{}_nf_x \left[ {}_nA_x e_{x+n} + (1-{}_nA_x) e_x \right]
+\text{H}^* = 1-\text{H}
 $$
 
 #### *pash* implementation
@@ -100,17 +88,7 @@ EDagger <- function(nax, nx, ndx, ex) {
   ed  = sum(ndx*edx)
   return(ed)
 }
-```
 
-### Entropy, `Entropy`, $H$
-
-$$
-\text{H} = 1 - \frac{e^\dagger}{e_\theta}
-$$
-
-#### *pash* implementation
-
-```{r}
 # Life Table Entropy
 LifetableEntropy <- function(nax, nx, ndx, ex) {
   ed = EDagger(nax, nx, ndx, ex)
@@ -119,9 +97,51 @@ LifetableEntropy <- function(nax, nx, ndx, ex) {
 }
 ```
 
+
+### Life-table coefficient of variation, `cv`, $\text{CV}$
+
+The coefficient of variation of the age at death is the standard deviation in the age at death divided by the total life-expectancy.
+
+#### Continous
+
+$$
+\text{CV}(X) = \frac{\sqrt{\text{Var}(X)}} {E(X)} =\frac{\sqrt{\int_{\theta}^{\omega} f(x)(x-e_0)^2\,\text{d}x}}{e_\theta}.
+$$
+
+#### Discrete
+
+$$
+\text{CV}(X) = \frac{\sqrt{\sum_x {}_nd_x(\bar{x}-e_0)^2}} {e_\theta} = \frac{\sqrt{\sum_x {}_nd_x(x+{}_na_x-e_0)^2}} {e_\theta}.
+$$
+
+#### Harmonized Transformation
+
+$$
+\text{CV}^*(X) = 1-\text{CV}(X)
+$$
+
+#### *pash* implementation
+
+```{r eval=FALSE}
+# Life Table Variance
+LifetableVar <- function(x, ndx, nax, ex) {
+  var = sum(ndx*(x+nax-ex[1L])^2)
+  return(var)
+}
+
+# Life Table Coefficient of Variation
+LifetableCV <- function(x, ndx, nax, ex, harmonized) {
+  var = LifetableVar(x, ndx, nax, ex)
+  CV  = sqrt(var)/ex[1L]
+  if (!isTRUE(harmonized)) {S = CV}
+  if (isTRUE(harmonized)) {S = 1-CV}
+  return(S)
+}
+```
+
 ### Life-table Gini coefficient variant 1, `Gini`, $G$
 
-Gini coefficient of the age-at-death distribution, $G$, is originally defined as a property of the Lorenz curve, and it is commonly used for measuring and analyzing inter-individual inequality in the length of life. Discrete expression by Pascariu (2016).
+The Gini coefficient of the age-at-death distribution, $G$, is originally defined as a property of the Lorenz curve, and it is commonly used for measuring and analyzing inter-individual inequality in the length of life. Discrete expression by Pascariu (2016).
 
 #### Continous
 
@@ -207,38 +227,6 @@ LifetableGini3 <- function(nax, nx, lx, ex, ndx) {
   Gx   = (lx^2 + lx_1^2)/2 - (ndx^2)/6
   Gx   = Gx*nx
   G    = 1 - 1/ex[1L]*sum(Gx)
-  return(G)
-}
-```
-
-### A variant of the life-table Gini coefficient, `Gini_v`, $G_v$
-
-The variant of the Gini coefficient of the age-at-death distribution as stated in [3]. Discrete expression by Pascariu (2016).
-
-#### Continous
-
-$$
-\begin{aligned}
-\text{G}_v & = 1 - 2G \\
-& = \frac{2}{e_\theta} \int\limits_{\theta}^{\infty} l(x)^2 \text{ d}x - 1
-\end{aligned}
-$$
-
-#### Discrete
-
-$$
-\text{G}_v = \frac{2}{e_\theta} \sum_{x=\theta}^{\omega - n} 
-\left[ {}_nA_x l_{x+n} + (1- {}_nA_x)l_x \right]^2 - 1
-$$
-
-#### *pash* implementation
-
-```{r}
-LifetableGini4 <- function(nax, nx, lx, ex) {
-  nAx = nax/nx
-  Gx  = nAx*c(lx[-1L], 0) + (1-nAx)*lx
-  Gx  = Gx^2 * nx
-  G   = 2/ex[1L] * sum(Gx) - 1
   return(G)
 }
 ```
@@ -377,40 +365,17 @@ PSMAD <- function(x, nx, lx, ex){
 }
 ```
 
-### Life-table coefficient of variation, `CV`, $\text{CV}$
-
-A rescaled variant of the coefficient of variation in the age at death. Suggested by [3].
-
-#### Continous
-
-$$
-\text{CV} = \frac{1}{e(\theta)}
-\sqrt{\int \limits_{\theta}^{\infty} (x - e(\theta))^2 f(x) \text{ d}x}
-$$
-
-#### Discrete
-
-$$
-\text{CV} = \frac{\sigma}{e_\theta}
-$$
-
-#### *pash* implementation
-
-```{r}
-LifetableCV <- function(nax, nx, ex, ndx) {
-  Var = LifetableVar(nax, nx, ex, ndx)
-  CV  = sqrt(Var)/ex[1L]
-  return(CV)
-}
-```
-
 References
 ----------
 
-[1]: Baudisch, Annette. 2011. "The Pace and Shape of Ageing." Methods in Ecology and Evolution 2 (4): 375–82. doi:10.1111/j.2041-210X.2010.00087.x.
+[1]: Baudisch, Annette. 2011. The Pace and Shape of Ageing. Methods in Ecology and Evolution 2 (4): 375–82. doi:10.1111/j.2041-210X.2010.00087.x.
 
-[2]: Wrycza, Tomasz, and Annette Baudisch. 2014. "The Pace of Aging: Intrinsic Time Scales in Demography." Demographic Research 30 (1): 1571–90. doi:10.4054/DemRes.2014.30.57.
+[2]: Wrycza, Tomasz, and Annette Baudisch. 2014. The Pace of Aging: Intrinsic Time Scales in Demography. Demographic Research 30 (1): 1571–90. doi:10.4054/DemRes.2014.30.57.
 
-[3]: Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015. "Quantifying the Shape of Aging."" PLOS ONE 10 (3): 1–18. doi:10.1371/journal.pone.0119163.
+[3]: Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015. Quantifying the Shape of Aging." PLOS ONE 10 (3): 1–18. doi:10.1371/journal.pone.0119163.
 
-[4]: Shkolnikov, Vladimir, Evgueni Andreev, and Alexander Z. Begun. 2003. "Gini Coefficient as a Life Table Function."" Demographic Research 8 (17): 305-58. doi:10.4054/DemRes.2003.8.11.
+[4]: Shkolnikov, Vladimir, Evgueni Andreev, and Alexander Z. Begun. 2003. Gini Coefficient as a Life Table Function. Demographic Research 8 (17): 305-58. doi:10.4054/DemRes.2003.8.11.
+
+[5]: Keyfitz, N., & Caswell, H. 2005. Applied Mathematical Demography (3rd ed.). New York, NY: Springer.
+
+[6]: Vaupel, J. W., & Romo, V. C. (2003). Decomposing change in life expectancy: a bouquet of formulas in honor of Nathan Keyfitz’s 90th birthday. Demography, 40(2), 201-216.

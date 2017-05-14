@@ -4,15 +4,15 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta name="author" content="Marius Pascariu and Jonas Schöley" />
+<meta name="author" content="Jonas Schöley and Marius Pascariu" />
 
-<meta name="date" content="2017-04-10" />
+<meta name="date" content="2017-05-12" />
 
 <title>Shape measures and their implementation</title>
 
@@ -69,8 +69,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Shape measures and their implementation</h1>
-<h4 class="author"><em>Marius Pascariu and Jonas Schöley</em></h4>
-<h4 class="date"><em>2017-04-10</em></h4>
+<h4 class="author"><em>Jonas Schöley and Marius Pascariu</em></h4>
+<h4 class="date"><em>2017-05-12</em></h4>
 
 
 
@@ -80,18 +80,50 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <tbody>
 <tr class="odd">
 <td align="left"><span class="math inline">\(x\)</span></td>
-<td align="left">Start of age group</td>
+<td align="left">Age (in some unit of time)</td>
 </tr>
 <tr class="even">
-<td align="left"><span class="math inline">\(\theta = min(x)\)</span></td>
-<td align="left">Smallest values of <span class="math inline">\(x\)</span>. First age group in the lifetable (usually <span class="math inline">\(\theta = 0\)</span>).</td>
+<td align="left"><span class="math inline">\(\theta = \min(x)\)</span></td>
+<td align="left">Starting age of life-table (usually <span class="math inline">\(\theta = 0\)</span>)</td>
 </tr>
 <tr class="odd">
+<td align="left"><span class="math inline">\(\omega = \max(x)\)</span></td>
+<td align="left">Maximum age at death</td>
+</tr>
+<tr class="even">
 <td align="left"><span class="math inline">\(n_x\)</span></td>
 <td align="left">Width of age group <span class="math inline">\(x\)</span> as <span class="math inline">\([x, x+n_x)\)</span></td>
 </tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(f(x)\)</span></td>
+<td align="left">Probability density function of ages at death</td>
+</tr>
 <tr class="even">
-<td align="left"><span class="math inline">\(e_x\)</span></td>
+<td align="left"><span class="math inline">\(l(x)\)</span></td>
+<td align="left">Probability of surviving up until <span class="math inline">\(x\)</span>,</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">Note that: <span class="math inline">\(l_\theta = 1\)</span></td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\({}_nd_x\)</span></td>
+<td align="left">Expected number of deaths in the life-table</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">population over age interval <span class="math inline">\([x, x+n_x)\)</span></td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\mu(x)\)</span></td>
+<td align="left">Force of mortality at age <span class="math inline">\(x\)</span> (hazard of death)</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\({}_nm_x\)</span></td>
+<td align="left">Expected mortality rate over age interval <span class="math inline">\([x, x+n_x)\)</span></td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(e(x)\)</span></td>
 <td align="left">Remaining life-expectancy at age <span class="math inline">\(x\)</span></td>
 </tr>
 <tr class="odd">
@@ -99,50 +131,22 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <td align="left">Avg. time spent in <span class="math inline">\([x, x+n_x)\)</span> when dying there</td>
 </tr>
 <tr class="even">
-<td align="left"><span class="math inline">\(l_x\)</span></td>
-<td align="left">Probability of surviving until <span class="math inline">\(x\)</span>. Important assumption: <span class="math inline">\(l_\theta = 1\)</span></td>
-</tr>
-<tr class="odd">
-<td align="left"><span class="math inline">\(f_x\)</span></td>
-<td align="left">Probability density function of ages at death</td>
-</tr>
-<tr class="even">
-<td align="left"><span class="math inline">\({}_nd_x\)</span></td>
-<td align="left">Expected number of deaths in <span class="math inline">\([x, x+n_x)\)</span></td>
-</tr>
-<tr class="odd">
-<td align="left"><span class="math inline">\(\omega\)</span></td>
-<td align="left">Highest age group in life-table</td>
-</tr>
-<tr class="even">
-<td align="left"><span class="math inline">\({}_nA_x = \frac{a_x} {n_x}\)</span></td>
+<td align="left"><span class="math inline">\({}_nA_x = \frac{{}_na_x} {n_x}\)</span></td>
 <td align="left">Avg. fraction of interval alive when dying there</td>
 </tr>
 <tr class="odd">
-<td align="left"><span class="math inline">\(\mu_x\)</span></td>
-<td align="left">Force of mortality at age <span class="math inline">\(x\)</span> or hazard rate.</td>
-</tr>
-<tr class="even">
-<td align="left"><span class="math inline">\(\overline{\mu}\)</span></td>
-<td align="left">Weighted harmonic mean of the hazard rate. <span class="math inline">\(\overline{\mu} = \frac{1}{e_\theta}\)</span></td>
-</tr>
-<tr class="odd">
-<td align="left"><span class="math inline">\(m_x\)</span></td>
-<td align="left">Age-specific death rate at age <span class="math inline">\(x\)</span></td>
-</tr>
-<tr class="even">
 <td align="left">Let <span class="math inline">\(k \in \mathbb{R}\)</span>, then</td>
 <td align="left"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><span class="math inline">\(\lfloor k \rfloor\)</span></td>
 <td align="left">Integer part of <span class="math inline">\(k\)</span>.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><span class="math inline">\(\lceil k \rceil\)</span></td>
 <td align="left"><span class="math inline">\(\lfloor k \rfloor + 1\)</span></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><span class="math inline">\(\text{frac}(k)\)</span></td>
 <td align="left"><span class="math inline">\(k - \lfloor k \rfloor\)</span></td>
 </tr>
@@ -502,7 +506,7 @@ l_{e_\theta}^\ast \approx \frac{1}{n_{\lfloor e_\theta \rfloor}}
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
