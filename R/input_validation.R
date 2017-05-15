@@ -171,7 +171,8 @@ Validatenax <- function (nax, x, nx, last_open) {
       nax_mode = "scalar"
       nax_ = rep(nax, length(x))
     }
-    if (any(nax_ > nx)) { stop("nax must not be larger than nx.", call. = FALSE) }
+    # remove NA in nx for comparision because last nx may be NA
+    if (any(nax_ > nx, na.rm = TRUE)) { stop("nax must not be larger than nx.", call. = FALSE) }
   } else { # character nax
     if (!is.character(nax)) { stop("nax must be numeric or character.") }
     if (!identical(length(nax), 1L)) { stop("nax must be scalar if character.") }
