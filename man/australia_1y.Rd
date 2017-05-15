@@ -3,7 +3,7 @@
 \docType{data}
 \name{australia_1y}
 \alias{australia_1y}
-\title{Simulated period life-table for Australian males 1970-1972}
+\title{Simulated Period Life-table for Australian Males 1970-1972}
 \format{A data frame with 101 rows and 10 variables:
   \describe{
     \item{x}{Start of age interval in years.}

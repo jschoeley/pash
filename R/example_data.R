@@ -53,7 +53,24 @@ prestons_lx <-
                                94195, 91937, 88711, 83845, 76377,
                                66225, 53803, 37441, 21134)))
 
-#' Simulated period life-table for Australian males 1970-1972
+#' Simulated Survival Times for Australian Males 1970-1972
+#'
+#' Simulated survival times for a cohort of 10,000 subjects following the
+#' age-specific mortality rates of Australian males years 1970-1972.
+#'
+#' @details
+#'   The survival times have been simulated using the Heligman-Pollard mortality
+#'   model with parameters given by Heligman and Pollard (1980), Table 2.
+#'
+#' @format
+#'   A numeric vector with 10,000 elements.
+#'
+#' @source
+#'   Heligman, L., & Pollard, J. H. 1980. The Age Pattern of Mortality
+#'   Journal of the Institute of Actuaries, 107(1), 49-80.
+"australia_surv_times"
+
+#' Simulated Period Life-table for Australian Males 1970-1972
 #'
 #' A simulated period life-table for the Australian male population years
 #' 1970-1972 in single year age intervals.
@@ -83,7 +100,7 @@ prestons_lx <-
 #'   Journal of the Institute of Actuaries, 107(1), 49-80.
 "australia_1y"
 
-#' Simulated abridged period life-table for Australian males 1970-1972
+#' Simulated Abridged Period Life-table for Australian Males 1970-1972
 #'
 #' A simulated abridged period life-table for the Australian male population
 #' years 1970-1972 in 10 year age intervals with smaller intervals for
