@@ -21,14 +21,14 @@ returned (default \code{TRUE})?}
 \value{
 The following shape measures are reurned:
 \describe{
-  \item{\code{"Entropy"}}{Life table entropy}
-  \item{\code{"Gini"}}{Life table Gini coefficient}
-  \item{\code{"CV"}}{Life table coefficient of variation.}
-  \item{\code{"mxRatio"}}{Mortality Ratio - Wrycza et al. (2015)}
-  \item{\code{"exRatio"}}{Life Expectancy Ratio - Wrycza et al. (2015)}
-  \item{\code{"ACFM"}}{Average of Change in Force of Mortality
+  \item{\code{"entropy"}}{Life table entropy}
+  \item{\code{"gini"}}{Life table Gini coefficient}
+  \item{\code{"cv"}}{Life table coefficient of variation.}
+  \item{\code{"mr"}}{Mortality Ratio - Wrycza et al. (2015)}
+  \item{\code{"ler"}}{Life Expectancy Ratio - Wrycza et al. (2015)}
+  \item{\code{"acfm"}}{Average of Change in Force of Mortality
     with respect to lx - Wrycza et al. (2015)}
-  \item{\code{"PSMAD"}}{Probability to Survive up to the Mean Age at Death
+  \item{\code{"psmad"}}{Probability to Survive up to the Mean Age at Death
    - Wrycza et al. (2015)}
   \item{\code{"all"}}{All of the above measures.}
 }

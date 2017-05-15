@@ -10,6 +10,6 @@ Schoeley (2017)
 LifetableVar(x, ndx, nax, ex)
 }
 \description{
-Discrete formulation of variance
+Discrete formulation of variance of life-table distribution of death
 }
 \keyword{internal}

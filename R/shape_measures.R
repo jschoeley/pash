@@ -21,14 +21,14 @@
 #' @return
 #' The following shape measures are reurned:
 #' \describe{
-#'   \item{\code{"Entropy"}}{Life table entropy}
-#'   \item{\code{"Gini"}}{Life table Gini coefficient}
-#'   \item{\code{"CV"}}{Life table coefficient of variation.}
-#'   \item{\code{"mxRatio"}}{Mortality Ratio - Wrycza et al. (2015)}
-#'   \item{\code{"exRatio"}}{Life Expectancy Ratio - Wrycza et al. (2015)}
-#'   \item{\code{"ACFM"}}{Average of Change in Force of Mortality
+#'   \item{\code{"entropy"}}{Life table entropy}
+#'   \item{\code{"gini"}}{Life table Gini coefficient}
+#'   \item{\code{"cv"}}{Life table coefficient of variation.}
+#'   \item{\code{"mr"}}{Mortality Ratio - Wrycza et al. (2015)}
+#'   \item{\code{"ler"}}{Life Expectancy Ratio - Wrycza et al. (2015)}
+#'   \item{\code{"acfm"}}{Average of Change in Force of Mortality
 #'     with respect to lx - Wrycza et al. (2015)}
-#'   \item{\code{"PSMAD"}}{Probability to Survive up to the Mean Age at Death
+#'   \item{\code{"psmad"}}{Probability to Survive up to the Mean Age at Death
 #'    - Wrycza et al. (2015)}
 #'   \item{\code{"all"}}{All of the above measures.}
 #' }
@@ -45,13 +45,13 @@ GetShape <- function(pash, type = "all", harmonized = TRUE) {
   TestClass(pash)
   with(pash[["lt"]],
        {
-         shapes = c(Entropy  = LifetableEntropy(nax, nx, ndx, ex, harmonized),
-                    Gini     = LifetableGini(x, nax, ndx, ex, harmonized),
-                    CV       = LifetableCV(x, ndx, nax, ex, harmonized),
-                    mxRatio  = MortalityRatio(x, nx, nmx, ex, harmonized),
-                    exRatio  = LER(x, nx, ex, harmonized),
-                    ACFM     = ACFM(nmx, ndx, ex, harmonized),
-                    PSMAD    = PSMAD(x, nx, lx, ex, harmonized))
+         shapes = c(entropy = LifetableEntropy(nax, nx, ndx, ex, harmonized),
+                    gini    = LifetableGini(x, nax, ndx, ex, harmonized),
+                    cv      = LifetableCV(x, ndx, nax, ex, harmonized),
+                    mr      = MortalityRatio(x, nx, nmx, ex, harmonized),
+                    ler     = LER(x, nx, ex, harmonized),
+                    acfm    = ACFM(nmx, ndx, ex, harmonized),
+                    psmad   = PSMAD(x, nx, lx, ex, harmonized))
          if (identical(type, "all")) { S = shapes } else { S = shapes[type] }
          return(S)
        })
@@ -95,6 +95,7 @@ LifetableEntropy <- function(nax, nx, ndx, ex, harmonized) {
 #' Life Table Gini-Coefficient
 #'
 #' Discrete formulation of the Gini-Coeffcient
+#'
 #' @source Schoeley (2017)
 #' @keywords internal
 LifetableGini <- function (x, nax, ndx, ex, harmonized) {
@@ -112,7 +113,8 @@ LifetableGini <- function (x, nax, ndx, ex, harmonized) {
 
 #' Life Table Variance
 #'
-#' Discrete formulation of variance
+#' Discrete formulation of variance of life-table distribution of death
+#'
 #' @source Schoeley (2017)
 #' @keywords internal
 LifetableVar <- function(x, ndx, nax, ex) {

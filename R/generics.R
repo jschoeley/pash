@@ -47,9 +47,9 @@ summary.pash <- function (object, ...) {
       formatC(EDagger(lt[["nax"]], lt[["nx"]], lt[["ndx"]], lt[["ex"]]),
               format = "f", digits = 2), attr(object, "time_unit"))
   cat("\nLife table entropy      :",
-      formatC(GetShape(object, type = "Entropy", harmonized = FALSE), format = "f", digits = 3))
+      formatC(GetShape(object, type = "entropy", harmonized = FALSE), format = "f", digits = 3))
   cat("\nGini Coefficient        :",
-      formatC(GetShape(object, type = "Gini", harmonized = FALSE), format = "f", digits = 3))
+      formatC(GetShape(object, type = "gini", harmonized = FALSE), format = "f", digits = 3))
 }
 
 #' Convert Pace-Shape Object to Data Frame
