@@ -43,20 +43,20 @@ $\text{frac}(k)$                           $k - \lfloor k \rfloor$
 Shape measures in *pash*
 ------------------------
 
-### Life-table entropy, `Entropy`, $H$
+### Life-table entropy, `entropy`, $\text{H}$
 
-Life-table entropy, also known as Keyfitz's entropy [5], is the average remaining life-expectancy lost due to death divided by the total life-expectancy. The quantity in the numerator is known as $e^\dagger$ and discussed in [6].
+Life-table entropy, also known as Keyfitz's entropy [4], is the average remaining life-expectancy lost upon death ($e^\dagger$ [5]) divided by the total life-expectancy.
 
-#### Continous
+#### Continuous
 
 $$
-H = \frac{e^\dagger} {e(\theta)} = \frac{\int\limits_{x=\theta}^{\omega} e(x)f(x)\,\text{d}x} {e(\theta)}
+\text{H} = \frac{e^\dagger} {e(\theta)} = \frac{\int\limits_{x=\theta}^{\omega} e(x)f(x)\,\text{d}x} {e(\theta)}
 $$
 
 #### Discrete
 
 $$
-H = \frac{\sum_\limits{x=\theta}^{\omega} {}_nd_x \left[{}_nA_x e_{x+n_x} + (1-{}_nA_x) e_x \right]} {e_\theta},
+\widehat{\text{H}} = \frac {\sum_\limits{x=\theta}^{\omega} {}_nd_x \left[{}_nA_x e_{x+n_x} + (1-{}_nA_x) e_x \right]} {e_\theta},
 $$
 with
 
@@ -66,7 +66,7 @@ $$
 
 for the final age group.
 
-#### Harmonized Transformation
+#### Harmonizing Transformation
 
 $$
 \text{H}^* = 1-\text{H}
@@ -75,49 +75,51 @@ $$
 #### *pash* implementation
 
 ```{r}
-# Average Years of Life Lost due to Death in Age x
-eDaggerx <- function(nax, nx, ex) {
+# Average Life-Expectancy in Age x
+EDaggerx <- function(nax, nx, ex) {
   nAx = nax/nx
-  edx = (nAx * c(ex[-1L], 0) + (1 - nAx) * ex)
+  edx = (nAx*c(ex[-1L], 0) + (1-nAx)*ex)
+  edx[length(edx)] = ex[length(ex)]
   return(edx)
 }
 
 # Total Life Years Lost due to Death
 EDagger <- function(nax, nx, ndx, ex) {
-  edx = eDaggerx(nax, nx, ex)
+  edx = EDaggerx(nax, nx, ex)
   ed  = sum(ndx*edx)
   return(ed)
 }
 
 # Life Table Entropy
-LifetableEntropy <- function(nax, nx, ndx, ex) {
+LifetableEntropy <- function(nax, nx, ndx, ex, harmonized) {
   ed = EDagger(nax, nx, ndx, ex)
-  H  = 1 - ed / ex[1L]
-  return(H)
+  H  = ed/ex[1L]
+  if (!isTRUE(harmonized)) {S = H}
+  if (isTRUE(harmonized)) {S = 1-H}
+  return(S)
 }
 ```
-
 
 ### Life-table coefficient of variation, `cv`, $\text{CV}$
 
 The coefficient of variation of the age at death is the standard deviation in the age at death divided by the total life-expectancy.
 
-#### Continous
+#### Continuous
 
 $$
-\text{CV}(X) = \frac{\sqrt{\text{Var}(X)}} {E(X)} =\frac{\sqrt{\int_{\theta}^{\omega} f(x)(x-e_0)^2\,\text{d}x}}{e_\theta}.
+\text{CV} = \frac {\sqrt{\text{Var}(X)}} {\text{E}(X)} =\frac {\sqrt{\int_{x=\theta}^{\omega} f(x)(x-e_0)^2\,\text{d}x}}{e_\theta}.
 $$
 
 #### Discrete
 
 $$
-\text{CV}(X) = \frac{\sqrt{\sum_x {}_nd_x(\bar{x}-e_0)^2}} {e_\theta} = \frac{\sqrt{\sum_x {}_nd_x(x+{}_na_x-e_0)^2}} {e_\theta}.
+\widehat{\text{CV}} = \frac {\sqrt{\sum_\limits{x=\theta}^\omega {}_nd_x(\overline{x}-e_0)^2}} {e_\theta} = \frac {\sqrt{\sum_\limits{x=\theta}^\omega {}_nd_x(x+{}_na_x-e_0)^2}} {e_\theta}.
 $$
 
-#### Harmonized Transformation
+#### Harmonizing Transformation
 
 $$
-\text{CV}^*(X) = 1-\text{CV}(X)
+\text{CV}^* = 1-\text{CV}
 $$
 
 #### *pash* implementation
@@ -139,243 +141,234 @@ LifetableCV <- function(x, ndx, nax, ex, harmonized) {
 }
 ```
 
-### Life-table Gini coefficient variant 1, `Gini`, $G$
+### Life-table Gini coefficient, `gini`, $\text{G}$
 
-The Gini coefficient of the age-at-death distribution, $G$, is originally defined as a property of the Lorenz curve, and it is commonly used for measuring and analyzing inter-individual inequality in the length of life. Discrete expression by Pascariu (2016).
+The Gini coefficient of the age-at-death distribution represents the mean absolute difference in the ages at death between any two individuals of a population.
 
-#### Continous
+We base our discretization of the Gini coefficient on the formulation by [3] because it allows for a straightforward inclusion of ${}_na_x$ and doesn't require special considerations in case of an open-ended age group. An alternative formulation in terms of the life-table survivorship curve proposed by [2] and discretized by [8, 9] is in widespread use in demography.
+
+#### Continuous
 
 $$
-\text{G} = 1 - \frac{1}{e_\theta} \int\limits_{\theta}^{\infty} l(x)^2 \text{ d}x
+\text{G} = \frac{1}{2e_\theta} \int\limits_{x=\theta}^{\omega}\int\limits_{y=\theta}^{\omega} |x-y|\cdot f(x)f(y)\,\text{d}x\,\text{d}y
 $$
 
 #### Discrete
 
+Let $i, j$ be indices of life-table age groups $1\ldots k$. Let $\overline{x}_i = x_i + a_i$ be the average age at death for those who die in age group $i$. Then
+
 $$
-\text{G} = 1 - \frac{1}{e_\theta} \sum_{x = \theta}^{\omega-n} 
-\left[ {}_nA_x l_{x+n} + (1-{}_nA_x)l_x \right]^2
+\widehat{\text{G}} = \frac {1} {2e_\theta} \sum\limits_{i,j=1}^{k}d_i \cdot d_j \cdot | \overline{x}_i - \overline{x}_j |
 $$
+
+This expression can easily evaluated using the matrix facilities available in `R`. We therefore reformulate it in matrix algebra notation. Let $\mathbf{D}_{k\times k}=\mathbf{d} \otimes \mathbf{d}$ and let $\overline{\mathbf{X}} = | \mathbf{e}\overline{\mathbf{x}}^\top - \overline{\mathbf{x}}\mathbf{e}^\top|$, then
+
+$$
+\begin{aligned}
+\widehat{\text{G}} &= \frac {1} {2e_\theta} \sum\limits_{i,j=1}^{k} \mathbf{D} \circ \overline{\mathbf{X}} \\
+  &= \frac {\mathbf{e}^\top\left[\mathbf{D} \circ \overline{\mathbf{X}}\right]\mathbf{e}} {2e_\theta}
+\end{aligned}
+$$
+
+#### Harmonizing Transformation
+
+$$
+\text{G}^* = 1-2\text{G}
+$$
+
 
 #### *pash* implementation
 
 ```{r}
-LifetableGini <- function(nax, nx, lx, ex) {
-  nAx <- nax/nx
-  Gx = nAx * c(lx[-1L], 0) + (1-nAx)*lx
-  Gx = Gx^2 * nx
-  G  = 1 - 1/ex[1L]*sum(Gx)
-  return(G)
+# Life Table Gini-Coefficient
+LifetableGini <- function (x, nax, ndx, ex, harmonized) {
+  e = rep(1, length(x))
+  D = outer(ndx, ndx)
+  x_ = x+nax
+  X_ = abs(e%*%t(x_) - x_%*%t(e))
+  G = sum(D*X_)/(2*ex[1L])
+  if (!isTRUE(harmonized)) {S = G}
+  if (isTRUE(harmonized)) {S = 1-2*G}
+  return(S)
 }
 ```
 
-### Life-table Gini coefficient variant 2, `Gini2`, $G_2$
+### Mortality ratio, `mr`, $\text{MR}$
 
-Gini coefficient of the age-at-death distribution. Discrete expression by [4].
+The ratio between mortality at age 0 and mortality at the age of total life-expectancy. First suggested by [1], further developed by [7].
 
-#### Continous
-
-$$
-\text{G}_2 = G = 1 - \frac{1}{e_\theta} \int\limits_{\theta}^{\infty} l(x)^2 \text{ d}x
-$$
-
-#### Discrete
+#### Continuous
 
 $$
-\text{G}_2 = 1 - \frac{1}{e_\theta} 
-\left[\sum_{x=\theta}^{\omega-n} l_x^2 + a_x \left( l_x^2 - l_{x+n}^2 \right) \right]
-$$
-
-
-#### *pash* implementation
-
-```{r}
-LifetableGini2 <- function(nax, nx, lx, ex) {
-  nAx  = nax/nx
-  lx_1 = c(lx[-1L], 0)
-  Gx   = lx_1^2 + nAx*(lx^2 - lx_1^2)
-  Gx   = Gx*nx
-  G    = 1 - 1/ex[1L] * sum(Gx)
-  return(G)
-}
-```
-
-### Life-table Gini coefficient variant 3, `Gini3`, $G_3$
-
-Gini coefficient of the age-at-death distribution. Discrete expression by Danko (2016).
-
-#### Continous
-
-$$
-\text{G}_3 = \text{G} = 1 - \frac{1}{e_\theta} 
-\int\limits_{\theta}^{\infty} l(x)^2 \text{ d}x
+\text{MR} = \frac{\mu(\theta)}{\mu(e_\theta)}
 $$
 
 #### Discrete
 
 $$
-\text{G}_3 = 1 - \frac{1}{e_\theta} \sum_{x=\theta}^{\omega-n} 
-\left( \frac{l_x^2 + l_{x+n}^2}{2} - \frac{d_x^2}{6} \right)
+\widehat{\text{MR}} = \frac {{}_nm_\theta} {\widehat{\mu}_{e_\theta}}
 $$
 
-#### Discrete derivation:
-
-#### *pash* implementation
-
-```{r}
-LifetableGini3 <- function(nax, nx, lx, ex, ndx) {
-  lx_1 = c(lx[-1L], 0)
-  Gx   = (lx^2 + lx_1^2)/2 - (ndx^2)/6
-  Gx   = Gx*nx
-  G    = 1 - 1/ex[1L]*sum(Gx)
-  return(G)
-}
-```
-
-### Mortality ratio, `mxRatio`, $\text{MR}$
-
-The ratio between mortality at age 0 and mortality at the age of total life-expectancy. First suggested by [1], further developed by [3].
-
-#### Continous
+where, using linear interpolation of the ${}_nm_x$ data, we have
 
 $$
-\text{MR} = 1 - \frac{\mu(\theta)}{\mu(e(\theta))}
+\widehat{\mu}_{e_\theta} = \frac {1} {n_{\lfloor e_\theta \rfloor}} 
+\left[ {}_nm_{\lfloor e_\theta \rfloor} (n_{\lfloor e_\theta \rfloor} - \text{frac}~e_\theta) + {}_nm_{\lceil e_\theta \rceil} \text{frac}~e_\theta \right]
 $$
 
-#### Discrete
+#### Harmonizing Transformation
 
 $$
-\text{MR} = 1 - \frac{m_\theta}{m_{e_\theta}}
-$$
-where,
-$$
-m_{e_\theta} \approx \frac{1}{n_{\lfloor e_\theta \rfloor}} 
-\left[ l_{\lfloor e_\theta \rfloor} (n_{\lfloor e_\theta \rfloor} - \text{frac}(e_\theta)) + l_{\lceil e_\theta \rceil} \text{frac}(e_\theta) \right]
+\text{MR}^* = 1-\text{MR}
 $$
 
 #### *pash* implementation
 
 ```{r}
-MortalityRatio <- function(x, nx, nmx, ex){
+# Mortality Ratio
+MortalityRatio <- function(x, nx, nmx, ex, harmonized){
   m0   = nmx[1L]
-  m_e0 = FindValue(measure = nmx, x, nx, ex)
-  MR   = 1 - m0/m_e0
-  return(MR)
+  m_e0 = approx(x = x, y = nmx, xout = ex[1L])[["y"]]
+  MR   = m0/m_e0
+  if (!isTRUE(harmonized)) {S = MR}
+  if (isTRUE(harmonized)) {S = 1 - MR}
+  return(S)
 }
 
-FindValue <- function(measure, x, nx, ex){
-  # I know this looks crazy!
-  e0     = ex[1L]
-  e0_    = max(x[(x - e0) <= 0])       # find the floor of e0 value
-  m_e0_  = measure[x == e0_]           # find the floor of nmx (when x = e0_)
-  n_e0_  = nx[x == e0_]
-  m_e0up = measure[x == (e0_ + n_e0_)] # find the ceiling of nmx (when x = e0_ + nx)
-  E0     = e0 - e0_                    # frac(e0)
-  M_e0   = (m_e0_*(n_e0_ - E0) + m_e0up * E0) / n_e0_
-  return(M_e0)
-}
 ```
 
-### Life expectancy ratio, `exRatio`, $\text{LER}$
+### Life expectancy ratio, `ler`, $\text{LER}$
 
-The ratio between remaining life expectancy at the age of total life expectancy and total life expectancy. Suggested by [3].
+The ratio between remaining life expectancy at the age of total life expectancy and total life expectancy. Suggested by [7].
 
-#### Continous
+#### Continuous
 
 $$
-\text{LER} = 1 - \frac{e(e(\theta))}{e(\theta)}
+\text{LER} = \frac{e(e_\theta)}{e(\theta)}
 $$
 
 #### Discrete
 
 $$
-\text{LER} = 1 - \frac{e_{e_\theta}^\ast}{e_\theta}
+\widehat{\text{LER}} = 1 - \frac{\widehat{e}_{e_\theta}}{e_\theta}
 $$
-where,
+
+where, using linear interpolation of the $e(x)$ function, we have
+
 $$
-e_{e(\theta)}^\ast \approx \frac{1}{n_{\lfloor e_\theta \rfloor}} 
-\left[ e_{\lfloor e_\theta \rfloor} (n_{\lfloor e_\theta \rfloor} - \text{frac}(e_\theta)) + e_{\lceil e_\theta \rceil} \text{frac}(e_\theta) \right]
+\widehat{e}_{e_\theta} = \frac{1}{n_{\lfloor e_\theta \rfloor}} 
+\left[ e_{\lfloor e_\theta \rfloor} (n_{\lfloor e_\theta \rfloor} - \text{frac}~e_\theta) + e_{\lceil e_\theta \rceil} \text{frac}~e_\theta \right].
+$$
+
+#### Harmonizing Transformation
+
+$$
+\text{LER}^* = 1-\text{LER}
 $$
 
 #### *pash* implementation
 
 ```{r}
-LER <- function(x, nx, ex){
-  e0   = ex[1L]
-  e_e0 = FindValue(measure = ex, x, nx, ex)
-  ler  =  1 - e_e0/e0
-  return(ler)
+# Life Expectancy Ratio
+LER <- function(x, nx, ex, harmonized){
+  e_e0 = approx(x = x, y = ex, xout = ex[1L])[["y"]]
+  ler = e_e0/ex[1L]
+  if (!isTRUE(harmonized)) {S = ler}
+  if (isTRUE(harmonized)) {S = 1-ler}
+  return(S)
 }
 ```
 
-### Average change in force of mortality wrt $l_x$, `ACFM`, $\text{ACFM}$
+### Average change in force of mortality wrt. $\ell_x$, `acfm`, $\text{ACFM}$
 
-A rescaled variant of the average lifetime change of the hazard of death divided by average mortality. Suggested by [3].
+A rescaled variant of the average lifetime change of the hazard of death divided by average mortality. Suggested by [7].
 
-#### Continous
+#### Continuous
 
 $$
-\text{ACFM} = 1 - \exp{\left[- \int\limits_{\theta}^{\infty} 
-\frac{\mu(x) - \mu(\theta)}{\overline{\mu}} f(x) \text{ d}x \right]}
+\text{ACFM} = \int\limits_{x=\theta}^{\omega}
+\frac{\mu(x) - \mu(\theta)}{\overline{\mu}} f(x)\,\text{d}x
 $$
 
 #### Discrete
 
 $$
-\text{ACFM} = 1 - \exp{\left[ -e_\theta \sum_{x=\theta}^{\omega} (m_x - m_\theta) {}_nd_x \right]}
+\widehat{\text{ACFM}} = e_\theta \sum_{x=\theta}^{\omega} \left[ ({}_nm_x - {}_nm_\theta) {}_nd_x \right]
+$$
+
+#### Harmonizing Transformation
+
+$$
+\text{ACFM}^* = 1-e^{-\text{ACFM}}
 $$
 
 #### *pash* implementation
 
 ```{r}
-ACFM <- function(nmx, ndx, ex){
+# Average of Change in Force of Mortality with respect to lx
+ACFM <- function(nmx, ndx, ex, harmonized){
   acfm_x = (nmx - nmx[1L]) * ndx
-  acfm   = 1 - exp(-ex[1L] * sum(acfm_x))
-  return(acfm)
+  D = ex[1L] * sum(acfm_x)
+  if (!isTRUE(harmonized)) {S = D}
+  if (isTRUE(harmonized)) {S = 1-exp(-D)}
+  return(S)
 }
 ```
 
-### Probability to survive up to mean age at death, `PSMAD`, $\text{PSMAD}$
+### Probability to survive up to mean age at death, `psmad`, $\ell_{e_\theta}$
 
-A rescaled variant of the probability to survive up to the mean age at death. Suggested by [3].
+The probability to survive up to the mean age at death, suggested by [3].
 
-#### Continous
+#### Continuous
 
 $$
-\text{PSMAD} = 1 + \log{l(e(\theta))}
+\ell_{e_\theta} = \text{P}(X>e_\theta)
 $$
 
 #### Discrete
 
+Using linear interpolation of the $\ell(x)$ function we get
+
 $$
-\text{PSMAD} = 1 + \log{(l_{e_\theta}^\ast)}
+\widehat{\ell}_{e_\theta} = \frac{1}{n_{\lfloor e_\theta \rfloor}} 
+\left[ \ell_{\lfloor e_\theta \rfloor} (n_{\lfloor e_\theta \rfloor} - \text{frac}~e_\theta) + \ell_{\lceil e_\theta \rceil} \text{frac}~e_\theta \right].
 $$
-where
+
+#### Harmonizing Transformation
+
 $$
-l_{e_\theta}^\ast \approx \frac{1}{n_{\lfloor e_\theta \rfloor}} 
-\left[ l_{\lfloor e_\theta \rfloor} (n_{\lfloor e_\theta \rfloor} - \text{frac}(e_\theta)) + l_{\lceil e_\theta \rceil} \text{frac}(e_\theta) \right]
+\ell_{e_\theta}^\ast = 1 + \log \ell_{e_\theta}
 $$
 
 #### *pash* implementation
 
 ```{r}
-PSMAD <- function(x, nx, lx, ex){
-  l_e0  = FindValue(measure = lx, x, nx, ex)
-  psmad = 1 - log(l_e0)
-  return(psmad)
+# Probability to Survive up to the Mean Age at Death
+PSMAD <- function(x, nx, lx, ex, harmonized){
+  l_e0  = approx(x = x, y = lx, xout = ex[1L])[["y"]]
+  if (!isTRUE(harmonized)) {S = l_e0}
+  if (isTRUE(harmonized)) {S = 1 + log(l_e0)}
+  return(S)
 }
 ```
 
 References
 ----------
 
-[1]: Baudisch, Annette. 2011. The Pace and Shape of Ageing. Methods in Ecology and Evolution 2 (4): 375–82. doi:10.1111/j.2041-210X.2010.00087.x.
+[1]: Baudisch, A. (2011). The pace and shape of ageing. Methods in Ecology and Evolution, 2(4), 375-382. https://doi.org/10.1111/j.2041-210X.2010.00087.x
 
-[2]: Wrycza, Tomasz, and Annette Baudisch. 2014. The Pace of Aging: Intrinsic Time Scales in Demography. Demographic Research 30 (1): 1571–90. doi:10.4054/DemRes.2014.30.57.
+[2] Hanada, K. (1983). A Formula of Gini's Concentration Ratio and its Applications to Life Tables. Journal of the Japan Statistical Society, 13(2), 95-98. Retrieved from https://www.jstage.jst.go.jp/article/jjss1970/13/2/13_2_95/_pdf
 
-[3]: Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015. Quantifying the Shape of Aging." PLOS ONE 10 (3): 1–18. doi:10.1371/journal.pone.0119163.
+[3]: Kendall, M. G. (1945). The Advanced Theory of Statistics. Volume I (2nd ed.). London: Charles Griffin.
 
-[4]: Shkolnikov, Vladimir, Evgueni Andreev, and Alexander Z. Begun. 2003. Gini Coefficient as a Life Table Function. Demographic Research 8 (17): 305-58. doi:10.4054/DemRes.2003.8.11.
+[4]: Keyfitz, N., & Caswell, H. (2005). Applied Mathematical Demography (3rd ed.). New York, NY: Springer.
 
-[5]: Keyfitz, N., & Caswell, H. 2005. Applied Mathematical Demography (3rd ed.). New York, NY: Springer.
+[5]: Vaupel, J. W., & Romo, V. C. (2003). Decomposing change in life expectancy: a bouquet of formulas in honor of Nathan Keyfitz’s 90th birthday. Demography, 40(2), 201-216.
 
-[6]: Vaupel, J. W., & Romo, V. C. (2003). Decomposing change in life expectancy: a bouquet of formulas in honor of Nathan Keyfitz’s 90th birthday. Demography, 40(2), 201-216.
+[6]: Wrycza, T., & Baudisch, A. (2014). The pace of aging: Intrinsic time scales in demography. Demographic Research, 30(1), 1571-1590. https://doi.org/10.4054/DemRes.2014.30.57
+
+[7]: Wrycza, T. F., Missov, T. I., & Baudisch, A. (2015). Quantifying the Shape of Aging. PLOS ONE, 10(3), 1-18. https://doi.org/10.1371/journal.pone.0119163
+
+[8] Shkolnikov, V. M., & Andreev, E. M. (2010). Spreadsheet for calculation of life-table dispersion measures. Retrieved from http://www.demogr.mpg.de/papers/technicalreports/tr-2010-001.pdf
+
+[9]: Shkolnikov, V., Andreev, E., & Begun, A. Z. (2003). Gini coefficient as a life table function. Demographic Research, 8(17), 305-358. https://doi.org/10.4054/DemRes.2003.8.11
