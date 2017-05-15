@@ -147,30 +147,16 @@ ACFM <- function(nmx, ndx, ex, harmonized){
 
 # Mortality ratio ---------------------------------------------------------
 
-#' Find and compute values that depend on ex
-#' eg: m(x) when x = e(x)
-#' @keywords internal
-FindValue <- function(measure, x, nx, ex){
-  # I know this looks crazy!
-  e0     = ex[1L]
-  e0_    = max(x[(x - e0) <= 0]) # find the floor of e0 value
-  m_e0_  = measure[x == e0_] # find the floor of nmx (when x = e0_)
-  n_e0_  = nx[x == e0_]
-  m_e0up = measure[x == (e0_ + n_e0_)] # find the ceiling of nmx (when x = e0_ + nx)
-  E0     = e0 - e0_
-  M_e0   = (m_e0_*(n_e0_ - E0) + m_e0up * E0) / n_e0_
-  return(M_e0)
-}
-
 #' Mortality Ratio
 #'
+#' @importFrom stats approx
 #' @keywords internal
 MortalityRatio <- function(x, nx, nmx, ex, harmonized){
   m0   = nmx[1L]
-  m_e0 = FindValue(measure = nmx, x, nx, ex)
-  MR   = 1 - m0/m_e0
+  m_e0 = approx(x = x, y = nmx, xout = ex[1L])[["y"]]
+  MR   = m0/m_e0
   if (!isTRUE(harmonized)) {S = MR}
-  if (isTRUE(harmonized)) {S = MR}
+  if (isTRUE(harmonized)) {S = 1 - MR}
   return(S)
 }
 
@@ -178,9 +164,10 @@ MortalityRatio <- function(x, nx, nmx, ex, harmonized){
 
 #' Probability to Survive up to the Mean Age at Death
 #'
+#' @importFrom stats approx
 #' @keywords internal
 PSMAD <- function(x, nx, lx, ex, harmonized){
-  l_e0  = FindValue(measure = lx, x, nx, ex)
+  l_e0  = approx(x = x, y = lx, xout = ex[1L])[["y"]]
   if (!isTRUE(harmonized)) {S = l_e0}
   if (isTRUE(harmonized)) {S = 1 + log(l_e0)}
   return(S)
@@ -190,9 +177,10 @@ PSMAD <- function(x, nx, lx, ex, harmonized){
 
 #' Life Expectancy Ratio
 #'
+#' @importFrom stats approx
 #' @keywords internal
 LER <- function(x, nx, ex, harmonized){
-  e_e0 = FindValue(measure = ex, x, nx, ex)
+  e_e0 = approx(x = x, y = ex, xout = ex[1L])[["y"]]
   ler = e_e0/ex[1L]
   if (!isTRUE(harmonized)) {S = ler}
   if (isTRUE(harmonized)) {S = 1-ler}
