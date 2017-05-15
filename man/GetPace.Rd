@@ -27,7 +27,7 @@ The type argument accepts the following strings:
 \describe{
   \item{\code{"e0"}}{Total life expectancy.}
   \item{\code{"qlx"}}{Age where q percent of the life table population is still alive.}
-  \item{\code{"cdr"}}{The average mortality rate over all ages (crude death rate).}
+  \item{\code{"ldr"}}{The life-table death rate.}
   \item{\code{"all"}}{All of the above measures}
 }
 }
