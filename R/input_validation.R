@@ -130,6 +130,8 @@ Validatenx <- function (nx, x, last_open) {
     # numeric vector nx
     if (length(nx) > 1L) {
       if (!identical(length(nx), length(x))) { stop("nx vector must be of same length as x.", call. = FALSE) }
+      if (identical(last_open, FALSE) && any(is.na(nx))) { stop("nx vector must not contain NA if last_open=FALSE.", call. = FALSE) }
+      if (identical(last_open, TRUE) && any(is.na(nx[-length(nx)]))) { stop("nx vector must not contain NA unless its in last position and last_open=TRUE.", call. = FALSE) }
       nx_mode = "vector"
       nx_ = nx
       if (identical(last_open, TRUE)) { nx_ = SetLastToNA(nx_) }

@@ -29,6 +29,8 @@ test_that("errors in age input are catched", {
 # Test Validatenx() -------------------------------------------------------
 
 test_that("errors in nx input are catched", {
+
+  # Validatenx() level tests
   expect_error(Validatenx(c(rep(5, 11), NaN), seq(0, 55, 5), last_open = TRUE),
                "nx must not contain NaN.")
   expect_error(Validatenx(c(rep(5, 11), Inf), seq(0, 55, 5), last_open = TRUE),
@@ -67,6 +69,24 @@ test_that("errors in nx input are catched", {
                "Provided Age and nx vectors don't match.")
   expect_error(Validatenx(rep(6, 12), seq(0, 55, 5), last_open = TRUE),
                "Provided Age and nx vectors don't match.")
+
+  # Input*() level tests
+  expect_error(Inputlx(x = australia_1y$x, nx = c(NA, rep(1, 100)),
+                       nax = australia_1y$nax, lx = australia_1y$lx,
+                       last_open = FALSE),
+               "nx vector must not contain NA if last_open=FALSE")
+  expect_error(Inputlx(x = australia_1y$x, nx = c(rep(1, 100), NA),
+                       nax = australia_1y$nax, lx = australia_1y$lx,
+                       last_open = FALSE),
+               "nx vector must not contain NA if last_open=FALSE")
+  expect_error(Inputlx(x = australia_1y$x, nx = c(NA, rep(1, 100)),
+                       nax = australia_1y$nax, lx = australia_1y$lx,
+                       last_open = TRUE),
+               "nx vector must not contain NA unless its in last position and last_open=TRUE")
+  expect_equal(Inputlx(x = australia_1y$x, nx = c(rep(1, 100), NA),
+                       nax = australia_1y$nax, lx = australia_1y$lx,
+                       last_open = TRUE)[["lt"]][["ex"]][1],
+               68.2675, tolerance = 0.0001, scale = 1)
 })
 
 # Test Validatenax() ------------------------------------------------------
