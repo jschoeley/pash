@@ -7,6 +7,8 @@ pash 0.0.4
 
 ### OTHER CHANGES
 
+- add tests for shape measures
+
 pash 0.0.3
 ----------
 
