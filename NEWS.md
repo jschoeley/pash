@@ -1,3 +1,12 @@
+pash 0.0.4
+----------
+
+### NEW FEATURES
+
+### FIXES
+
+### OTHER CHANGES
+
 pash 0.0.3
 ----------
 
