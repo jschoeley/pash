@@ -3,9 +3,9 @@ pash 0.0.3
 
 ### NEW FEATURES
 
-- Conditional probabilities of death can be used as input via the new `Inputnqx()` function (@panchoVG).
-- The crude death rate (cdr) has been added to the pace measures returned by `GetPace()`
-- `GetShape()` now features the `harmonized` option. If set to `TRUE` the shape measures are rescaled so that they all have a similar interpretation (see Wrycza etal. 2015. Quantifying the Shape of Aging for details). Set to `FALSE` the measures are returned in their conventional form. (closes #14)
+- conditional probabilities of death can be used as input via the new `Inputnqx()` function (@panchoVG)
+- `GetShape()` now features the `harmonized` option. if set to `TRUE` the shape measures are rescaled so that they all have a similar interpretation (see Wrycza etal. (2015). Quantifying the Shape of Aging for details). Set to `FALSE`, the measures are returned in their conventional form (closes #14)
+- the life-table death rate (ldr) has been added to the pace measures returned by `GetPace()`
 
 ### FIXES
 
@@ -15,7 +15,11 @@ pash 0.0.3
 
 ### OTHER CHANGES
 
-- The life-table variance measure has been removed from the output of `GetShape()` because it is not standardized by pace and therefore no true shape measure. The life-table coefficient of variation is available as the true shape measure equivalent.
-- Remove alternative Gini implementations
-- Add additional data sets
-- Implement additional tests
+- add vignette: "Shape measures and their implementation"
+- add vignette: "Accuracy of discrete formulas for life-table shape measures"
+- the life-table variance measure has been removed from the output of `GetShape()` because it is not standardized by pace and therefore not a true shape measure. the life-table coefficient of variation is available as the true shape measure equivalent.
+- The cdr has been renamed ldr (life-table death rate) and moved from shape to pace measures
+- remove alternative Gini implementations
+- add additional data sets
+- implement additional tests
+- changed names of shape measures to lowercase
