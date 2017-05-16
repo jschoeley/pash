@@ -1,6 +1,6 @@
 ---
 title: "pash: Pace-Shape Analysis for Life-tables"
-author: "Jonas Schoeley, Marius Pascariu, Francisco Villavicencio"
+author: "Jonas Schoeley, Marius Pascariu, Francisco Villavicencio, Maciej Danko"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -97,7 +97,7 @@ GetShape(pash)
 The life-table entropy:
 
 ```{r}
-GetShape(pash, type = "Entropy")
+GetShape(pash, type = "entropy")
 ```
 
 ### Rebase a life-table
@@ -165,7 +165,7 @@ sweden5x5 %>%
     do({
      pash = Inputnmx(x = .$x, nmx = .$nmx)
      data.frame(e0 = GetPace(pash, type = "e0"),
-                H  = GetShape(pash, type = "Entropy"))
+                H  = GetShape(pash, type = "entropy"))
     }) %>%
   ggplot(aes(x = e0, y = H, color = sex)) + geom_point()
 ```

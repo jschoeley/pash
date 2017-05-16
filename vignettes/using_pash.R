@@ -32,7 +32,7 @@ GetPace(pash, type = "qlx", q = 0.2)
 GetShape(pash)
 
 ## ------------------------------------------------------------------------
-GetShape(pash, type = "Entropy")
+GetShape(pash, type = "entropy")
 
 ## ------------------------------------------------------------------------
 pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
@@ -68,7 +68,7 @@ sweden5x5 %>%
     do({
      pash = Inputnmx(x = .$x, nmx = .$nmx)
      data.frame(e0 = GetPace(pash, type = "e0"),
-                H  = GetShape(pash, type = "Entropy"))
+                H  = GetShape(pash, type = "entropy"))
     }) %>%
   ggplot(aes(x = e0, y = H, color = sex)) + geom_point()
 
