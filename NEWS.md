@@ -5,6 +5,8 @@ pash 0.0.4
 
 ### FIXES
 
+- last nax is no longer NA in case of `Inputnmx(nax="udd", last_open=TRUE)` but instead calculated using constant hazard assumption (closes #18)
+
 ### OTHER CHANGES
 
 - add tests for shape measures

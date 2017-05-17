@@ -1,127 +1,3 @@
-# nax Calculation ---------------------------------------------------------
-
-#' Calculate nax From nx Using Uniform Distribution of Deaths Assumption
-#'
-#' Get life-table nax values from nx using the "uniform distribution of deaths"
-#' (midpoint) assumption.
-#'
-#' @param nx Width of age interval [x, x+n).
-#' @param k  Number of age groups.
-#' @param last_open Is the last age group open (TRUE) or closed (FALSE)?
-#'
-#' @return The nax as a numeric vector of \code{length(nx)}.
-#'
-#' @details
-#' nax is NA for last open age group.
-#'
-#' @keywords internal
-naxUDD <- function (nx, k, last_open) {
-  nax = 0.5*nx
-  return(nax)
-}
-
-#' Calculate nax From nqx Using Constant Force of Mortality Assumption
-#'
-#' Get life-table nax values from nqx using the constant nmx assumption.
-#'
-#' @param nx  Width of age interval [x, x+n).
-#' @param nqx Probability to die within age interval [x, x+nx) given survival to
-#'   x.
-#' @param npx Probability to survive age interval [x, x+nx) given survival to x.
-#' @param k   Number of age groups.
-#' @param last_open Is the last age group open (TRUE) or closed (FALSE)?
-#'
-#' @return The nax as a numeric vector of \code{length(nx)}.
-#'
-#' @details
-#' For all age groups but the last we calculate:
-#' nax = -nx/nqx - nx/log(npx) + nx
-#'
-#' If the last age group is closed we linearly extrapolate the last nax from the
-#' preceding two nax.
-#'
-#' If the last age group is open we set the last nax to NA.
-#'
-#' @keywords internal
-naxCFMfromnqx <- function (x, nx, nqx, npx, k, last_open) {
-  nax = -nx/nqx - nx/log(npx) + nx
-  if (identical(last_open, FALSE)) {
-    # the analytic expression above can't return a nax value for the
-    # last age group (when survivorship hits 0). Therefore we extrapolate
-    # the last nax value based on the preceding 2 nax values
-    nAx = nax/nx
-    nAk = LinearExtrapolation(x = x[c(k-2, k-1)], y = nAx[c(k-2, k-1)],
-                              xextra = x[k], loga = FALSE)
-    nax[k] = nAk*nx[k]
-  }
-  if (identical(last_open, TRUE)) {
-    # without knowing the width of the last age group there is no way to know
-    # the last nax value
-    nax[k] = NA
-  }
-  return(nax)
-}
-
-#' Calculate nax From nmx Using Constant Force of Mortality Assumption
-#'
-#' Get life-table nax values from nmx using the constant nmx assumption.
-#'
-#' @param nx  Width of age interval [x, x+n).
-#' @param nmx Mortality rate in age interval [x, x+nx).
-#' @param k   Number of age groups.
-#' @param last_open Is the last age group open (TRUE) or closed (FALSE)?
-#'
-#' @return The nax as a numeric vector of \code{length(nx)}.
-#'
-#' @details
-#' For all age groups we calculate:
-#' nax = nx + 1/nmx - nx/(1 - exp(-nx*nmx))
-#'
-#' If the last age group is open we calculate the last nax as the remaining life
-#' expectancy at x. Given the constant hazard assumption that is:
-#' nax[k] = 1/nmx[k]
-#'
-#' @keywords internal
-naxCFMfromnmx <- function (nx, nmx, k, last_open) {
-  nax = nx + 1/nmx - nx/(1 - exp(-nx*nmx))
-  if (identical(last_open, TRUE)){
-    nax[k] = 1/nmx[k]
-  }
-  return(nax)
-}
-
-#' Convert Death Rates to Death Probabilities
-#'
-#' @param nmx Mortality rate in age interval [x, x+nx).
-#' @param nax Subject-time alive in [x, x+n) for those who die in same interval.
-#' @param nx Width of age interval [x, x+n).
-#' @param mode Conversion formula. "chiang", "cfm", or "udd".
-#'
-#' @details Chiangs formula for the nmx->nqx conversion is
-#'
-#' nqx = nx*nmx / (1+(nx-nax)*nmx).
-#'
-#' It may produce probabilities > 1 in cases where age groups are wide, hazards
-#' are high and the nax is approximated using the uniform distribution of deaths
-#' or the constant force of mortality assumption. Therefore in these cases we
-#' use other conversion formulas.
-#'
-#' nqx = 1 - exp(-nmx*nx),
-#'
-#' assuming a constant force of mortality within the age interval [x, x+n), and
-#'
-#' nqx = 1 - (1-nmx / (1+0.5*nmx))^nx,
-#'
-#' assuming a uniform distribution of deaths within the age interval [x, x+n).
-#'
-#' @keywords internal
-nmxTonqx <- function (nmx, nax, nx, mode) {
-  if (identical(mode, "chiang")) { nqx = nx*nmx / (1+(nx-nax)*nmx) }
-  if (identical(mode, "cfm")) { nqx = 1 - exp(-nmx*nx) }
-  if (identical(mode, "udd")) { nqx = 1 - (1-nmx / (1+0.5*nmx))^nx }
-  return(nqx)
-}
-
 # Input lx ----------------------------------------------------------------
 
 #' Convert a Life-table Survivorship Function into a Pace-Shape Object
@@ -354,6 +230,8 @@ Inputnmx <- function (x, nmx,
   # contributed by those who die in that age group
   if (identical(val_nax[["nax_mode"]], "udd")) {
     nax_ = naxUDD(nx_, k, last_open)
+    # if last age group is open use cfm assumption for last nax
+    if (identical(last_open, TRUE)) { nax_[k] = 1/nmx[k] }
   }
   if (identical(val_nax[["nax_mode"]], "cfm")) {
     nax_ = naxCFMfromnmx(nx_, nmx, k, last_open)
@@ -550,4 +428,128 @@ Inputnqx <- function (x, nqx,
 
   return(pash)
 
+}
+
+# nax Calculation ---------------------------------------------------------
+
+#' Calculate nax From nx Using Uniform Distribution of Deaths Assumption
+#'
+#' Get life-table nax values from nx using the "uniform distribution of deaths"
+#' (midpoint) assumption.
+#'
+#' @param nx Width of age interval [x, x+n).
+#' @param k  Number of age groups.
+#' @param last_open Is the last age group open (TRUE) or closed (FALSE)?
+#'
+#' @return The nax as a numeric vector of \code{length(nx)}.
+#'
+#' @details
+#' nax is NA for last open age group.
+#'
+#' @keywords internal
+naxUDD <- function (nx, k, last_open) {
+  nax = 0.5*nx
+  return(nax)
+}
+
+#' Calculate nax From nqx Using Constant Force of Mortality Assumption
+#'
+#' Get life-table nax values from nqx using the constant nmx assumption.
+#'
+#' @param nx  Width of age interval [x, x+n).
+#' @param nqx Probability to die within age interval [x, x+nx) given survival to
+#'   x.
+#' @param npx Probability to survive age interval [x, x+nx) given survival to x.
+#' @param k   Number of age groups.
+#' @param last_open Is the last age group open (TRUE) or closed (FALSE)?
+#'
+#' @return The nax as a numeric vector of \code{length(nx)}.
+#'
+#' @details
+#' For all age groups but the last we calculate:
+#' nax = -nx/nqx - nx/log(npx) + nx
+#'
+#' If the last age group is closed we linearly extrapolate the last nax from the
+#' preceding two nax.
+#'
+#' If the last age group is open we set the last nax to NA.
+#'
+#' @keywords internal
+naxCFMfromnqx <- function (x, nx, nqx, npx, k, last_open) {
+  nax = -nx/nqx - nx/log(npx) + nx
+  if (identical(last_open, FALSE)) {
+    # the analytic expression above can't return a nax value for the
+    # last age group (when survivorship hits 0). Therefore we extrapolate
+    # the last nax value based on the preceding 2 nax values
+    nAx = nax/nx
+    nAk = LinearExtrapolation(x = x[c(k-2, k-1)], y = nAx[c(k-2, k-1)],
+                              xextra = x[k], loga = FALSE)
+    nax[k] = nAk*nx[k]
+  }
+  if (identical(last_open, TRUE)) {
+    # without knowing the width of the last age group there is no way to know
+    # the last nax value
+    nax[k] = NA
+  }
+  return(nax)
+}
+
+#' Calculate nax From nmx Using Constant Force of Mortality Assumption
+#'
+#' Get life-table nax values from nmx using the constant nmx assumption.
+#'
+#' @param nx  Width of age interval [x, x+n).
+#' @param nmx Mortality rate in age interval [x, x+nx).
+#' @param k   Number of age groups.
+#' @param last_open Is the last age group open (TRUE) or closed (FALSE)?
+#'
+#' @return The nax as a numeric vector of \code{length(nx)}.
+#'
+#' @details
+#' For all age groups we calculate:
+#' nax = nx + 1/nmx - nx/(1 - exp(-nx*nmx))
+#'
+#' If the last age group is open we calculate the last nax as the remaining life
+#' expectancy at x. Given the constant hazard assumption that is:
+#' nax[k] = 1/nmx[k]
+#'
+#' @keywords internal
+naxCFMfromnmx <- function (nx, nmx, k, last_open) {
+  nax = nx + 1/nmx - nx/(1 - exp(-nx*nmx))
+  if (identical(last_open, TRUE)){
+    nax[k] = 1/nmx[k]
+  }
+  return(nax)
+}
+
+#' Convert Death Rates to Death Probabilities
+#'
+#' @param nmx Mortality rate in age interval [x, x+nx).
+#' @param nax Subject-time alive in [x, x+n) for those who die in same interval.
+#' @param nx Width of age interval [x, x+n).
+#' @param mode Conversion formula. "chiang", "cfm", or "udd".
+#'
+#' @details Chiangs formula for the nmx->nqx conversion is
+#'
+#' nqx = nx*nmx / (1+(nx-nax)*nmx).
+#'
+#' It may produce probabilities > 1 in cases where age groups are wide, hazards
+#' are high and the nax is approximated using the uniform distribution of deaths
+#' or the constant force of mortality assumption. Therefore in these cases we
+#' use other conversion formulas.
+#'
+#' nqx = 1 - exp(-nmx*nx),
+#'
+#' assuming a constant force of mortality within the age interval [x, x+n), and
+#'
+#' nqx = 1 - (1-nmx / (1+0.5*nmx))^nx,
+#'
+#' assuming a uniform distribution of deaths within the age interval [x, x+n).
+#'
+#' @keywords internal
+nmxTonqx <- function (nmx, nax, nx, mode) {
+  if (identical(mode, "chiang")) { nqx = nx*nmx / (1+(nx-nax)*nmx) }
+  if (identical(mode, "cfm")) { nqx = 1 - exp(-nmx*nx) }
+  if (identical(mode, "udd")) { nqx = 1 - (1-nmx / (1+0.5*nmx))^nx }
+  return(nqx)
 }
