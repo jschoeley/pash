@@ -1,5 +1,5 @@
 ^data-raw$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-devel_misc
+misc
 priv
