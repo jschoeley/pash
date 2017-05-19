@@ -61,6 +61,34 @@ Validatelx <- function (lx) {
   if (is.unsorted(rev(lx))) { stop("lx must be monotonically decreasing.", call. = FALSE) }
 }
 
+#' Validate / Modify lx Tail To Close the Life-table
+#' @importFrom utils head tail
+#' @keywords internal
+ValidateTaillx <- function(x, lx, nax, nx, last_open) {
+  # k: number of age-groups
+  k = length(x)
+
+  # delete tail of 0s in lx vector and remove corresponding
+  # values of other life-table columns
+  if (identical(lx[k], 0)) {
+    zero_tail_length = tail(rle(lx)$length, 1)
+    lx = head(lx, -zero_tail_length)
+    x = head(x, -zero_tail_length)
+    nx = head(nx, -zero_tail_length)
+    nax = head(nax, -zero_tail_length)
+
+    if (last_open == FALSE) {
+      message("Ages where lx = 0 have been removed from life-table.")
+    }
+    if (last_open == TRUE) {
+      last_open = FALSE
+      message("Ages where lx = 0 have been removed from life-table.\nThe last age group is now closed instead of open.")
+    }
+  }
+
+  return(list(x = x, lx = lx, nax = nax, nx = nx, last_open = last_open))
+}
+
 #' Validate mx
 #' @keywords internal
 Validatemx <- function (mx) {
@@ -75,7 +103,8 @@ Validatenqx <- function (nqx) {
   if (any(nqx < 0) || any(nqx > 1)) { stop("nqx can only take values in [0,1].", call. = FALSE) }
 }
 
-# Validate / Modify the last nqx to close the life table
+#' Validate / Modify Last nqx To Close The Life-table
+#' @keywords internal
 ValidateLastnqx <- function(x, nqx, nax, nx, last_open) {
 
   # k: number of age-groups

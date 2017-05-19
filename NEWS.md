@@ -5,6 +5,7 @@ pash 0.0.4
 
 ### FIXES
 
+- Truncate lx input data in case it ends with 0s
 - last nax is no longer NA in case of `Inputnmx(nax="udd", last_open=TRUE)` but instead calculated using constant hazard assumption (closes #18)
 
 ### OTHER CHANGES

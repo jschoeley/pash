@@ -34,7 +34,7 @@ test_that("errors in age input are catched", {
 
 test_that("errors in nx input are catched", {
 
-  # Validatenx() level tests
+  # Validatenx() tests
   expect_error(Validatenx(c(rep(5, 11), NaN), seq(0, 55, 5), last_open = TRUE),
                "nx must not contain NaN.")
   expect_error(Validatenx(c(rep(5, 11), Inf), seq(0, 55, 5), last_open = TRUE),
@@ -74,7 +74,7 @@ test_that("errors in nx input are catched", {
   expect_error(Validatenx(rep(6, 12), seq(0, 55, 5), last_open = TRUE),
                "Provided Age and nx vectors don't match.")
 
-  # Input*() level tests
+  # Input*() tests
   expect_error(Inputlx(x = australia_1y$x, nx = c(NA, rep(1, 100)),
                        nax = australia_1y$nax, lx = australia_1y$lx,
                        last_open = FALSE),
@@ -126,4 +126,14 @@ test_that("errors in nax input are catched", {
                "nax must not be larger than nx.")
   expect_error(Validatenax(nax = 1.1, x = 0:11, nx = 1, last_open = FALSE),
                "nax must not be larger than nx.")
+})
+
+# Test ValidateTaillx -----------------------------------------------------
+
+test_that("lx is truncated in case of 0s in tail", {
+  expect_equal(
+    utils::tail(Inputlx(c(prestons_lx$x, 100, 101, 102), c(prestons_lx$lx, 0, 0, 0),
+                        last_open = TRUE, nax = "cfm")[["lt"]][["lx"]], 1),
+    0.21134
+  )
 })

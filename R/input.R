@@ -67,9 +67,6 @@ Inputlx <- function (x, lx,
 
   # Input validation --------------------------------------------------------
 
-  # k: number of age-groups
-  k = length(x)
-
   # validate parameters
   ValidateAge(x)
   val_nx = Validatenx(nx, x, last_open)
@@ -77,13 +74,22 @@ Inputlx <- function (x, lx,
   val_nax = Validatenax(nax, x, nx, last_open)
   nax_ = val_nax[["nax"]]
 
-  # validate data
+  # validate data (modify in case of lx with 0s in tail)
   Validatelx(lx)
+  valid_lx = ValidateTaillx(x, lx, nax_, nx_, last_open)
+  x_ = valid_lx[["x"]]
+  lx_ = valid_lx[["lx"]]
+  nx_ = valid_lx[["nx"]]
+  nax_ = valid_lx[["nax"]]
+  last_open = valid_lx[["last_open"]]
+
+  # k: number of age-groups
+  k = length(x_)
 
   # Build life-table --------------------------------------------------------
 
   # set radix to 1
-  lx_ = lx / lx[1L]
+  lx_ = lx_ / lx_[1L]
 
   # ndx: life-table deaths in age group [x, x+n)
   ndx = c(lx_[-k] - lx_[-1L], lx_[k])
@@ -100,7 +106,7 @@ Inputlx <- function (x, lx,
     nax_ = naxUDD(nx_, k, last_open)
   }
   if (identical(val_nax[["nax_mode"]], "cfm")) {
-    nax_ = naxCFMfromnqx(x, nx_, nqx, npx, k, last_open)
+    nax_ = naxCFMfromnqx(x_, nx_, nqx, npx, k, last_open)
   }
 
   # nLx: amount of subject-time at risk in age group [x, x+n)
@@ -113,8 +119,8 @@ Inputlx <- function (x, lx,
     # extrapolate nmx based on the preceding two nmx and calculate nLx of the
     # last age group using the constant hazard assumption.
     if (val_nax[["nax_mode"]] %in% c("udd", "cfm")) {
-      nmx[k] = LinearExtrapolation(x = x[c(k-2, k-1)], y = nmx[c(k-2, k-1)],
-                                   xextra = x[k], loga = TRUE)
+      nmx[k] = LinearExtrapolation(x = x_[c(k-2, k-1)], y = nmx[c(k-2, k-1)],
+                                   xextra = x_[k], loga = TRUE)
       nax_[k] = 1/nmx[k]
       nLx[k] = nax_[k]*lx_[k]
       message("Inputlx() and last_open = TRUE: nmx of open age group log-linearly extrapolated based on preceding two nmx.")
@@ -128,14 +134,12 @@ Inputlx <- function (x, lx,
   Tx = rev(cumsum(rev(nLx)))
   # ex: life expectancy at age x
   ex = Tx/lx_
-  # when lx becomes 0 ex becomes NaN. set it to 0
-  ex[is.nan(ex)] = 0
 
   # Construct pash object ---------------------------------------------------
 
   # construct the pace-shape object, a validated life-table
   pash =  ConstructPash(
-    x = x, nx = nx_, nmx = nmx, nax = nax_,
+    x = x_, nx = nx_, nmx = nmx, nax = nax_,
     nqx = nqx, npx = npx, lx = lx_, ndx = ndx,
     nLx = nLx, Tx = Tx, ex = ex,
     time_unit = time_unit, nax_mode = val_nax[["nax_mode"]], last_open = last_open,
