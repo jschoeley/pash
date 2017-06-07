@@ -1,0 +1,172 @@
+---
+title: "pash: Pace-Shape Analysis for Life-tables"
+author: "Jonas Schoeley, Marius Pascariu, Francisco Villavicencio, Maciej Danko"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{pash}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+What's it for?
+--------------
+
+*pash* lets you perform pace-shape analysis[^1][^2][^3] on life-tables. Calculate a wide array of pace and shape metrics and use them to standardize and compare your data.
+
+*pash* is based on a powerful implementation of single-decrement life-tables. Allowing for various input formats, a choice of sensible defaults and extensive error-checking routines make the construction of life-tables extremely easy with *pash* while experts can choose among different life-table estimation methods.
+
+- Step 1: Create a pace-shape object from life table columns using `Inputlx()` or `Inputmx()`.
+- Step 2: Using the pace-shape object as argument, calculate pace measures with `GetPace()`, calculate shape measures with `GetShape()`, standardize a life table by pace and shape with `StandardizeLT()`, re-base your life table to a different age with `RebaseLT()`.
+
+[^1]: Baudisch, Annette. 2011. "The Pace and Shape of Ageing." Methods in Ecology and Evolution 2 (4): 375–82. doi:10.1111/j.2041-210X.2010.00087.x.
+[^2]: Wrycza, Tomasz, and Annette Baudisch. 2014. "The Pace of Aging: Intrinsic Time Scales in Demography." Demographic Research 30 (1): 1571–90. doi:10.4054/DemRes.2014.30.57.
+[^3]: Wrycza, Tomasz F., Trifon I. Missov, and Annette Baudisch. 2015. "Quantifying the Shape of Aging."" PLOS ONE 10 (3): 1–18. doi:10.1371/journal.pone.0119163.
+
+How to install?
+---------------
+
+You can install `pash` by running:
+
+```{r eval=FALSE}
+install.packages("devtools")
+devtools::install_github("jschoeley/pash")
+```
+
+Examples
+--------
+
+```{r}
+library(pash)
+```
+
+### Create a life-table from mortality rates
+
+Let's say we have a vector of mortality rates by age (Sweden, females, 1940--1944) and would like to calculate a life-table from it...
+
+```{r}
+swe <- subset(sweden5x5, sex == "female" & period == "1940-1944")[c("x", "nmx")]
+swe
+```
+
+...we use the `Inputnmx()` function and specify the last age group as open, done.
+
+```{r}
+Inputnmx(x = swe$x, nmx = swe$nmx, last_open = TRUE)
+```
+
+We can change the details of the life-table calculation.
+
+```{r}
+Inputnmx(x = swe$x, nmx = swe$nmx, last_open = TRUE, nax = "cfm")
+```
+
+### Create a life-table from a survival curve
+
+Given a vector of age-specific survival probabilities we can easily derive a whole life-table. By default the last age group is assumed to be closed.
+
+```{r}
+prestons_lx
+Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
+```
+
+### Calculate measures of pace and shape
+
+```{r}
+pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
+```
+
+Once a `pash` object has been created using one of the `Input*()` functions pace and shape measures are readily available. By default all available pace measures are returned.
+
+```{r}
+GetPace(pash)
+```
+
+The age where only 20% of the population is alive:
+
+```{r}
+GetPace(pash, type = "qlx", q = 0.2)
+```
+
+By default all available shape measures are returned.
+
+```{r}
+GetShape(pash)
+```
+
+The life-table entropy:
+
+```{r}
+GetShape(pash, type = "entropy")
+```
+
+### Rebase a life-table
+
+Sometimes life-table shape and pace measures are only calculated for the adult ages. *pash* lets you "re-base" a life-table to a new age.
+
+Create a pash object from a survival curve.
+
+```{r}
+pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
+pash
+```
+
+Re-base to age 15.
+
+```{r}
+pash = RebaseLT(pash, origin = 15)
+pash
+```
+
+Calculate shape measures on the re-based life-table.
+
+```{r}
+GetPace(pash)
+GetShape(pash)
+```
+
+Re-basing is a non-destructive operation and thus can be reversed:
+
+```{r}
+RebaseLT(pash, origin = 0)
+```
+
+### Standardize a life-table by pace and shape
+
+Different life-tables can be made comparable in shape by standardizing them by pace.[^3] *pash* allows you to standardize your life-table by different shape measures, total life expectancy being the default:
+
+```{r}
+pash = Inputlx(x = prestons_lx$x, lx = prestons_lx$lx)
+StandardizeLT(pash)
+```
+
+Standardize by median life-span:
+
+```{r}
+StandardizeLT(pash, pace = "qlx")
+```
+
+Standardize by 0.7 quantile life-span:
+
+```{r}
+StandardizeLT(pash, pace = "qlx", q = 0.7)
+```
+
+### Using pash within dplyr pipe
+
+Here we use *pash* in conjunction with `dplyr` and `ggplot2` to produce a plot of life expectancy at birth versus life-table entropy for hundreds of Swedish life-tables.
+
+```{r message=FALSE}
+library(dplyr)
+library(ggplot2)
+
+sweden5x5 %>%
+  group_by(sex, period) %>%
+    do({
+     pash = Inputnmx(x = .$x, nmx = .$nmx)
+     data.frame(e0 = GetPace(pash, type = "e0"),
+                H  = GetShape(pash, type = "entropy"))
+    }) %>%
+  ggplot(aes(x = e0, y = H, color = sex)) + geom_point()
+```
+
