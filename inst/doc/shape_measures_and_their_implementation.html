@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jonas Schöley and Marius Pascariu" />
 
-<meta name="date" content="2017-06-07" />
+<meta name="date" content="2017-07-19" />
 
 <title>Shape measures and their implementation</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Shape measures and their implementation</h1>
 <h4 class="author"><em>Jonas Schöley and Marius Pascariu</em></h4>
-<h4 class="date"><em>2017-06-07</em></h4>
+<h4 class="date"><em>2017-07-19</em></h4>
 
 
 
@@ -191,26 +191,26 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="pash-implementation" class="section level4">
 <h4><em>pash</em> implementation</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Average Life-Expectancy in Age x</span>
-EDaggerx &lt;-<span class="st"> </span><span class="cf">function</span>(nax, nx, ex) {
-  nAx =<span class="st"> </span>nax<span class="op">/</span>nx
-  edx =<span class="st"> </span>(nAx<span class="op">*</span><span class="kw">c</span>(ex[<span class="op">-</span>1L], <span class="dv">0</span>) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">-</span>nAx)<span class="op">*</span>ex)
+EDaggerx &lt;-<span class="st"> </span>function(nax, nx, ex) {
+  nAx =<span class="st"> </span>nax/nx
+  edx =<span class="st"> </span>(nAx*<span class="kw">c</span>(ex[-1L], <span class="dv">0</span>) +<span class="st"> </span>(<span class="dv">1</span>-nAx)*ex)
   edx[<span class="kw">length</span>(edx)] =<span class="st"> </span>ex[<span class="kw">length</span>(ex)]
   <span class="kw">return</span>(edx)
 }
 
 <span class="co"># Total Life Years Lost due to Death</span>
-EDagger &lt;-<span class="st"> </span><span class="cf">function</span>(nax, nx, ndx, ex) {
+EDagger &lt;-<span class="st"> </span>function(nax, nx, ndx, ex) {
   edx =<span class="st"> </span><span class="kw">EDaggerx</span>(nax, nx, ex)
-  ed  =<span class="st"> </span><span class="kw">sum</span>(ndx<span class="op">*</span>edx)
+  ed  =<span class="st"> </span><span class="kw">sum</span>(ndx*edx)
   <span class="kw">return</span>(ed)
 }
 
 <span class="co"># Life Table Entropy</span>
-LifetableEntropy &lt;-<span class="st"> </span><span class="cf">function</span>(nax, nx, ndx, ex, harmonized) {
+LifetableEntropy &lt;-<span class="st"> </span>function(nax, nx, ndx, ex, harmonized) {
   ed =<span class="st"> </span><span class="kw">EDagger</span>(nax, nx, ndx, ex)
-  H  =<span class="st"> </span>ed<span class="op">/</span>ex[1L]
-  <span class="cf">if</span> (<span class="op">!</span><span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span>H}
-  <span class="cf">if</span> (<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span><span class="dv">1</span><span class="op">-</span>H}
+  H  =<span class="st"> </span>ed/ex[1L]
+  if (!<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span>H}
+  if (<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span><span class="dv">1</span>-H}
   <span class="kw">return</span>(S)
 }</code></pre></div>
 </div>
@@ -239,17 +239,17 @@ LifetableEntropy &lt;-<span class="st"> </span><span class="cf">function</span>(
 <div id="pash-implementation-1" class="section level4">
 <h4><em>pash</em> implementation</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Life Table Variance</span>
-LifetableVar &lt;-<span class="st"> </span><span class="cf">function</span>(x, ndx, nax, ex) {
-  var =<span class="st"> </span><span class="kw">sum</span>(ndx<span class="op">*</span>(x<span class="op">+</span>nax<span class="op">-</span>ex[1L])<span class="op">^</span><span class="dv">2</span>)
+LifetableVar &lt;-<span class="st"> </span>function(x, ndx, nax, ex) {
+  var =<span class="st"> </span><span class="kw">sum</span>(ndx*(x+nax-ex[1L])^<span class="dv">2</span>)
   <span class="kw">return</span>(var)
 }
 
 <span class="co"># Life Table Coefficient of Variation</span>
-LifetableCV &lt;-<span class="st"> </span><span class="cf">function</span>(x, ndx, nax, ex, harmonized) {
+LifetableCV &lt;-<span class="st"> </span>function(x, ndx, nax, ex, harmonized) {
   var =<span class="st"> </span><span class="kw">LifetableVar</span>(x, ndx, nax, ex)
-  CV  =<span class="st"> </span><span class="kw">sqrt</span>(var)<span class="op">/</span>ex[1L]
-  <span class="cf">if</span> (<span class="op">!</span><span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span>CV}
-  <span class="cf">if</span> (<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span><span class="dv">1</span><span class="op">-</span>CV}
+  CV  =<span class="st"> </span><span class="kw">sqrt</span>(var)/ex[1L]
+  if (!<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span>CV}
+  if (<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span><span class="dv">1</span>-CV}
   <span class="kw">return</span>(S)
 }</code></pre></div>
 </div>
@@ -287,14 +287,14 @@ LifetableCV &lt;-<span class="st"> </span><span class="cf">function</span>(x, nd
 <div id="pash-implementation-2" class="section level4">
 <h4><em>pash</em> implementation</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Life Table Gini-Coefficient</span>
-LifetableGini &lt;-<span class="st"> </span><span class="cf">function</span> (x, nax, ndx, ex, harmonized) {
+LifetableGini &lt;-<span class="st"> </span>function (x, nax, ndx, ex, harmonized) {
   e =<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>, <span class="kw">length</span>(x))
   D =<span class="st"> </span><span class="kw">outer</span>(ndx, ndx)
-  x_ =<span class="st"> </span>x<span class="op">+</span>nax
-  X_ =<span class="st"> </span><span class="kw">abs</span>(e<span class="op">%*%</span><span class="kw">t</span>(x_) <span class="op">-</span><span class="st"> </span>x_<span class="op">%*%</span><span class="kw">t</span>(e))
-  G =<span class="st"> </span><span class="kw">sum</span>(D<span class="op">*</span>X_)<span class="op">/</span>(<span class="dv">2</span><span class="op">*</span>ex[1L])
-  <span class="cf">if</span> (<span class="op">!</span><span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span>G}
-  <span class="cf">if</span> (<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span><span class="dv">1</span><span class="op">-</span><span class="dv">2</span><span class="op">*</span>G}
+  x_ =<span class="st"> </span>x+nax
+  X_ =<span class="st"> </span><span class="kw">abs</span>(e%*%<span class="kw">t</span>(x_) -<span class="st"> </span>x_%*%<span class="kw">t</span>(e))
+  G =<span class="st"> </span><span class="kw">sum</span>(D*X_)/(<span class="dv">2</span>*ex[1L])
+  if (!<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span>G}
+  if (<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span><span class="dv">1-2</span>*G}
   <span class="kw">return</span>(S)
 }</code></pre></div>
 </div>
@@ -328,12 +328,12 @@ LifetableGini &lt;-<span class="st"> </span><span class="cf">function</span> (x,
 <div id="pash-implementation-3" class="section level4">
 <h4><em>pash</em> implementation</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Mortality Ratio</span>
-MortalityRatio &lt;-<span class="st"> </span><span class="cf">function</span>(x, nx, nmx, ex, harmonized){
+MortalityRatio &lt;-<span class="st"> </span>function(x, nx, nmx, ex, harmonized){
   m0   =<span class="st"> </span>nmx[1L]
   m_e0 =<span class="st"> </span><span class="kw">approx</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> nmx, <span class="dt">xout =</span> ex[1L])[[<span class="st">&quot;y&quot;</span>]]
-  MR   =<span class="st"> </span>m0<span class="op">/</span>m_e0
-  <span class="cf">if</span> (<span class="op">!</span><span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span>MR}
-  <span class="cf">if</span> (<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span><span class="dv">1</span> <span class="op">-</span><span class="st"> </span>MR}
+  MR   =<span class="st"> </span>m0/m_e0
+  if (!<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span>MR}
+  if (<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span><span class="dv">1</span> -<span class="st"> </span>MR}
   <span class="kw">return</span>(S)
 }</code></pre></div>
 </div>
@@ -367,11 +367,11 @@ MortalityRatio &lt;-<span class="st"> </span><span class="cf">function</span>(x,
 <div id="pash-implementation-4" class="section level4">
 <h4><em>pash</em> implementation</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Life Expectancy Ratio</span>
-LER &lt;-<span class="st"> </span><span class="cf">function</span>(x, nx, ex, harmonized){
+LER &lt;-<span class="st"> </span>function(x, nx, ex, harmonized){
   e_e0 =<span class="st"> </span><span class="kw">approx</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> ex, <span class="dt">xout =</span> ex[1L])[[<span class="st">&quot;y&quot;</span>]]
-  ler =<span class="st"> </span>e_e0<span class="op">/</span>ex[1L]
-  <span class="cf">if</span> (<span class="op">!</span><span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span>ler}
-  <span class="cf">if</span> (<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span><span class="dv">1</span><span class="op">-</span>ler}
+  ler =<span class="st"> </span>e_e0/ex[1L]
+  if (!<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span>ler}
+  if (<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span><span class="dv">1</span>-ler}
   <span class="kw">return</span>(S)
 }</code></pre></div>
 </div>
@@ -401,11 +401,11 @@ LER &lt;-<span class="st"> </span><span class="cf">function</span>(x, nx, ex, ha
 <div id="pash-implementation-5" class="section level4">
 <h4><em>pash</em> implementation</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Average of Change in Force of Mortality with respect to lx</span>
-ACFM &lt;-<span class="st"> </span><span class="cf">function</span>(nmx, ndx, ex, harmonized){
-  acfm_x =<span class="st"> </span>(nmx <span class="op">-</span><span class="st"> </span>nmx[1L]) <span class="op">*</span><span class="st"> </span>ndx
-  D =<span class="st"> </span>ex[1L] <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>(acfm_x)
-  <span class="cf">if</span> (<span class="op">!</span><span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span>D}
-  <span class="cf">if</span> (<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span><span class="dv">1</span><span class="op">-</span><span class="kw">exp</span>(<span class="op">-</span>D)}
+ACFM &lt;-<span class="st"> </span>function(nmx, ndx, ex, harmonized){
+  acfm_x =<span class="st"> </span>(nmx -<span class="st"> </span>nmx[1L]) *<span class="st"> </span>ndx
+  D =<span class="st"> </span>ex[1L] *<span class="st"> </span><span class="kw">sum</span>(acfm_x)
+  if (!<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span>D}
+  if (<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span><span class="dv">1</span>-<span class="kw">exp</span>(-D)}
   <span class="kw">return</span>(S)
 }</code></pre></div>
 </div>
@@ -436,10 +436,10 @@ ACFM &lt;-<span class="st"> </span><span class="cf">function</span>(nmx, ndx, ex
 <div id="pash-implementation-6" class="section level4">
 <h4><em>pash</em> implementation</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Probability to Survive up to the Mean Age at Death</span>
-PSMAD &lt;-<span class="st"> </span><span class="cf">function</span>(x, nx, lx, ex, harmonized){
+PSMAD &lt;-<span class="st"> </span>function(x, nx, lx, ex, harmonized){
   l_e0  =<span class="st"> </span><span class="kw">approx</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> lx, <span class="dt">xout =</span> ex[1L])[[<span class="st">&quot;y&quot;</span>]]
-  <span class="cf">if</span> (<span class="op">!</span><span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span>l_e0}
-  <span class="cf">if</span> (<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(l_e0)}
+  if (!<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span>l_e0}
+  if (<span class="kw">isTRUE</span>(harmonized)) {S =<span class="st"> </span><span class="dv">1</span> +<span class="st"> </span><span class="kw">log</span>(l_e0)}
   <span class="kw">return</span>(S)
 }</code></pre></div>
 </div>

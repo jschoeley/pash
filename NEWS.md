@@ -1,8 +1,6 @@
 pash 0.0.4
 ----------
 
-### NEW FEATURES
-
 ### FIXES
 
 - Truncate lx input data in case it ends with 0s
@@ -11,6 +9,8 @@ pash 0.0.4
 ### OTHER CHANGES
 
 - add tests for shape measures
+- always build package vignettes upon installation
+- add travis CI integration
 
 pash 0.0.3
 ----------

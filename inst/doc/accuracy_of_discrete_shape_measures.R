@@ -4,10 +4,7 @@ knitr::opts_chunk$set(tidy = FALSE, size = "small")
 
 ## ----init-----------------------------------------------------------------------------------------
 library(pash)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(scales)
+library(tidyverse)
 
 radix = 10000
 
@@ -100,7 +97,7 @@ data.frame(cv, gini, entropy, ler, psmad) %>%
   scale_x_discrete("", labels = c("CV-1Y.", "CV-10Y", "Entropy-1Y", "Entropy-10Y",
                                   "Gini-1Y", "Gini-10Y", "LER-1Y", "LER-10Y",
                                   "PSMAD-1Y", "PSMAD-10Y")) +
-  scale_y_continuous(labels = percent_format(), limits = c(-0.05, 0.05),
+  scale_y_continuous(labels = scales::percent_format(), limits = c(-0.05, 0.05),
                      breaks = seq(-0.05, 0.05, 0.01)) +
   theme_minimal() +
   theme(panel.grid.minor = element_blank(), panel.grid.major.y = element_blank()) +

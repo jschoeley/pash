@@ -9,6 +9,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width = 100)
+knitr::opts_chunk$set(tidy = FALSE, size = "small")
+```
+
 What's it for?
 --------------
 
@@ -156,9 +161,8 @@ StandardizeLT(pash, pace = "qlx", q = 0.7)
 
 Here we use *pash* in conjunction with `dplyr` and `ggplot2` to produce a plot of life expectancy at birth versus life-table entropy for hundreds of Swedish life-tables.
 
-```{r message=FALSE}
-library(dplyr)
-library(ggplot2)
+```{r message=FALSE, fig.width=6}
+library(tidyverse)
 
 sweden5x5 %>%
   group_by(sex, period) %>%
