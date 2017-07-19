@@ -1,6 +1,8 @@
 pash - Pace and Shape Analysis in R
 -----------------------------------
 
+[![Build Status](https://travis-ci.org/mpascariu/pclm.svg?branch=master)](https://travis-ci.org/mpascariu/pclm)
+
 `pash` lets you perform pace-shape analysis on life tables. Calculate a wide array of pace and shape metrics and use them to standardize and compare your data.
 
 Install with `r devtools::install_github("jschoeley/pash")`.

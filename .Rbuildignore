@@ -3,3 +3,4 @@
 ^\.Rproj\.user$
 misc
 priv
+^\.travis\.yml$
