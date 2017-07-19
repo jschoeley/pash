@@ -11,6 +11,7 @@ pash 0.0.4
 - add tests for shape measures
 - always build package vignettes upon installation
 - add travis CI integration
+- use the tidyverse in vignettes
 
 pash 0.0.3
 ----------
